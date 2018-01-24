@@ -22,6 +22,16 @@
 			let img2;
 			let img3;
 			let img4;
+			var player1;
+			
+			function Player(job, health, x, y, has_flag/*, img*/){
+				this.job = job;
+				this.health = health;
+				this.x = x;
+				this.y = y;
+				this.has_flag = has_flag;
+				//this.image = document.getElementById(img);
+			}
 			
 			function setup(){
 				c = document.getElementById("myCanvas");
@@ -30,6 +40,18 @@
 				img2 = document.getElementById("player");
 				img3 = document.getElementById("wall");
 				img4 = document.getElementById("trap");
+				//player1 = new Player(
+				run();
+			}
+			
+			function run(){
+				/*var entities = getFromServer()
+				for(let entity of entities){
+					draw(entity);
+				}
+				var actions = updatePlayer(); //basically gets a list of the keypresses, etc.
+				sendToServer(actions);
+				*/
 			}
 			
 			function draw(){
