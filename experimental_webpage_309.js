@@ -16,11 +16,12 @@ var time_between_shots = 100; //milliseconds
 
 //this code executes right when the page is loaded
 setup(); //only call setup once
-setInterval(draw, 1000 / 60); //called 60 times a second
+
 
 
 //all functions
 function setup() {
+  setInterval(draw, 1000 / 60); //called 60 times a second
   player = new player();
   bullet_p = new bullet_population();
   //setting up two key listeners to improve movement
