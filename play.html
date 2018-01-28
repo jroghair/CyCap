@@ -1,66 +1,20 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<title>CyCap - Login</title>
+	</head>
 	<body>
-		<canvas id="myCanvas" width="1080" height="720" style="border:1px solid #000000;"></canvas>
-			<img id="enemy" src="enemy.png"></img>
-			<img id="player" src="player.png"></img>
-			<img id="wall" src="wall.png"></img>
-			<img id="trap" src="trap.png"></img>
-		
-		<style>
-			img{
-				display:none;
-			}
-		</style>
-		
-		<button id="button1" onclick="draw()">Start Game!</button>
-		
-		<script>
-			let c;
-			let ctx;
-			let img1;
-			let img2;
-			let img3;
-			let img4;
-			var player1;
-			
-			function Player(job, health, x, y, has_flag/*, img*/){
-				this.job = job;
-				this.health = health;
-				this.x = x;
-				this.y = y;
-				this.has_flag = has_flag;
-				//this.image = document.getElementById(img);
-			}
-			
-			function setup(){
-				c = document.getElementById("myCanvas");
-				ctx = c.getContext("2d");
-				img1 = document.getElementById("enemy");
-				img2 = document.getElementById("player");
-				img3 = document.getElementById("wall");
-				img4 = document.getElementById("trap");
-				//player1 = new Player(
-				run();
-			}
-			
-			function run(){
-				/*var entities = getFromServer()
-				for(let entity of entities){
-					draw(entity);
-				}
-				var actions = updatePlayer(); //basically gets a list of the keypresses, etc.
-				sendToServer(actions);
-				*/
-			}
-			
-			function draw(){
-				ctx.drawImage(img1,0,0);
-				ctx.drawImage(img2,100,0);
-				ctx.drawImage(img3,0,100);
-				ctx.drawImage(img4,100,100);
-			}
-			window.onload = setup;
-		</script>
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<img src="test.png" width = 10 height = 10/> <!-- this would probably lead to the about page when you click on it -->
+			<a href="main_page.html">Home</a>
+			<a href="join_server.html">Join Server</a>
+			<a href="how_to.html">How To Play</a>
+			<a href="about.html">About the Team</a>
+			<a id = "profile_link" href="profile.html">Profile</a>
+		</div>
+		<canvas id="myCanvas" width="1080" height="650" style="border:1px solid #000000;"></canvas>
+		<!--<link rel="stylesheet" href="play.css"> -->
+		<script type="text/javascript" src="play.js"></script>
 	</body>
 </html>
