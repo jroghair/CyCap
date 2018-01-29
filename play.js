@@ -3,6 +3,7 @@ var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
 var keys_down = []; //keys being pressed
 var bullets = []; //all bullets
+var walls = [];
 var player, bullet_p;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
 var player_speed = 3, bullet_speed = 10; //pixels. eventually we will want this to be based on grid_length/seconds
@@ -10,9 +11,12 @@ var mouseX;
 var mouseY;
 var last_shot_time = 0; //don't change
 var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+
+//image filenames
 var player_image = "player.png";
 var bullet_image = "enemy.png";
 var background_image = "grid_map_30x20.png";
+var wall_image = "wall.png"
 
 
 //this code executes right when the page is loaded
@@ -22,10 +26,14 @@ setup(); //only call setup once
 
 //all functions
 function setup() {
-  setInterval(draw, 1000 / 60); //called 60 times a second
+  setInterval(run, 1000 / 60); //called 60 times a second
   player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
   bullet_p = new bullet_population();
   map = new Background(background_image);
+  walls.push(new Wall(wall_image, 5, 10));
+  walls.push(new Wall(wall_image, 5, 11));
+  walls.push(new Wall(wall_image, 5, 12));
+  walls.push(new Wall(wall_image, 5, 13));
   //setting up two key listeners to improve movement
   //when a key goes down it is added to a list and when it goes up its taken out
   document.addEventListener("keydown", function(event) {
@@ -40,14 +48,20 @@ function setup() {
   window.addEventListener('mousemove', getMousePosition, false);
 }
 
-function draw() {
+function run() {
   context.beginPath(); //so styles dont interfere
   context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
+  
   player.update();
   bullet_p.move_bullets();
+  
   map.draw();
+  for(i = 0; i < walls.length; i++){
+	  walls[i].draw();
+  }
   bullet_p.draw();
   player.draw();
+  
   context.closePath(); //so styles dont interfere
 }
 
@@ -65,6 +79,7 @@ function toDegrees(angle) {
   return (angle * (180.0 / Math.PI));
 }
 
+//x & y refer to the center of the Entity
 function Entity(width, height, img, x, y){
 	this.image = new Image();
 	this.image.src = img;
@@ -76,7 +91,7 @@ function Entity(width, height, img, x, y){
 	this.y = y;
 	
 	this.draw = function(){
-		context.drawImage(this.image, this.x, this.y, this.width, this.height);
+		context.drawImage(this.image, this.x - (this.width/2), this.y - (this.height/2), this.width, this.height);
 	}
 }
 
@@ -117,12 +132,23 @@ function bullet_population() {
 	}
 
 	this.move_bullets = function() {
+		
 		for (var i = 0; i < bullets.length; i++) {
 			//console.log(bullets[i].x_ratio + ', ' + bullets[i].y_ratio);
 			bullets[i].x += bullet_speed * bullets[i].x_ratio;
 			bullets[i].y += bullet_speed * bullets[i].y_ratio;
 			if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y < 0 || bullets[i].y > canvas.height) {
 				bullets.splice(i, 1);
+			}
+			
+			for(var j = 0; j < walls.length; j++){
+				if (bullets[i].x < (walls[j].x +  (walls[j].width/2)) 
+				 && bullets[i].x > (walls[j].x -  (walls[j].width/2)) 
+				 && bullets[i].y < (walls[j].y + (walls[j].height/2)) 
+			   	 && bullets[i].y > (walls[j].y - (walls[j].height/2)))
+				{
+					bullets.splice(i, 1);
+				}
 			}
 		}
 	}
@@ -164,7 +190,22 @@ function Player(width, height, img, x, y, role, team) {
 	}
 }
 
-function Background(img){
+//Grid_x and grid_y are the positions on the grid, with top left grid coordinates being (0,0)
+function Wall(img, grid_x, grid_y){
+	this.grid_x = grid_x;
+	this.grid_y = grid_y;
 	this.base = Entity;
-	this.base(canvas.width, canvas.height, img, 0, 0);
+	this.base(grid_length, grid_length, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
+	
+}
+
+function Background(img){
+	this.image = new Image();
+	this.image.src = img;
+	this.width = canvas.width;
+	this.height = canvas.height;
+	
+	this.draw = function(){
+		context.drawImage(this.image, 0, 0, this.width, this.height);
+	}
 }
