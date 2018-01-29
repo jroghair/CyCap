@@ -4,13 +4,15 @@ var context = canvas.getContext("2d");
 var keys_down = []; //keys being pressed
 var bullets = []; //all bullets
 var player, bullet_p;
-var player_speed = 3, bullet_speed = 10; //pixels
+let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
+var player_speed = 3, bullet_speed = 10; //pixels. eventually we will want this to be based on grid_length/seconds
 var mouseX;
 var mouseY;
 var last_shot_time = 0; //don't change
-var time_between_shots = 100; //milliseconds
+var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 var player_image = "player.png";
 var bullet_image = "enemy.png";
+var background_image = "grid_map_30x20.png";
 
 
 //this code executes right when the page is loaded
@@ -21,8 +23,9 @@ setup(); //only call setup once
 //all functions
 function setup() {
   setInterval(draw, 1000 / 60); //called 60 times a second
-  player = new Player(50, 50, player_image, 0, 0, "recruit", "1");
+  player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
   bullet_p = new bullet_population();
+  map = new Background(background_image);
   //setting up two key listeners to improve movement
   //when a key goes down it is added to a list and when it goes up its taken out
   document.addEventListener("keydown", function(event) {
@@ -42,8 +45,9 @@ function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   player.update();
   bullet_p.move_bullets();
-  player.draw();
+  map.draw();
   bullet_p.draw();
+  player.draw();
   context.closePath(); //so styles dont interfere
 }
 
@@ -149,13 +153,18 @@ function Player(width, height, img, x, y, role, team) {
 
 		if (keys_down.includes(32)) {
 			if (last_shot_time == 0) {
-				bullets.push(new Bullet(5, 5, bullet_image, this.x, this.y));
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y));
 				last_shot_time = Date.now();
 			}
 			else if ((Date.now() - last_shot_time) >= time_between_shots) {
-				bullets.push(new Bullet(5, 5, bullet_image, this.x, this.y));
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y));
 				last_shot_time = Date.now();
 			}
 		}
 	}
+}
+
+function Background(img){
+	this.base = Entity;
+	this.base(canvas.width, canvas.height, img, 0, 0);
 }
