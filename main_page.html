@@ -1,51 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CyCap</title>
-<style>
-body {margin:0;}
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>CyCap</title>
+		<link rel="stylesheet" href="main_page.css">
+		<script type="text/javascript" src="main_page.js">window.onload = setup;</script>
+	</head>
+	
+	<body>
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<img src="test.png" /> <!-- this would probably lead to the about page when you click on it -->
+			<a href="#">Home</a>
+			<a href="join_server.html">Join Server</a>
+			<a href="how_to.html">How To Play</a>
+			<a href="about.html">About the Team</a>
+			<a id = "profile_link" href="profile.html">Profile</a>
+		</div>
+		<img src="test.png" />
 
-.topnav {
-    overflow: hidden;
-    background-color: #333;
-}
-
-.topnav a {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-}
-
-.topnav a:hover {
-    background-color: #ddd;
-    color: black;
-}
-
-.topnav a.active {
-    background-color: #4CAF50;
-    color: white;
-}
-</style>
-</head>
-<body>
-<div class="topnav">
-    <h1>CyCap</h1>
-    <img src="team_logo.png" /> <!-- this would probably lead to the about page when you click on it -->
-    <a href="#main_page">Home</a>
-    <a href="#join_server">Join Server</a>
-    <a href="#how_to">How To Play</a>
-    <a href="#about">About the Team</a>
-</div>
-        <img src="bckgrd_photo.png" />
-
-        <div>
-            <a href="play.html" target="_blank">Play Now</a>
-            <a href="login.html" target="_blank">Log In</a>
-            <a href="new_account.html" target="_blank">Create Account</a>
-        </div>
-</body>
+		<div>
+			<a href="play.html" target="_blank">Play Now</a>
+			<a href="login.html" target="_blank">Log In</a>
+			<a href="new_account.html" target="_blank">Create Account</a>
+		</div>
+	</body>
 </html>
