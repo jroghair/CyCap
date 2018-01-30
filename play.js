@@ -9,7 +9,7 @@ var walls = [];
 let map;
 var player, bullet_p;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
-var player_speed = 3, bullet_speed = 10; //pixels. eventually we will want this to be based on grid_length/seconds
+var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 var mouseX;
 var mouseY;
 var last_shot_time = 0; //don't change
@@ -29,7 +29,8 @@ setup(); //only call setup once
 
 //all functions
 function setup() {
-	setInterval(run, 1000 / 60); //called 60 times a second
+	//setInterval(run, 1000 / 60); //called 60 times a second
+	requestAnimationFrame(run); //more synchronized method similar to setInterval
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
 	bullet_p = new bullet_population();
@@ -53,6 +54,9 @@ function setup() {
 	document.addEventListener("keyup", function(event) {
 		keys_down.splice(keys_down.indexOf(event.keyCode), 1);
 	});
+	document.addEventListener("click", function(event) {
+		//place trap at player position
+	});
 	//mouse listener for coordinates
 	window.addEventListener('mousemove', getMousePosition, false);
 }
@@ -72,6 +76,7 @@ function run() {
 	player.draw();
   
 	context.closePath(); //so styles dont interfere
+	requestAnimationFrame(run);
 }
 
 //returns true if ent_1 is colliding with ent_2
