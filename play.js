@@ -1,9 +1,12 @@
+"use strict";
+
 //global variables
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
 var keys_down = []; //keys being pressed
 var bullets = []; //all bullets
 var walls = [];
+let map;
 var player, bullet_p;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
 var player_speed = 3, bullet_speed = 10; //pixels. eventually we will want this to be based on grid_length/seconds
@@ -26,43 +29,86 @@ setup(); //only call setup once
 
 //all functions
 function setup() {
-  setInterval(run, 1000 / 60); //called 60 times a second
-  player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
-  bullet_p = new bullet_population();
-  map = new Background(background_image);
-  walls.push(new Wall(wall_image, 5, 10));
-  walls.push(new Wall(wall_image, 5, 11));
-  walls.push(new Wall(wall_image, 5, 12));
-  walls.push(new Wall(wall_image, 5, 13));
-  //setting up two key listeners to improve movement
-  //when a key goes down it is added to a list and when it goes up its taken out
-  document.addEventListener("keydown", function(event) {
-    if (!keys_down.includes(event.keyCode)) {
-      keys_down.push(event.keyCode);
-    }
-  });
-  document.addEventListener("keyup", function(event) {
-    keys_down.splice(keys_down.indexOf(event.keyCode), 1);
-  });
-  //mouse listener for coordinates
-  window.addEventListener('mousemove', getMousePosition, false);
+	setInterval(run, 1000 / 60); //called 60 times a second
+	
+	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
+	bullet_p = new bullet_population();
+	map = new Background(background_image);
+	walls.push(new Wall(wall_image, 5, 10));
+	walls.push(new Wall(wall_image, 5, 11));
+	walls.push(new Wall(wall_image, 5, 12));
+	walls.push(new Wall(wall_image, 5, 13));
+	walls.push(new Wall(wall_image, 7, 10));
+	walls.push(new Wall(wall_image, 7, 11));
+	walls.push(new Wall(wall_image, 7, 12));
+	walls.push(new Wall(wall_image, 7, 13));
+	
+	//setting up two key listeners to improve movement
+	//when a key goes down it is added to a list and when it goes up its taken out
+	document.addEventListener("keydown", function(event) {
+		if (!keys_down.includes(event.keyCode)) {
+			keys_down.push(event.keyCode);
+		}
+	});
+	document.addEventListener("keyup", function(event) {
+		keys_down.splice(keys_down.indexOf(event.keyCode), 1);
+	});
+	//mouse listener for coordinates
+	window.addEventListener('mousemove', getMousePosition, false);
 }
 
 function run() {
-  context.beginPath(); //so styles dont interfere
-  context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
+	context.beginPath(); //so styles dont interfere
+	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
-  player.update();
-  bullet_p.move_bullets();
+	player.update();
+	bullet_p.move_bullets();
   
-  map.draw();
-  for(i = 0; i < walls.length; i++){
-	  walls[i].draw();
-  }
-  bullet_p.draw();
-  player.draw();
+	map.draw();
+	for(let i = 0; i < walls.length; i++){
+		walls[i].draw();
+	}
+	bullet_p.draw();
+	player.draw();
   
-  context.closePath(); //so styles dont interfere
+	context.closePath(); //so styles dont interfere
+}
+
+//returns true if ent_1 is colliding with ent_2
+function isColliding(ent_1, ent_2){
+	var y_collision = isBetween(ent_1.y - (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y + (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2));
+	
+	if(isBetween(ent_1.x - (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+		return true;
+	}
+	else if(isBetween(ent_1.x + (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+		return true;
+	}
+	else if(isBetween(ent_1.x, ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+		return true;
+	}
+	else{
+		return false;
+	}
+	/*
+	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.width/2)), (ent_2.x +  (ent_2.width/2)))
+	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.height/2)), (ent_2.y +  (ent_2.height/2)))){
+		return true;
+	}
+	else{
+		return false;
+	}
+	*/
+}
+
+//returns true if num is between lower and upper, exclusive
+function isBetween(num, lower, upper){
+	if(num > lower && num < upper){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 function getMousePosition(event) {
@@ -132,25 +178,27 @@ function bullet_population() {
 	}
 
 	this.move_bullets = function() {
-		
 		for (var i = 0; i < bullets.length; i++) {
 			//console.log(bullets[i].x_ratio + ', ' + bullets[i].y_ratio);
 			bullets[i].x += bullet_speed * bullets[i].x_ratio;
 			bullets[i].y += bullet_speed * bullets[i].y_ratio;
 			if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y < 0 || bullets[i].y > canvas.height) {
 				bullets.splice(i, 1);
+				i--; //this is so that it checks the bullet after one that is removed
+				continue; //so that when a bullet leaves the map and is spliced out of the bullet list
+				//it does not check if that bullet hit a wall
 			}
 			
 			for(var j = 0; j < walls.length; j++){
-				if (bullets[i].x < (walls[j].x +  (walls[j].width/2)) 
-				 && bullets[i].x > (walls[j].x -  (walls[j].width/2)) 
-				 && bullets[i].y < (walls[j].y + (walls[j].height/2)) 
-			   	 && bullets[i].y > (walls[j].y - (walls[j].height/2)))
+				if (isColliding(bullets[i], walls[j]))
 				{
 					bullets.splice(i, 1);
+					i--; //this is so that it checks the bullet after one that is removed
+					break; //does not check the other walls if at least one was hit
 				}
 			}
 		}
+		
 	}
 }
 
@@ -162,8 +210,15 @@ function Player(width, height, img, x, y, role, team) {
 	//decide health based on role
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role 
+	this.last_x = this.x;
+	this.last_y = this.y;
 
 	this.update = function() {
+		//save last positions in case the new ones are no good
+		this.last_x = this.x;
+		this.last_y = this.y;
+		
+		//this section will probably end up on the server
 		if (keys_down.includes(87)) {
 			this.y -= this.mov_speed;
 		}
@@ -176,7 +231,18 @@ function Player(width, height, img, x, y, role, team) {
 		if (keys_down.includes(83)) {
 			this.y += this.mov_speed;
 		}
-
+		
+		//check if you hit a wall after that move
+		for(let j = 0; j < walls.length; j++){
+				if (isColliding(this, walls[j]))
+				{
+					this.x = this.last_x;
+					this.y = this.last_y;
+					break; //does not check the other walls if at least one was hit
+				}
+			}
+		
+		//shoot bullets
 		if (keys_down.includes(32)) {
 			if (last_shot_time == 0) {
 				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y));
