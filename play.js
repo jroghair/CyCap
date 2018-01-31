@@ -17,7 +17,7 @@ var time_between_shots = 150; //milliseconds. this will eventually be dependent 
 
 //image filenames
 var player_image = "player.png";
-var bullet_image = "enemy.png";
+var bullet_image = "bullet.png";
 var background_image = "grid_map_30x20.png";
 var wall_image = "wall.png"
 
@@ -43,6 +43,7 @@ function setup() {
 	walls.push(new Wall(wall_image, 7, 11));
 	walls.push(new Wall(wall_image, 7, 12));
 	walls.push(new Wall(wall_image, 7, 13));
+	placeBorder();
 	
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -79,7 +80,34 @@ function run() {
 	requestAnimationFrame(run);
 }
 
+//this will eventually be taken out, but i am using it for simplicity for now
+function placeBorder(){
+	wallLine(0, 0, 30, "x");
+	wallLine(0, 19, 30, "x");
+	wallLine(0, 1, 18, "y");
+	wallLine(29, 1, 18, "y");
+}
+
+//takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
+function wallLine(start_x, start_y, length, axis){
+	if(axis === "x"){
+		for(var i = 0; i < length; i++){
+			walls.push(new Wall(wall_image, start_x + i, start_y));
+		}
+	}
+	else if(axis === "y"){
+		for(var i = 0; i < length; i++){
+			walls.push(new Wall(wall_image, start_x, start_y + i));
+		}
+	}
+	else{
+		return;
+	}
+}
+
 //returns true if ent_1 is colliding with ent_2
+//in the future, I want this to somehow return which walls the player is colliding with, this will help with
+//allowing the player to slide along a wall while pushing into it and other smarter collision detection
 function isColliding(ent_1, ent_2){
 	var y_collision = isBetween(ent_1.y - (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y + (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2));
 	
@@ -95,7 +123,7 @@ function isColliding(ent_1, ent_2){
 	else{
 		return false;
 	}
-	/*
+	/* This was the older method of collision detection. it is simpler and could still be used for more basic detection
 	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.width/2)), (ent_2.x +  (ent_2.width/2)))
 	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.height/2)), (ent_2.y +  (ent_2.height/2)))){
 		return true;
@@ -146,10 +174,12 @@ function Entity(width, height, img, x, y){
 	}
 }
 
-function Bullet(width, height, img, x, y) {
+function Bullet(width, height, img, x, y, team) {
 	this.base = Entity;
 	this.base(width, height, img, x, y);
 
+	this.team = team; //this is so we can avoid friendly fire (and maybe reduce the amount of collision checks)
+	
 	this.x_diff = mouseX - player.x;
 	this.y_diff = (mouseY - player.y) * -1;
 
@@ -210,11 +240,13 @@ function bullet_population() {
 function Player(width, height, img, x, y, role, team) {
 	this.base = Entity;
 	this.base(width, height, img, x, y);
+	
 	this.role = role;
 	this.team = team;
 	//decide health based on role
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role 
+	
 	this.last_x = this.x;
 	this.last_y = this.y;
 
@@ -250,11 +282,11 @@ function Player(width, height, img, x, y, role, team) {
 		//shoot bullets
 		if (keys_down.includes(32)) {
 			if (last_shot_time == 0) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y));
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
 				last_shot_time = Date.now();
 			}
 			else if ((Date.now() - last_shot_time) >= time_between_shots) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y));
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
 				last_shot_time = Date.now();
 			}
 		}
