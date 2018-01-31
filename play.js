@@ -5,6 +5,7 @@ var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
 var keys_down = []; //keys being pressed
 var bullets = []; //all bullets
+var shells = [];
 var walls = [];
 let map;
 let masks = [];
@@ -13,6 +14,7 @@ let grid_length = (canvas.width / 30); //the grid map we are using for now is 30
 var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 var mouseX;
 var mouseY;
+let artillery_time = 3000; //milliseconds
 var last_shot_time = 0; //don't change
 var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
@@ -20,8 +22,9 @@ var time_between_shots = 150; //milliseconds. this will eventually be dependent 
 var player_image = "player.png";
 var bullet_image = "bullet.png";
 var background_image = "grid_map_30x20.png";
-var wall_image = "wall.png"
-let blast1_image = "blast1.png"
+var wall_image = "wall.png";
+let blast1_image = "blast1.png";
+let artillery_shell_image = "artillery_shell.png";
 
 
 //this code executes right when the page is loaded
@@ -60,9 +63,7 @@ function setup() {
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		let temp_x = Math.floor((mouseX/canvas.width) * 30);
-		let temp_y = Math.floor((mouseY/canvas.height) * 20);
-		masks.push(new GroundMask(blast1_image, temp_x, temp_y, 3));
+		shells.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, artillery_shell_image, player.team, blast1_image));
 	});
 	//mouse listener for coordinates
 	window.addEventListener('mousemove', getMousePosition, false);
@@ -74,6 +75,9 @@ function run() {
   
 	player.update();
 	bullet_p.move_bullets();
+	for(let i = 0; i < shells.length; i++){
+		shells[i].update();
+	}
   
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
@@ -82,8 +86,12 @@ function run() {
 	for(let i = 0; i < walls.length; i++){
 		walls[i].draw();
 	}
-	bullet_p.draw();
 	player.draw();
+	for(let i = 0; i < shells.length; i++){
+		shells[i].draw();
+		console.log("drawing shell", shells[i].width);
+	}
+	bullet_p.draw();
   
 	context.closePath(); //so styles dont interfere
 	requestAnimationFrame(run);
@@ -211,6 +219,50 @@ function Bullet(width, height, img, x, y, team) {
 	this.y_ratio += ((Math.random() - 0.5) * 0.05);
 	this.x_ratio += ((Math.random() - 0.5) * 0.05);
 	//console.log(this.x_ratio + ',' + this.y_ratio);
+}
+
+function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
+	this.start_time = Date.now();
+	this.lastUpdate = this.start_time;
+	
+	this.start_x = start_x;
+	this.start_y = start_y;
+	this.end_x = end_x;
+	this.end_y = end_y;
+	this.start_width = width;//this is the initial width
+	this.start_height = height;//this is the initial height
+	
+	this.team = team;
+	this.blast_img = blast_img;
+	
+	this.x_vel = (this.end_x - this.start_x) / artillery_time; //pixels per millisecond
+	this.y_vel = (this.end_y - this.start_y) / artillery_time; //pixels per millisecond
+	
+	this.base = Entity;
+	this.base(width, height, img, this.start_x, this.start_y);
+	
+	this.update = function(){
+		if((Date.now() - this.start_time) < artillery_time){
+			let delta_t = Date.now() - this.lastUpdate;
+			this.x += (this.x_vel * delta_t);
+			this.y += (this.y_vel * delta_t);
+			
+			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
+			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + 29.4*total_time) + 1
+			this.width = this.start_width * temp_multiplier;
+			this.height = this.start_height * temp_multiplier;
+			
+			this.lastUpdate = Date.now();
+		}
+		else{
+			//place mask
+			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/canvas.width)*30), Math.floor((this.end_y/canvas.height)*20), 3));
+			//deal damage
+			//remove from draw list
+			let temp_index = shells.indexOf(this);
+			shells.splice(temp_index, 1);
+		}
+	}
 }
 
 
