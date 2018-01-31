@@ -7,6 +7,7 @@ var keys_down = []; //keys being pressed
 var bullets = []; //all bullets
 var walls = [];
 let map;
+let masks = [];
 var player, bullet_p;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
 var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
@@ -20,6 +21,7 @@ var player_image = "player.png";
 var bullet_image = "bullet.png";
 var background_image = "grid_map_30x20.png";
 var wall_image = "wall.png"
+let blast1_image = "blast1.png"
 
 
 //this code executes right when the page is loaded
@@ -57,6 +59,10 @@ function setup() {
 	});
 	document.addEventListener("click", function(event) {
 		//place trap at player position
+		//places a blast mask just for testing
+		let temp_x = Math.floor((mouseX/canvas.width) * 30);
+		let temp_y = Math.floor((mouseY/canvas.height) * 20);
+		masks.push(new GroundMask(blast1_image, temp_x, temp_y, 3));
 	});
 	//mouse listener for coordinates
 	window.addEventListener('mousemove', getMousePosition, false);
@@ -70,6 +76,9 @@ function run() {
 	bullet_p.move_bullets();
   
 	map.draw();
+	for(let i = 0; i < masks.length; i++){
+		masks[i].draw();
+	}
 	for(let i = 0; i < walls.length; i++){
 		walls[i].draw();
 	}
@@ -300,6 +309,14 @@ function Wall(img, grid_x, grid_y){
 	this.base = Entity;
 	this.base(grid_length, grid_length, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
 	
+}
+
+//takes in the mask image, the grid coordinates of the center, and the size in grid_lengths
+function GroundMask(img, center_x, center_y, size){
+	this.grid_x = center_x;
+	this.grid_y = center_y;
+	this.base = Entity;
+	this.base(grid_length * size, grid_length * size, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
 }
 
 function Background(img){
