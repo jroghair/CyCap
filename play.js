@@ -3,13 +3,13 @@
 //global variables
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
+
 var keys_down = []; //keys being pressed
-var bullets = []; //all bullets
-var shells = [];
+var bullets = []; //all bullets, including artillery shells
 var walls = [];
 let map;
 let masks = [];
-var player, bullet_p;
+var player;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
 var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 var mouseX;
@@ -19,18 +19,12 @@ var last_shot_time = 0; //don't change
 var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
 //image filenames
-var player_image = "player.png";
-var bullet_image = "bullet.png";
-var background_image = "grid_map_30x20.png";
-var wall_image = "wall.png";
+let player_image = "player.png";
+let bullet_image = "bullet.png";
+let background_image = "grid_map_30x20.png";
+let wall_image = "wall2.png";
 let blast1_image = "blast1.png";
 let artillery_shell_image = "artillery_shell.png";
-
-
-//this code executes right when the page is loaded
-setup(); //only call setup once
-
-
 
 //all functions
 function setup() {
@@ -38,7 +32,6 @@ function setup() {
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
-	bullet_p = new bullet_population();
 	map = new Background(background_image);
 	walls.push(new Wall(wall_image, 5, 10));
 	walls.push(new Wall(wall_image, 5, 11));
@@ -63,7 +56,7 @@ function setup() {
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		shells.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, artillery_shell_image, player.team, blast1_image));
+		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, artillery_shell_image, player.team, blast1_image));
 	});
 	//mouse listener for coordinates
 	window.addEventListener('mousemove', getMousePosition, false);
@@ -74,9 +67,8 @@ function run() {
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
 	player.update();
-	bullet_p.move_bullets();
-	for(let i = 0; i < shells.length; i++){
-		shells[i].update();
+	for(let i = bullets.length - 1; i >= 0; i--){
+		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
   
 	map.draw();
@@ -87,92 +79,14 @@ function run() {
 		walls[i].draw();
 	}
 	player.draw();
-	for(let i = 0; i < shells.length; i++){
-		shells[i].draw();
-		console.log("drawing shell", shells[i].width);
+	for(let i = 0; i < bullets.length; i++){
+		bullets[i].draw();
 	}
-	bullet_p.draw();
+	//draw fog of war
+	//draw GUI
   
 	context.closePath(); //so styles dont interfere
 	requestAnimationFrame(run);
-}
-
-//this will eventually be taken out, but i am using it for simplicity for now
-function placeBorder(){
-	wallLine(0, 0, 30, "x");
-	wallLine(0, 19, 30, "x");
-	wallLine(0, 1, 18, "y");
-	wallLine(29, 1, 18, "y");
-}
-
-//takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
-function wallLine(start_x, start_y, length, axis){
-	if(axis === "x"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x + i, start_y));
-		}
-	}
-	else if(axis === "y"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x, start_y + i));
-		}
-	}
-	else{
-		return;
-	}
-}
-
-//returns true if ent_1 is colliding with ent_2
-//in the future, I want this to somehow return which walls the player is colliding with, this will help with
-//allowing the player to slide along a wall while pushing into it and other smarter collision detection
-function isColliding(ent_1, ent_2){
-	var y_collision = isBetween(ent_1.y - (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y + (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2));
-	
-	if(isBetween(ent_1.x - (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
-		return true;
-	}
-	else if(isBetween(ent_1.x + (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
-		return true;
-	}
-	else if(isBetween(ent_1.x, ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
-		return true;
-	}
-	else{
-		return false;
-	}
-	/* This was the older method of collision detection. it is simpler and could still be used for more basic detection
-	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.width/2)), (ent_2.x +  (ent_2.width/2)))
-	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.height/2)), (ent_2.y +  (ent_2.height/2)))){
-		return true;
-	}
-	else{
-		return false;
-	}
-	*/
-}
-
-//returns true if num is between lower and upper, exclusive
-function isBetween(num, lower, upper){
-	if(num > lower && num < upper){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
-
-function getMousePosition(event) {
-  this.rect = canvas.getBoundingClientRect();
-  mouseX = event.clientX - rect.left;
-  mouseY = event.clientY - rect.top;
-}
-
-function toRadians(angle) {
-  return (angle * (Math.PI / 180.0));
-}
-
-function toDegrees(angle) {
-  return (angle * (180.0 / Math.PI));
 }
 
 //x & y refer to the center of the Entity
@@ -181,13 +95,16 @@ function Entity(width, height, img, x, y){
 	this.image.src = img;
 	this.width = width;
 	this.height = height;
-	//this.speedX = 0; not sure if we need speed right now, so im taking it out
-	//this.speedY = 0; 
+	this.transparency = 1.0; //from 0.0 to 1.0
 	this.x = x;
 	this.y = y;
 	
 	this.draw = function(){
-		context.drawImage(this.image, this.x - (this.width/2), this.y - (this.height/2), this.width, this.height);
+		context.setTransform(1, 0, 0, 1, this.x, this.y); // set scale and position
+		context.rotate(0); //this is in radians
+		context.globalAlpha = this.transparency;
+		context.drawImage(this.image, 0, 0, this.image.width, this.image.height, -this.width/2, -this.height/2, this.width, this.height);
+		//context.drawImage(this.image, this.x - (this.width/2), this.y - (this.height/2), this.width, this.height);
 	}
 }
 
@@ -219,6 +136,25 @@ function Bullet(width, height, img, x, y, team) {
 	this.y_ratio += ((Math.random() - 0.5) * 0.05);
 	this.x_ratio += ((Math.random() - 0.5) * 0.05);
 	//console.log(this.x_ratio + ',' + this.y_ratio);
+	
+	this.update = function(){
+		this.x += bullet_speed * this.x_ratio;
+		this.y += bullet_speed * this.y_ratio;
+		if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+			let temp_index = bullets.indexOf(this);
+			bullets.splice(temp_index, 1);
+			return;
+		}
+			
+		for(var j = 0; j < walls.length; j++){
+			if (isColliding(this, walls[j]))
+			{
+				let temp_index = bullets.indexOf(this);
+				bullets.splice(temp_index, 1);
+				break;
+			}
+		}
+	}
 }
 
 function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
@@ -259,42 +195,9 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/canvas.width)*30), Math.floor((this.end_y/canvas.height)*20), 3));
 			//deal damage
 			//remove from draw list
-			let temp_index = shells.indexOf(this);
-			shells.splice(temp_index, 1);
+			let temp_index = bullets.indexOf(this);
+			bullets.splice(temp_index, 1);
 		}
-	}
-}
-
-
-function bullet_population() {
-	this.draw = function() {
-		for (var i = 0; i < bullets.length; i++) {
-		    bullets[i].draw();
-		}	
-	}
-
-	this.move_bullets = function() {
-		for (var i = 0; i < bullets.length; i++) {
-			//console.log(bullets[i].x_ratio + ', ' + bullets[i].y_ratio);
-			bullets[i].x += bullet_speed * bullets[i].x_ratio;
-			bullets[i].y += bullet_speed * bullets[i].y_ratio;
-			if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y < 0 || bullets[i].y > canvas.height) {
-				bullets.splice(i, 1);
-				i--; //this is so that it checks the bullet after one that is removed
-				continue; //so that when a bullet leaves the map and is spliced out of the bullet list
-				//it does not check if that bullet hit a wall
-			}
-			
-			for(var j = 0; j < walls.length; j++){
-				if (isColliding(bullets[i], walls[j]))
-				{
-					bullets.splice(i, 1);
-					i--; //this is so that it checks the bullet after one that is removed
-					break; //does not check the other walls if at least one was hit
-				}
-			}
-		}
-		
 	}
 }
 
@@ -360,24 +263,35 @@ function Wall(img, grid_x, grid_y){
 	this.grid_y = grid_y;
 	this.base = Entity;
 	this.base(grid_length, grid_length, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
-	
 }
 
 //takes in the mask image, the grid coordinates of the center, and the size in grid_lengths
+//this should also take in a starting A_value and a fade time in seconds (-1 means never fade)
 function GroundMask(img, center_x, center_y, size){
+	//this.transparency = starting_a;
 	this.grid_x = center_x;
 	this.grid_y = center_y;
 	this.base = Entity;
 	this.base(grid_length * size, grid_length * size, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
+	/*
+	this.update(){
+		//set transparency
+	}
+	*/
 }
 
-function Background(img){
-	this.image = new Image();
-	this.image.src = img;
-	this.width = canvas.width;
-	this.height = canvas.height;
+function TiledBackground(img){
 	
-	this.draw = function(){
-		context.drawImage(this.image, 0, 0, this.width, this.height);
-	}
 }
+
+//need to make this a subclass of entity
+function Background(img){
+	this.base = Entity;
+	this.base(canvas.width, canvas.height, img, canvas.width/2, canvas.height/2);
+}
+
+//this code executes right when the page is loaded
+//but it needs to be at the end of the file because it references
+//certain functions in util.js that require classes (that exist in this file)
+//to have already been defined
+setup(); //only call setup once
