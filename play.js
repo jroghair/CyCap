@@ -7,6 +7,7 @@ var context = canvas.getContext("2d");
 var keys_down = []; //keys being pressed
 var bullets = []; //all bullets, including artillery shells
 var walls = [];
+let part_fx = [];
 let map;
 let masks = [];
 var player;
@@ -14,21 +15,11 @@ let grid_length = (canvas.width / 30); //the grid map we are using for now is 30
 var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 var mouseX;
 var mouseY;
-let artillery_time = 3000; //milliseconds
 var last_shot_time = 0; //don't change
 var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
-//image filenames
-let player_image = "player.png";
-let bullet_image = "bullet.png";
-let background_image = "grid_map_30x20.png";
-let wall_image = "wall2.png";
-let blast1_image = "blast1.png";
-let artillery_shell_image = "artillery_shell.png";
-
 //all functions
 function setup() {
-	//setInterval(run, 1000 / 60); //called 60 times a second
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
@@ -56,7 +47,7 @@ function setup() {
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, artillery_shell_image, player.team, blast1_image));
+		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, bullet_image, player.team, blast1_image));
 	});
 	//mouse listener for coordinates
 	window.addEventListener('mousemove', getMousePosition, false);
@@ -70,6 +61,12 @@ function run() {
 	for(let i = bullets.length - 1; i >= 0; i--){
 		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
+	for(let i = masks.length - 1; i >= 0; i--){
+		masks[i].update(); //we go through this backwards so that if one is removed, it still checks the others
+	}
+	for(let i = part_fx.length - 1; i >= 0; i--){
+		part_fx[i].update(); //we go through this backwards so that if one is removed, it still checks the others
+	}
   
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
@@ -82,6 +79,9 @@ function run() {
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
 	}
+	for(let i = 0; i < part_fx.length; i++){
+		part_fx[i].draw();
+	}
 	//draw fog of war
 	//draw GUI
   
@@ -89,53 +89,60 @@ function run() {
 	requestAnimationFrame(run);
 }
 
-//x & y refer to the center of the Entity
-function Entity(width, height, img, x, y){
-	this.image = new Image();
-	this.image.src = img;
-	this.width = width;
-	this.height = height;
-	this.transparency = 1.0; //from 0.0 to 1.0
+/*
+*img is the Image that already has the sprite sheet data
+*img.sprites = [{x:0,y:0,w:10,h:10},{x:20,y:0,w:30,h:40},....]
+*sprIdx is the index of the data from img
+*x & y are the position of sprite center
+*dWidth & dHeight are the destination width and height of the drawn image
+*r is the rotation in degrees
+*a is the alpha value between 0.0 and 1.0
+*/
+function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
+	this.image = img; //this already needs to be defined in another file
+	this.sprIdx = sprIdx
+	this.sprite = this.image.sprites[this.sprIdx];
 	this.x = x;
 	this.y = y;
+	this.dWidth = dWidth;
+	this.dHeight = dHeight;
+	this.r = toRadians(r);
+	this.a = a;
 	
 	this.draw = function(){
-		context.setTransform(1, 0, 0, 1, this.x, this.y); // set scale and position
-		context.rotate(0); //this is in radians
-		context.globalAlpha = this.transparency;
-		context.drawImage(this.image, 0, 0, this.image.width, this.image.height, -this.width/2, -this.height/2, this.width, this.height);
-		//context.drawImage(this.image, this.x - (this.width/2), this.y - (this.height/2), this.width, this.height);
+		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
+		context.rotate(this.r); //this is in radians
+		context.globalAlpha = this.a;
+		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 	}
 }
 
 function Bullet(width, height, img, x, y, team) {
+	this.x_diff = mouseX - x;
+	this.y_diff = (mouseY - y) * -1;
+	let angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
+
+	if (this.x_diff < 0 && this.y_diff > 0) {
+		angle += 180;
+	}
+	else if (this.x_diff < 0 && this.y_diff < 0) {
+		angle += 180;
+	}
+	else if (this.x_diff > 0 && this.y_diff < 0) {
+		angle += 360;
+	}	
+	
 	this.base = Entity;
-	this.base(width, height, img, x, y);
+	//sprIdx 0, transparency 1, angle is calculated based off of stuff
+	this.base(img, 0, x, y, width, height, angle - 90, 1);
 
 	this.team = team; //this is so we can avoid friendly fire (and maybe reduce the amount of collision checks)
 	
-	this.x_diff = mouseX - player.x;
-	this.y_diff = (mouseY - player.y) * -1;
-
-	this.angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
-
-	if (this.x_diff < 0 && this.y_diff > 0) {
-		this.angle += 180;
-	}
-	else if (this.x_diff < 0 && this.y_diff < 0) {
-		this.angle += 180;
-	}
-	else if (this.x_diff > 0 && this.y_diff < 0) {
-		this.angle += 360;
-	}	
-	//console.log(this.angle);
-
-	this.y_ratio = Math.sin(toRadians(this.angle)) * -1;
-	this.x_ratio = Math.cos(toRadians(this.angle));
-	//console.log(this.x_ratio + ',' + this.y_ratio);
+	this.y_ratio = Math.sin(toRadians(angle)) * -1;
+	this.x_ratio = Math.cos(toRadians(angle));
 	this.y_ratio += ((Math.random() - 0.5) * 0.05);
 	this.x_ratio += ((Math.random() - 0.5) * 0.05);
-	//console.log(this.x_ratio + ',' + this.y_ratio);
 	
 	this.update = function(){
 		this.x += bullet_speed * this.x_ratio;
@@ -171,29 +178,34 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 	this.team = team;
 	this.blast_img = blast_img;
 	
-	this.x_vel = (this.end_x - this.start_x) / artillery_time; //pixels per millisecond
-	this.y_vel = (this.end_y - this.start_y) / artillery_time; //pixels per millisecond
+	this.x_vel = (this.end_x - this.start_x) / ARTILLERY_TIME; //pixels per millisecond
+	this.y_vel = (this.end_y - this.start_y) / ARTILLERY_TIME; //pixels per millisecond
+	this.v_init = GRAVITY * (ARTILLERY_TIME/1000);
 	
 	this.base = Entity;
-	this.base(width, height, img, this.start_x, this.start_y);
+	//sprite 1 on the bullet sheet, rotation 0, transparency 1
+	//i am setting this to 0 temporarily
+	this.base(img, 1, this.start_x, this.start_y, width, height, 0, 1);
 	
 	this.update = function(){
-		if((Date.now() - this.start_time) < artillery_time){
+		if((Date.now() - this.start_time) < ARTILLERY_TIME){
 			let delta_t = Date.now() - this.lastUpdate;
 			this.x += (this.x_vel * delta_t);
 			this.y += (this.y_vel * delta_t);
 			
 			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
-			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + 29.4*total_time) + 1
-			this.width = this.start_width * temp_multiplier;
-			this.height = this.start_height * temp_multiplier;
+			
+			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + this.v_init*total_time) + 1
+			this.dWidth = this.start_width * temp_multiplier;
+			this.dHeight = this.start_height * temp_multiplier;
 			
 			this.lastUpdate = Date.now();
 		}
 		else{
 			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/canvas.width)*30), Math.floor((this.end_y/canvas.height)*20), 3));
-			//deal damage
+			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/canvas.width)*30), Math.floor((this.end_y/canvas.height)*20), 3, 1));
+			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
+			//TODO: deal damage
 			//remove from draw list
 			let temp_index = bullets.indexOf(this);
 			bullets.splice(temp_index, 1);
@@ -203,7 +215,8 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 
 function Player(width, height, img, x, y, role, team) {
 	this.base = Entity;
-	this.base(width, height, img, x, y);
+	//sprite 0, rotate 0, transparency 1
+	this.base(img, 0, x, y, width, height, 0, 1);
 	
 	this.role = role;
 	this.team = team;
@@ -262,32 +275,65 @@ function Wall(img, grid_x, grid_y){
 	this.grid_x = grid_x;
 	this.grid_y = grid_y;
 	this.base = Entity;
-	this.base(grid_length, grid_length, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
+	//we will use wall sprite 0, rotate 0, trans 1
+	this.base(img, 0, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length, grid_length, 0, 1);
 }
 
 //takes in the mask image, the grid coordinates of the center, and the size in grid_lengths
 //this should also take in a starting A_value and a fade time in seconds (-1 means never fade)
-function GroundMask(img, center_x, center_y, size){
-	//this.transparency = starting_a;
+function GroundMask(img, center_x, center_y, size, starting_a){
+	this.start_time = Date.now();
+	this.life_time = 10; //in seconds
 	this.grid_x = center_x;
 	this.grid_y = center_y;
 	this.base = Entity;
-	this.base(grid_length * size, grid_length * size, img, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2));
-	/*
-	this.update(){
-		//set transparency
+	//sprIdx 0 from groundMasks, 0 rotate
+	this.base(img, 0, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length * size, grid_length * size, 0, starting_a);
+
+	this.update = function(){
+		var age = (Date.now() - this.start_time)/1000; //in seconds
+		if(age > this.life_time){
+			let temp_index = masks.indexOf(this);
+			masks.splice(temp_index, 1);
+		}
+		else if(age > this.life_time/2){
+			this.a = 1 - (2/this.life_time)*(age-this.life_time/2)
+		}
+		else{
+			this.a = 1.0;
+		}
 	}
-	*/
 }
 
+function ParticleEffect(img, x, y, width, height, num_frames, life_time){
+	this.life_time = life_time; //in milliseconds
+	this.last_frame = Date.now();
+	this.frame_speed = life_time/num_frames;
+	this.num_frames = num_frames;
+	this.base = Entity;
+	this.base(img, 0, x, y, width, height, 0, 1);
+	
+	this.update = function(){
+		if(this.sprIdx >= (this.num_frames - 1)){
+			let temp_index = part_fx.indexOf(this);
+			part_fx.splice(temp_index, 1);
+		}	
+		else if((Date.now() - this.last_frame) > this.frame_speed){
+			this.last_frame = Date.now();
+			this.sprIdx++;
+		}
+	}
+}
+
+/*
 function TiledBackground(img){
 	
-}
+}*/
 
 //need to make this a subclass of entity
 function Background(img){
 	this.base = Entity;
-	this.base(canvas.width, canvas.height, img, canvas.width/2, canvas.height/2);
+	this.base(img, 0, canvas.width/2, canvas.height/2, canvas.width, canvas.height, 0, 1);
 }
 
 //this code executes right when the page is loaded
