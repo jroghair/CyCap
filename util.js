@@ -1,6 +1,29 @@
 //CONSTANTS
 const GRAVITY = 9.81;
 const ARTILLERY_TIME = 3000; //milliseconds
+const TIME_BETWEEN_SHOTS = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+
+/*PLAYER CLASS STATS*/
+//Recruit
+const RECRUIT_DMG = 10;
+const RECRUIT_MAX_HP = 100;
+const RECRUIT_SPEED = 5;
+
+//Artillery
+const ART_DMG = 10;
+const ART_MAX_HP = 100;
+const ART_SPEED = 5;
+
+//Scout
+const SCOUT_DMG = 10;
+const SCOUT_MAX_HP = 100;
+const SCOUT_SPEED = 5;
+
+//Tank
+const TANK_DMG = 10;
+const TANK_MAX_HP = 150;
+const TANK_SPEED = 3;
+/*PLAYER CLASS STATS END*/
 
 
 //this will eventually be taken out, but i am using it for simplicity for now

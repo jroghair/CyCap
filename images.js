@@ -1,25 +1,30 @@
 //////SPRITESHEET DATA//////
-var player_image = new Image();
+let player_image = new Image();
 player_image.src = "player.png";
 player_image.sprites = [{x:0, y:0, w:128, h:128}];
 
-var bullet_image = new Image();
+let bullet_image = new Image();
 bullet_image.src = "bullets.png";
 bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];
 
-var background_image = new Image();
+let background_image = new Image();
 background_image.src = "grid_map_30x20.png";
 background_image.sprites = [{x:0, y:0, w:1080, h:720}];
 
-var wall_image = new Image();
+let wall_image = new Image();
 wall_image.src = "wall2.png";
 wall_image.sprites = [{x:0, y:0, w:64, h:64}];
 
-var blast1_image = new Image();
+let blast1_image = new Image();
 blast1_image.src = "blast1.png";
 blast1_image.sprites = [{x:0, y:0, w:128, h:128}];
 
-var boom_ss = new Image();
+let health_gui = new Image();
+health_gui.src = "health_bar_good.png";
+health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},
+					  {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}, {x:128, y:64, w:64, h:64}, {x:192, y:64, w:64, h:64}];
+
+let boom_ss = new Image();
 boom_ss.src = "explosion_ss.png";
 //boom_ss.src = "explosion_ss2.png";
 boom_ss.sprites = [{x:0, y:0, w:114, h:114}, {x:114, y:0, w:114, h:114}, {x:227, y:0, w:114, h:114},

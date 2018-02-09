@@ -3,24 +3,27 @@
 //global variables
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
+let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
-var keys_down = []; //keys being pressed
-var bullets = []; //all bullets, including artillery shells
-var walls = [];
+let keys_down = []; //keys being pressed
+let bullets = []; //all bullets, including artillery shells
+let walls = [];
 let part_fx = [];
+let guis = [];
 let map;
 let masks = [];
-var player;
+let player;
 let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
-var player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
-var mouseX;
-var mouseY;
-var last_shot_time = 0; //don't change
-var time_between_shots = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
+let mouseX;
+let mouseY;
+let last_shot_time = 0; //don't change
 
 //all functions
 function setup() {
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
+	
+	//TODO: set the global transforms
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
 	map = new Background(background_image);
@@ -33,6 +36,8 @@ function setup() {
 	walls.push(new Wall(wall_image, 7, 12));
 	walls.push(new Wall(wall_image, 7, 13));
 	placeBorder();
+	
+	guis.push(new GuiElement(health_gui, 25, canvas.height - 25, 50, 50, 0, 8));
 	
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -67,6 +72,10 @@ function run() {
 	for(let i = part_fx.length - 1; i >= 0; i--){
 		part_fx[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
+	for(let i = guis.length - 1; i >= 0; i--){
+		guis[i].update();
+	}
+	
   
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
@@ -84,6 +93,9 @@ function run() {
 	}
 	//draw fog of war
 	//draw GUI
+	for(let i = 0; i < guis.length; i++){
+		guis[i].draw();
+	}
   
 	context.closePath(); //so styles dont interfere
 	requestAnimationFrame(run);
@@ -111,6 +123,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	
 	this.draw = function(){
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+		//need to include compatability with global transforms
 		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
@@ -220,7 +233,12 @@ function Player(width, height, img, x, y, role, team) {
 	
 	this.role = role;
 	this.team = team;
+	
 	//decide health based on role
+	this.max_hp = 100;
+	this.health = 37;
+	//^^^^these are temporary!!! FIX THIS
+	
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role 
 	
@@ -245,6 +263,12 @@ function Player(width, height, img, x, y, role, team) {
 		if (keys_down.includes(83)) {
 			this.y += this.mov_speed;
 		}
+		if(keys_down.includes(49)){
+			this.health -= 1;
+		}
+		if(keys_down.includes(50)){
+			this.health += 1;
+		}
 		
 		//check if you hit a wall after that move
 		for(let j = 0; j < walls.length; j++){
@@ -262,7 +286,7 @@ function Player(width, height, img, x, y, role, team) {
 				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
 				last_shot_time = Date.now();
 			}
-			else if ((Date.now() - last_shot_time) >= time_between_shots) {
+			else if ((Date.now() - last_shot_time) >= TIME_BETWEEN_SHOTS) {
 				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
 				last_shot_time = Date.now();
 			}
@@ -322,6 +346,16 @@ function ParticleEffect(img, x, y, width, height, num_frames, life_time){
 			this.last_frame = Date.now();
 			this.sprIdx++;
 		}
+	}
+}
+
+function GuiElement(img, x, y, width, height, elemIndex, num_frames){
+	this.base = Entity;
+	this.base(img, elemIndex, x, y, width, height, 0, 1);
+	this.num_frames = num_frames;
+	
+	this.update = function(){
+		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
 	}
 }
 
