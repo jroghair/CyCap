@@ -25,6 +25,8 @@ const TANK_MAX_HP = 150;
 const TANK_SPEED = 3;
 /*PLAYER CLASS STATS END*/
 
+let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
+
 
 //this will eventually be taken out, but i am using it for simplicity for now
 function placeBorder(){
@@ -92,8 +94,8 @@ function isBetween(num, lower, upper){
 
 function getMousePosition(event) {
   this.rect = canvas.getBoundingClientRect();
-  mouseX = event.clientX - rect.left;
-  mouseY = event.clientY - rect.top;
+  mouseX = (event.clientX - rect.left) / gt1;
+  mouseY = (event.clientY - rect.top) / gt4;
 }
 
 function toRadians(angle) {

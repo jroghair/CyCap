@@ -6,8 +6,6 @@ var context = canvas.getContext("2d");
 canvas.height = document.documentElement.clientHeight;
 canvas.width = document.documentElement.clientWidth;
 
-let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
-
 let keys_down = []; //keys being pressed
 let bullets = []; //all bullets, including artillery shells
 let walls = [];
