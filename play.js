@@ -3,6 +3,9 @@
 //global variables
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
+canvas.height = document.documentElement.clientHeight;
+canvas.width = document.documentElement.clientWidth;
+
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
 let keys_down = []; //keys being pressed
@@ -13,7 +16,7 @@ let guis = [];
 let map;
 let masks = [];
 let player;
-let grid_length = (canvas.width / 30); //the grid map we are using for now is 30x20
+let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
 let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouseX;
 let mouseY;
@@ -23,7 +26,13 @@ let last_shot_time = 0; //don't change
 function setup() {
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
 	
-	//TODO: set the global transforms
+	//set the global transforms
+	gt1 = 1; //x scale
+	gt2 = 0; //x skew
+	gt3 = 0; //y skew
+	gt4 = 1; //y scale
+	gt5 = 0; //x trans
+	gt6 = 0; //y trans
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
 	map = new Background(background_image);
@@ -60,6 +69,7 @@ function setup() {
 
 function run() {
 	context.beginPath(); //so styles dont interfere
+	context.setTransform(1, 0, 0, 1, 0, 0);
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
 	player.update();
@@ -124,7 +134,8 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.draw = function(){
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		//need to include compatability with global transforms
-		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
+		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+		context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
@@ -216,7 +227,7 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 		}
 		else{
 			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/canvas.width)*30), Math.floor((this.end_y/canvas.height)*20), 3, 1));
+			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/bg_width_px)*bg_width_grids), Math.floor((this.end_y/bg_height_px)*bg_height_grids), 3, 1));
 			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
 			//TODO: deal damage
 			//remove from draw list
@@ -268,6 +279,14 @@ function Player(width, height, img, x, y, role, team) {
 		}
 		if(keys_down.includes(50)){
 			this.health += 1;
+		}
+		if(keys_down.includes(51)){
+			gt1 -= 0.02;
+			gt4 -= 0.02;
+		}
+		else if(keys_down.includes(52)){
+			gt1 += 0.02;
+			gt4 += 0.02;
 		}
 		
 		//check if you hit a wall after that move
@@ -367,7 +386,7 @@ function TiledBackground(img){
 //need to make this a subclass of entity
 function Background(img){
 	this.base = Entity;
-	this.base(img, 0, canvas.width/2, canvas.height/2, canvas.width, canvas.height, 0, 1);
+	this.base(img, 0, bg_width_px/2, bg_height_px/2, bg_width_px, bg_height_px, 0, 1);
 }
 
 //this code executes right when the page is loaded

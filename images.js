@@ -10,6 +10,10 @@ bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];
 let background_image = new Image();
 background_image.src = "grid_map_30x20.png";
 background_image.sprites = [{x:0, y:0, w:1080, h:720}];
+let bg_width_px = 1080;
+let bg_height_px = 720;
+let bg_width_grids = 30;
+let bg_height_grids = 20;
 
 let wall_image = new Image();
 wall_image.src = "wall2.png";
