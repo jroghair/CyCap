@@ -9,7 +9,7 @@ public class Config extends WebMvcConfigurerAdapter {
 	
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry){
-		registry.addViewController("/").setViewName("button");
+		registry.addViewController("/button").setViewName("button");
 	}
 	
 }

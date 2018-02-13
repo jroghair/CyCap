@@ -18,7 +18,7 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 	
-	@RequestMapping("/")
+	@RequestMapping("/button")
 	String home(){
 		return "Hello World!";
 	}
