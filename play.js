@@ -7,17 +7,21 @@ canvas.height = document.documentElement.clientHeight;
 canvas.width = document.documentElement.clientWidth;
 
 let keys_down = []; //keys being pressed
+let keys_pnr = []; //keys that have been pushed and released
+
 let bullets = []; //all bullets, including artillery shells
 let walls = [];
 let part_fx = [];
 let guis = [];
 let map;
 let masks = [];
+
 let player;
 let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
 let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouseX;
 let mouseY;
+let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
 //all functions
@@ -55,6 +59,7 @@ function setup() {
 	});
 	document.addEventListener("keyup", function(event) {
 		keys_down.splice(keys_down.indexOf(event.keyCode), 1);
+		keys_pnr.push(event.keyCode);
 	});
 	document.addEventListener("click", function(event) {
 		//place trap at player position
@@ -70,6 +75,7 @@ function run() {
 	context.setTransform(1, 0, 0, 1, 0, 0);
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
+	//update everything
 	player.update();
 	for(let i = bullets.length - 1; i >= 0; i--){
 		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
@@ -84,6 +90,12 @@ function run() {
 		guis[i].update();
 	}
 	
+	//TESTING
+	if(keys_pnr.includes(90)){
+		console.log("Z pressed and released!");
+		//switch zoom level!
+		ToggleZoom();
+	}
   
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
@@ -106,7 +118,32 @@ function run() {
 	}
   
 	context.closePath(); //so styles dont interfere
+	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
+}
+
+function ToggleZoom(){
+	if(current_zoom_lvl == 1){
+		current_zoom_lvl = 2;
+		gt1 = 1; //setting scaling to normal levels
+		gt4 = 1;
+		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+	}
+	else if(current_zoom_lvl == 2){
+		current_zoom_lvl = 3;
+		gt1 = 0.5; //setting scaling to wide levels
+		gt4 = 0.5;
+		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+	}
+	else if(current_zoom_lvl == 3){
+		current_zoom_lvl = 1;
+		gt1 = 3; //setting scaling to zoomed levels
+		gt4 = 3;
+		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+	}
 }
 
 /*
@@ -250,27 +287,30 @@ function Player(width, height, img, x, y, role, team) {
 	
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role 
-	
-	this.last_x = this.x;
-	this.last_y = this.y;
 
 	this.update = function() {
 		//save last positions in case the new ones are no good
-		this.last_x = this.x;
-		this.last_y = this.y;
+		let last_x = this.x;
+		let last_y = this.y;
+		let last_gt5 = gt5;
+		let last_gt6 = gt6;
 		
 		//this section will probably end up on the server
 		if (keys_down.includes(87)) {
 			this.y -= this.mov_speed;
+			gt6 -= (-this.mov_speed * gt4);
 		}
 		if (keys_down.includes(65)) {
 			this.x -= this.mov_speed;
+			gt5 -= (-this.mov_speed * gt1);
 		}
 		if (keys_down.includes(68)) {
 			this.x += this.mov_speed;
+			gt5 += (-this.mov_speed * gt1);
 		}
 		if (keys_down.includes(83)) {
 			this.y += this.mov_speed;
+			gt6 += (-this.mov_speed * gt4);
 		}
 		if(keys_down.includes(49)){
 			this.health -= 1;
@@ -278,21 +318,16 @@ function Player(width, height, img, x, y, role, team) {
 		if(keys_down.includes(50)){
 			this.health += 1;
 		}
-		if(keys_down.includes(51)){
-			gt1 -= 0.02;
-			gt4 -= 0.02;
-		}
-		else if(keys_down.includes(52)){
-			gt1 += 0.02;
-			gt4 += 0.02;
-		}
 		
 		//check if you hit a wall after that move
 		for(let j = 0; j < walls.length; j++){
 				if (isColliding(this, walls[j]))
 				{
-					this.x = this.last_x;
-					this.y = this.last_y;
+					//if the player hit a wall, reset the player positions and global transforms
+					this.x = last_x;
+					this.y = last_y;
+					gt5 = last_gt5;
+					gt6 = last_gt6;
 					break; //does not check the other walls if at least one was hit
 				}
 			}

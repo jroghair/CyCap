@@ -94,8 +94,8 @@ function isBetween(num, lower, upper){
 
 function getMousePosition(event) {
   this.rect = canvas.getBoundingClientRect();
-  mouseX = (event.clientX - rect.left) / gt1;
-  mouseY = (event.clientY - rect.top) / gt4;
+  mouseX = ((event.clientX - rect.left) / gt1) - gt5;
+  mouseY = ((event.clientY - rect.top) / gt4) - gt6;
 }
 
 function toRadians(angle) {
