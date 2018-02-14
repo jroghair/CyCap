@@ -48,7 +48,7 @@ function setup() {
 	walls.push(new Wall(wall_image, 7, 13));
 	placeBorder();
 	
-	guis.push(new GuiElement(health_gui, 25, canvas.height - 25, 50, 50, 0, 8));
+	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -72,7 +72,7 @@ function setup() {
 
 function run() {
 	context.beginPath(); //so styles dont interfere
-	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
 	//update everything
@@ -90,9 +90,7 @@ function run() {
 		guis[i].update();
 	}
 	
-	//TESTING
 	if(keys_pnr.includes(90)){
-		console.log("Z pressed and released!");
 		//switch zoom level!
 		ToggleZoom();
 	}
@@ -139,8 +137,8 @@ function ToggleZoom(){
 	}
 	else if(current_zoom_lvl == 3){
 		current_zoom_lvl = 1;
-		gt1 = 3; //setting scaling to zoomed levels
-		gt4 = 3;
+		gt1 = 2; //setting scaling to zoomed levels
+		gt4 = 2;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	}
@@ -408,6 +406,14 @@ function GuiElement(img, x, y, width, height, elemIndex, num_frames){
 	
 	this.update = function(){
 		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
+	}
+	
+	this.draw = function(){
+		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
+		context.rotate(this.r); //this is in radians
+		context.globalAlpha = this.a;
+		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 	}
 }
 
