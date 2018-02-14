@@ -5,13 +5,10 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
-
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +25,7 @@ public class AccountController {
 
 	private static final String VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM = "acccounts/createOrUpdateAccountForm";
 	private final AccountRepository accounts;
-	private final Logger logger = LoggerFactory.getLogger(AccountController.class);
+	//private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 	@Autowired
 	public AccountController(AccountRepository account) {
@@ -66,6 +63,7 @@ public class AccountController {
 	@GetMapping("/accounts")
 	public String processFindForm(Account account, BindingResult result, Map<String, Object> model) {
 	
+		System.out.print(account.getUserID() == null);
 		// allow parameterless GET request for /owners to return all records
 		if (account.getUserID() == null) {
 			account.setUserID(""); // empty string signifies broadest possible
@@ -73,15 +71,19 @@ public class AccountController {
 		}
 
 		// find users by last name
+		System.out.println(account.getUserID());
 		Collection<Account> results = this.accounts.findByUserID(account.getUserID());
+		System.out.println("Size of results: " + results.size());
 		if (results.isEmpty()) {
 			// no users found
 			result.rejectValue("userID", "notFound", "not found");
 			return "accounts/findAccounts";
 		} else if (results.size() == 1) {
 			// 1 user found
-			account = results.iterator().next();
-			return "redirect:/accounts/" + (String) account.getUserID();
+			//account = results.iterator().next();
+			//return "redirect:/accounts/" + account.getUserID();
+			model.put("selections", results);
+			return "accounts/accountsList";
 		} else {
 			// multiple users found
 			model.put("selections", results);
@@ -89,12 +91,11 @@ public class AccountController {
 		}
 			
 	}
-
+	
 	@GetMapping("/accounts/{userID}")
 	public ModelAndView showAccount(@PathVariable("userID") String userID) {
 		ModelAndView mav = new ModelAndView("accounts/accountDetails");
 		mav.addObject(this.accounts.findBySpecificUserID(userID));
 		return mav;
 	}
-
 }

@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
-@Table(name="Account")
+@Table(name="account")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

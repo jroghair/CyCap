@@ -20,7 +20,9 @@ public interface AccountRepository extends Repository<Account, Integer> {
 	 * @return a Collection of matching {@link Accounts}s (or an empty
 	 *         Collection if none found)
 	 */
-	@Query("SELECT DISTINCT userID FROM Account a WHERE a.userID LIKE :userID%")
+	//@Query("SELECT DISTINCT userID FROM Account a WHERE a.userID LIKE :userID%")
+    @Query("SELECT DISTINCT account FROM Account account WHERE account.userID LIKE :userID%")
+	 //@Query("SELECT DISTINCT account FROM Account account WHERE account.userID =:userID")
 	@Transactional(readOnly = true)
 	Collection<Account> findByUserID(@Param("userID") String userID);
     
