@@ -27,33 +27,39 @@ const TANK_SPEED = 3;
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
-//computer player
-/*
+
+/*  Computer Player
 --generate field of nodes that it can or can't travel to
 --put them in an array with neigbors
 */
 function generateNodes(){
 	//go through all coordinates
-	for(var i = 0;i < canvas.width;i++){
-		for(var j = 0;j < canvas.height;j++){
+	var time1 = Date.now();
+	for(var i = 0;i < canvas.width;i+=5){
+		var node_col = [];//for storing a column of nodes
+		for(var j = 0;j < canvas.height;j+=5){
 			//make a test entity for player
 			var test_player_ent = new Entity(player_image, 0, i, j, grid_length, grid_length, 0, 1);
 			//go through all walls and check collision
-			var traverable = true;
+			var traverable = true; //whether node can be traveled to or not
 			for(var t = 0;t < walls.length;t++){
 				if(isColliding(walls[t], test_player_ent)){
 					traverable = false;
 					break;
 				}
 			}
-			nodes.push()
+			node_col.push(new node(i, j, traverable));
 
 		}
+		nodes.push(node_col);
 	}
+	console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
 	return 'success';
 }
 function node(x, y, trav){
-
+	this.x = x;
+	this.y = y;
+	this.trav = trav;
 }
 
 //this will eventually be taken out, but i am using it for simplicity for now

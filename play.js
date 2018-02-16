@@ -15,7 +15,7 @@ let part_fx = [];
 let guis = [];
 let map;
 let masks = [];
-var nodes = []; //nodes that are traverable or not for computer player
+let nodes = []; //nodes that are traverable or not for computer player
 
 let player;
 let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
@@ -117,7 +117,10 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
-
+	context.lineWidth="6";
+  context.strokeStyle="red";
+  context.rect(10,5,290,140);
+  context.stroke();
 	context.closePath(); //so styles dont interfere
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
