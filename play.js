@@ -117,10 +117,15 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
+	context.closePath();
+	context.beginPath();
+	//following is to test coordinates
+	context.resetTransform();
 	context.lineWidth="6";
   context.strokeStyle="red";
-  context.rect(10,5,290,140);
+  context.rect(0,0,290,140);
   context.stroke();
+	//delete top 4 lines later
 	context.closePath(); //so styles dont interfere
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
@@ -171,6 +176,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.a = a;
 
 	this.draw = function(){
+		context.beginPath();
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		//need to include compatability with global transforms
 		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
@@ -178,6 +184,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+		context.closePath();
 	}
 }
 
