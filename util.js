@@ -1,3 +1,61 @@
+//CONSTANTS
+const GRAVITY = 9.81;
+const ARTILLERY_TIME = 3000; //milliseconds
+const TIME_BETWEEN_SHOTS = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+
+/*PLAYER CLASS STATS*/
+//Recruit
+const RECRUIT_DMG = 10;
+const RECRUIT_MAX_HP = 100;
+const RECRUIT_SPEED = 5;
+
+//Artillery
+const ART_DMG = 10;
+const ART_MAX_HP = 100;
+const ART_SPEED = 5;
+
+//Scout
+const SCOUT_DMG = 10;
+const SCOUT_MAX_HP = 100;
+const SCOUT_SPEED = 5;
+
+//Tank
+const TANK_DMG = 10;
+const TANK_MAX_HP = 150;
+const TANK_SPEED = 3;
+/*PLAYER CLASS STATS END*/
+
+let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
+
+//computer player
+/*
+--generate field of nodes that it can or can't travel to
+--put them in an array with neigbors
+*/
+function generateNodes(){
+	//go through all coordinates
+	for(var i = 0;i < canvas.width;i++){
+		for(var j = 0;j < canvas.height;j++){
+			//make a test entity for player
+			var test_player_ent = new Entity(player_image, 0, i, j, grid_length, grid_length, 0, 1);
+			//go through all walls and check collision
+			var traverable = true;
+			for(var t = 0;t < walls.length;t++){
+				if(isColliding(walls[t], test_player_ent)){
+					traverable = false;
+					break;
+				}
+			}
+			nodes.push()
+
+		}
+	}
+	return 'success';
+}
+function node(x, y, trav){
+
+}
+
 //this will eventually be taken out, but i am using it for simplicity for now
 function placeBorder(){
 	wallLine(0, 0, 30, "x");
@@ -27,23 +85,23 @@ function wallLine(start_x, start_y, length, axis){
 //in the future, I want this to somehow return which walls the player is colliding with, this will help with
 //allowing the player to slide along a wall while pushing into it and other smarter collision detection
 function isColliding(ent_1, ent_2){
-	var y_collision = isBetween(ent_1.y - (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y + (ent_1.height/2), ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.height/2), ent_2.y + (ent_2.height/2));
-	
-	if(isBetween(ent_1.x - (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+	var y_collision = isBetween(ent_1.y - (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y + (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2));
+
+	if(isBetween(ent_1.x - (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
 		return true;
 	}
-	else if(isBetween(ent_1.x + (ent_1.width/2), ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+	else if(isBetween(ent_1.x + (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
 		return true;
 	}
-	else if(isBetween(ent_1.x, ent_2.x - (ent_2.width/2), ent_2.x + (ent_2.width/2)) && y_collision){
+	else if(isBetween(ent_1.x, ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
 		return true;
 	}
 	else{
 		return false;
 	}
 	/* This was the older method of collision detection. it is simpler and could still be used for more basic detection
-	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.width/2)), (ent_2.x +  (ent_2.width/2)))
-	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.height/2)), (ent_2.y +  (ent_2.height/2)))){
+	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.dWidth/2)), (ent_2.x +  (ent_2.dWidth/2)))
+	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.dHeight/2)), (ent_2.y +  (ent_2.dHeight/2)))){
 		return true;
 	}
 	else{
@@ -64,8 +122,8 @@ function isBetween(num, lower, upper){
 
 function getMousePosition(event) {
   this.rect = canvas.getBoundingClientRect();
-  mouseX = event.clientX - rect.left;
-  mouseY = event.clientY - rect.top;
+  mouseX = ((event.clientX - rect.left) - gt5) / gt1;
+  mouseY = ((event.clientY - rect.top) - gt6) / gt4;
 }
 
 function toRadians(angle) {
