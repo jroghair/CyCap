@@ -27,11 +27,7 @@ const TANK_SPEED = 3;
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
-
-/*  Computer Player
---generate field of nodes that it can or can't travel to
---put them in an array with neigbors
-*/
+//generates all nodes traversable and not traversable of map
 function generateNodes(){
 	//go through all coordinates
 	var time1 = Date.now();
@@ -49,13 +45,23 @@ function generateNodes(){
 				}
 			}
 			node_col.push(new node(i, j, traverable));
-
 		}
 		nodes.push(node_col);
 	}
 	console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
 	return 'success';
 }
+
+//path generating function for computer player
+function aStarPath(moving_ent, target_ent){
+
+}
+
+//for getting starting and (?) ending nodes when only given coordinates
+function getNearestNode(){
+
+}
+
 function node(x, y, trav){
 	this.x = x;
 	this.y = y;
