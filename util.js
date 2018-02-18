@@ -28,108 +28,193 @@ const TANK_SPEED = 3;
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
 //generates all nodes traversable and not traversable of map
-function generateNodes(){
-	//go through all coordinates
-	var time1 = Date.now();
-	for(var i = 0;i < canvas.width;i+=5){
-		var node_col = [];//for storing a column of nodes
-		for(var j = 0;j < canvas.height;j+=5){
-			//make a test entity for player
-			var test_player_ent = new Entity(player_image, 0, i, j, grid_length, grid_length, 0, 1);
-			//go through all walls and check collision
-			var traverable = true; //whether node can be traveled to or not
-			for(var t = 0;t < walls.length;t++){
-				if(isColliding(walls[t], test_player_ent)){
-					traverable = false;
-					break;
-				}
-			}
-			node_col.push(new node(i, j, traverable));
-		}
-		nodes.push(node_col);
-	}
-	console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
-	return 'success';
+function generateNodes() {
+  //go through all coordinates
+  var time1 = Date.now();
+  for (var i = 0; i < canvas.width; i += 5) {
+    var node_col = []; //for storing a column of nodes
+    for (var j = 0; j < canvas.height; j += 5) {
+      //make a test entity for player
+      var test_player_ent = new Entity(player_image, 0, i, j, grid_length, grid_length, 0, 1);
+      //go through all walls and check collision
+      var traverable = true; //whether node can be traveled to or not
+      for (var t = 0; t < walls.length; t++) {
+        if (isColliding(walls[t], test_player_ent)) {
+          traverable = false;
+          break;
+        }
+      }
+      node_col.push(new node(i, j, traverable));
+    }
+    nodes.push(node_col);
+  }
+  console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
+  return 'success';
 }
 
 //path generating function for computer player
-function aStarPath(moving_ent, target_ent){
+function aStarPath(moving_point, target_point) {
+  var start_node = nodes[moving_point.x][moving_point.y];
+  var goal_node = nodes[target_point.x][target_point.y];
+  var open = [];
+  open.push(start_node);
+  var close = [];
+  start_node.g = 0;
+  start_node.f = start_node.g + heuristic(start_node, goal_node);
+  //console.log(start_node.f);
+  while (open.length != 0) {
+    var current_node = getLowestF(open);
+    if (current_node.x == target_point.x && current_node.y == target_point.y) {
+			constructPath(current_node);
+    }
+		open.splice(getIndex(open, current_node), 1);
+		close.push(current_node);
+
+		var neighbors = getNeighbors(current_node);
+		console.log(neighbors);
+
+  }
+	console.log('success?');
+}
+
+function getNeighbors(node){
+	var nindex = getNearestNode(node);
+
 
 }
 
-//for getting starting and (?) ending nodes when only given coordinates
-function getNearestNode(){
-
+//for getting index of object array
+function getIndex(open, node){
+	for(var i = 0;i < open.length;i++){
+		if(open[i].x == node.x && open[i].y == node.y){
+			return i;
+		}
+	}
 }
 
-function node(x, y, trav){
-	this.x = x;
-	this.y = y;
-	this.trav = trav;
+function constructPath(node) {
+	//just track parents
+}
+
+//for getting the current node
+function getLowestF(open) {
+  var lowest = open[0];
+  for (var i = 0; i < open.length; i++) {
+    if (open[i].f < lowest.f) {
+      lowest = open[i];
+    }
+  }
+  return lowest;
+}
+
+//for getting starting and (?) ending nodes when only given entities
+function getNearestNode(ent) {
+  // this will round to the nearest 5 since thats where nodes are
+  this.x = (Math.ceil((ent.x / 5)) * 5);
+  console.log('old x: ' + ent.x + ' new x: ' + this.x);
+  this.y = (Math.ceil((ent.y / 5)) * 5);
+  console.log('old y: ' + ent.y + ' new y: ' + this.y);
+
+  //go through all nodes and see if one matches
+  //this could be improved
+  var i = 0,
+    j = 0;
+  while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+    if (nodes[i][j].x != this.x) {
+      i++;
+    }
+    if (nodes[i][j].y != this.y) {
+      j++;
+    }
+  }
+  console.log('found node: ' + nodes[i][j].x + ',' + nodes[i][j].y);
+  return (new point(i, j));
+}
+
+//gets and returns final path of nodes
+function getFinalPath(moving_ent, target_ent) {
+  this.moving_point = getNearestNode(moving_ent);
+  this.target_point = getNearestNode(target_ent);
+  aStarPath(this.moving_point, this.target_point);
+}
+
+//basically just the distance formula. used for a*. always to the goal
+function heuristic(node1, node2) {
+  return Math.sqrt(Math.pow((node1.x - node2.x), 2) + Math.pow((node1.y - node2.y), 2));
+}
+
+//for pathfinding
+function node(x, y, trav) {
+  this.x = x;
+  this.y = y;
+  this.trav = trav;
+  this.f = 0;
+  this.g = 0;
+	this.parent;
+}
+
+//to send 2d array indicies
+function point(x, y) {
+  this.x = x;
+  this.y = y;
 }
 
 //this will eventually be taken out, but i am using it for simplicity for now
-function placeBorder(){
-	wallLine(0, 0, 30, "x");
-	wallLine(0, 19, 30, "x");
-	wallLine(0, 1, 18, "y");
-	wallLine(29, 1, 18, "y");
+function placeBorder() {
+  wallLine(0, 0, 30, "x");
+  wallLine(0, 19, 30, "x");
+  wallLine(0, 1, 18, "y");
+  wallLine(29, 1, 18, "y");
 }
 
 //takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
-function wallLine(start_x, start_y, length, axis){
-	if(axis === "x"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x + i, start_y));
-		}
-	}
-	else if(axis === "y"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x, start_y + i));
-		}
-	}
-	else{
-		return;
-	}
+function wallLine(start_x, start_y, length, axis) {
+  if (axis === "x") {
+    for (var i = 0; i < length; i++) {
+      walls.push(new Wall(wall_image, start_x + i, start_y));
+    }
+  } else if (axis === "y") {
+    for (var i = 0; i < length; i++) {
+      walls.push(new Wall(wall_image, start_x, start_y + i));
+    }
+  } else {
+    return;
+  }
 }
 
 //returns true if ent_1 is colliding with ent_2
 //in the future, I want this to somehow return which walls the player is colliding with, this will help with
 //allowing the player to slide along a wall while pushing into it and other smarter collision detection
-function isColliding(ent_1, ent_2){
-	var y_collision = isBetween(ent_1.y - (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y + (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2));
+function isColliding(ent_1, ent_2) {
+  var y_collision = isBetween(ent_1.y - (ent_1.dHeight / 2), ent_2.y - (ent_2.dHeight / 2), ent_2.y + (ent_2.dHeight / 2)) || isBetween(ent_1.y + (ent_1.dHeight / 2), ent_2.y - (ent_2.dHeight / 2), ent_2.y + (ent_2.dHeight / 2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight / 2), ent_2.y + (ent_2.dHeight / 2));
 
-	if(isBetween(ent_1.x - (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
-		return true;
-	}
-	else if(isBetween(ent_1.x + (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
-		return true;
-	}
-	else if(isBetween(ent_1.x, ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
-		return true;
-	}
-	else{
-		return false;
-	}
-	/* This was the older method of collision detection. it is simpler and could still be used for more basic detection
-	if (isBetween(ent_1.x, (ent_2.x -  (ent_2.dWidth/2)), (ent_2.x +  (ent_2.dWidth/2)))
-	 && isBetween(ent_1.y, (ent_2.y -  (ent_2.dHeight/2)), (ent_2.y +  (ent_2.dHeight/2)))){
-		return true;
-	}
-	else{
-		return false;
-	}
-	*/
+  if (isBetween(ent_1.x - (ent_1.dWidth / 2), ent_2.x - (ent_2.dWidth / 2), ent_2.x + (ent_2.dWidth / 2)) && y_collision) {
+    return true;
+  } else if (isBetween(ent_1.x + (ent_1.dWidth / 2), ent_2.x - (ent_2.dWidth / 2), ent_2.x + (ent_2.dWidth / 2)) && y_collision) {
+    return true;
+  } else if (isBetween(ent_1.x, ent_2.x - (ent_2.dWidth / 2), ent_2.x + (ent_2.dWidth / 2)) && y_collision) {
+    return true;
+  } else {
+    return false;
+  }
+  /* This was the older method of collision detection. it is simpler and could still be used for more basic detection
+  if (isBetween(ent_1.x, (ent_2.x -  (ent_2.dWidth/2)), (ent_2.x +  (ent_2.dWidth/2)))
+   && isBetween(ent_1.y, (ent_2.y -  (ent_2.dHeight/2)), (ent_2.y +  (ent_2.dHeight/2)))){
+  	return true;
+  }
+  else{
+  	return false;
+  }
+  */
 }
 
 //returns true if num is between lower and upper, exclusive
-function isBetween(num, lower, upper){
-	if(num > lower && num < upper){
-		return true;
-	}
-	else{
-		return false;
-	}
+function isBetween(num, lower, upper) {
+  if (num > lower && num < upper) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function getMousePosition(event) {

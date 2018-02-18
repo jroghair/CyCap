@@ -38,8 +38,6 @@ function setup() {
   gt5 = 0; //x trans
   gt6 = 0; //y trans
 
-  player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
-  map = new Background(background_image);
   walls.push(new Wall(wall_image, 5, 10));
   walls.push(new Wall(wall_image, 5, 11));
   walls.push(new Wall(wall_image, 5, 12));
@@ -49,6 +47,14 @@ function setup() {
   walls.push(new Wall(wall_image, 7, 12));
   walls.push(new Wall(wall_image, 7, 13));
   placeBorder();
+
+  console.log(generateNodes());
+  console.log(nodes);
+
+  player = new Player(grid_length, grid_length, player_image, canvas.width / 2,
+    canvas.height / 2, "recruit", "1");
+  AI_player = new AI_player(grid_length, grid_length, player_image, 100, 430, "recruit", "1");
+  map = new Background(background_image);
 
   guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 
@@ -70,8 +76,6 @@ function setup() {
   });
   //mouse listener for coordinates
   window.addEventListener('mousemove', getMousePosition, false);
-  console.log(generateNodes());
-	console.log(nodes);
 }
 
 
@@ -108,6 +112,7 @@ function run() {
     walls[i].draw();
   }
   player.draw();
+  AI_player.draw();
   for (let i = 0; i < bullets.length; i++) {
     bullets[i].draw();
   }
@@ -290,6 +295,23 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
       bullets.splice(temp_index, 1);
     }
   }
+}
+
+//for the ocmputer player
+function AI_player(width, height, img, x, y, role, team) {
+  this.base = Entity;
+  this.base(img, 0, x, y, width, height, 0, 1);
+  this.role = role;
+  this.team = team;
+  this.hp = 100;
+  this.has_flag = false;
+  this.mov_speed = player_speed;
+  this.path = getFinalPath(this, player);
+
+  this.update = function() {
+
+  }
+
 }
 
 function Player(width, height, img, x, y, role, team) {
