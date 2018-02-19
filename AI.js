@@ -1,4 +1,4 @@
-var node_pixel_dist = 6;
+var node_pixel_dist = 5;
 
 function generateNodes() {
   //go through all coordinates
@@ -20,34 +20,32 @@ function generateNodes() {
     }
     nodes.push(node_col);
   }
-  console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
+  // console.log('nodal generation time: ' + (Date.now() - time1) + ' ms');
   return 'success';
 }
 
 function aStarPath(moving_point, target_point) {
-	console.log('starting path...');
+	// console.log('starting path...');
   var start_node = nodes[moving_point.x][moving_point.y];
   var goal_node = nodes[target_point.x][target_point.y];
-  console.log('from: ' + start_node.x + ',' + start_node.y);
-  console.log('to: ' + goal_node.x + ',' + goal_node.y);
+  // console.log('from: ' + start_node.x + ',' + start_node.y);
+  // console.log('to: ' + goal_node.x + ',' + goal_node.y);
   var open = [];
   open.push(start_node);
   var closed = [];
-  var current_node = 0;
+  var current_node = undefined;
   start_node.g = 0;
   start_node.f = start_node.g + heuristic(start_node, goal_node);
   //console.log(start_node.f);
   while (open.length != 0) {
 		//start with node with lowest cost function
     //console.log('open list: ' + open);
-    var temp = current_node;
     current_node = getLowestF(open);
-    console.log('current node: ' + current_node.x + ',' + current_node.y);
-    console.log(current_node);
-    if (current_node.x == goal_node.x && current_node.y == goal_node.y) {
-      console.log('path is complete.');
-      temp.parent = current_node;
-      var path = constructPath(start_node, goal_node);
+    // console.log('current node: ' + current_node.x + ',' + current_node.y);
+    //current_node.print_prev();
+    if (current_node === goal_node) {
+      // console.log('path is complete.');
+      var path = constructPath(current_node);
       return path;
     }
 		open.splice(getIndex(open, current_node), 1);
@@ -57,9 +55,28 @@ function aStarPath(moving_point, target_point) {
 		for(var i = 0;i < neighbors.length;i++){
       var neighbor = neighbors[i];
 			//if the node isnt in visited list
-			if(node_contains(closed, neighbor) != true){
+			if(closed.includes(neighbor) != true){
 				//console.log('doesnt contain');
 				//set cost function for the node
+
+
+        var temp_gscore = current_node.g + 1;
+        if(open.includes(neighbor)){
+          if(temp_gscore < neighbor.g){
+            neighbor.g = temp_gscore;
+          }
+        }else{
+          neighbor.g = temp_gscore
+          open.push(neighbor);
+        }
+        neighbor.h = heuristic(neighbor, goal_node);
+        neighbor.f = neighbor.g + neighbor.h;
+        neighbor.previous = current_node;
+        //console.log('setting: ' + current_node.x + ' as a previous of: ' + neighbor.x);
+
+
+
+        /*
 				neighbor.f = neighbor.g + heuristic(neighbor, goal_node);
 				//if its not in the open list
 				if(node_contains(neighbor, open) != true){
@@ -68,14 +85,15 @@ function aStarPath(moving_point, target_point) {
 					var openneighbor = getNodeFromList(open, neighbor);
 					if(neighbor.g < openneighbor.g){
 						openneighbor.g = neighbor.g;
-						openneighbor.parent = neighbor.parent;//add to the path
+						openneighbor.previous = neighbor.previous;//add to the path
 					}
 				}
+        */
 			}
 		}
   }
 
-	console.log('success');
+	// console.log('success');
 }
 
 function getNodeFromList(arr, node){
@@ -124,7 +142,7 @@ function getNeighbors(node){
   }
   //set travel costs to nodes
   for(var i = 0;i < neighbors.length;i++){
-    neighbors[i].parent = node;
+    //neighbors[i].previous = node;
     neighbors[i].g = node.g + 1;
   }
 	return neighbors;
@@ -138,7 +156,8 @@ function getIndex(open, node){
 	}
 }
 
-function constructPath(snode, enode) {
+function constructPath(enode) {
+  /*
   var c_node = snode;
 	console.log('constructing path coordinates...');
   var path = [];
@@ -149,14 +168,29 @@ function constructPath(snode, enode) {
         break;
       }
     }
-    c_node = c_node.parent;
+    c_node = c_node.previous;
     console.log(path);
-    if(path.length > 300){
+    if(path.length > 100){
       break;
     }
   }
 
-  console.log(path);
+  */
+  var path = [];
+  var temp = enode;
+  path.push(temp);
+  // console.log('here1');
+  while(temp.previous){
+    path.push(temp.previous);
+    // if(temp.previous == undefined){
+    //   break;
+    // }
+    //console.log('pushed previous');
+    temp = temp.previous;0
+
+  }
+  // console.log('here2');
+  // console.log(path);
   return path;
 }
 
@@ -206,10 +240,15 @@ function heuristic(node1, node2) {
 function node(x, y, trav) {
   this.x = x;
   this.y = y;
+  this.previous = undefined;
   this.trav = trav;
   this.f = 0;
   this.g = 1;
-	this.parent;
+  this.h;
+
+  this.print_prev = function(){
+    console.log(this.previous);
+  }
 }
 
 function point(x, y) {

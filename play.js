@@ -26,6 +26,8 @@ let mouseY;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
+var time1 = Date.now();
+
 //all functions
 function setup() {
   requestAnimationFrame(run); //more synchronized method similar to setInterval
@@ -47,9 +49,9 @@ function setup() {
   walls.push(new Wall(wall_image, 7, 12));
   walls.push(new Wall(wall_image, 7, 13));
   placeBorder();
-
-  console.log(generateNodes());
-  console.log(nodes);
+  generateNodes()
+  //console.log(generateNodes());
+  //console.log(nodes);
 
   player = new Player(grid_length, grid_length, player_image, canvas.width / 2,
     canvas.height / 2, "recruit", "1");
@@ -146,10 +148,17 @@ function run() {
     }
   }
 	*/
-
+  if(Date.now() - time1 > 100){
+    AI_player.generateNewPath();
+    time1 = Date.now();
+  }
   for(var i = 0;i < AI_player.path.length;i++){
     context.beginPath();
     context.strokeStyle = "red";
+
+    context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+    context.transform(1, 0, 0, 1, 0, 0); //set draw position
+
     context.rect(AI_player.path[i].x, AI_player.path[i].y, 2, 2);
     context.stroke();
     context.closePath(); //so styles dont interfere
@@ -319,6 +328,9 @@ function AI_player(width, height, img, x, y, role, team) {
 
   this.update = function() {
 
+  }
+  this.generateNewPath = function(){
+    this.path = getFinalPath(this, player);
   }
 
 }
