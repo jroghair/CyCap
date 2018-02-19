@@ -146,6 +146,15 @@ function run() {
     }
   }
 	*/
+
+  for(var i = 0;i < AI_player.path.length;i++){
+    context.beginPath();
+    context.strokeStyle = "red";
+    context.rect(AI_player.path[i].x, AI_player.path[i].y, 2, 2);
+    context.stroke();
+    context.closePath(); //so styles dont interfere
+  }
+
   //console.log(nodes.length);
   keys_pnr.splice(0, keys_pnr.length);
   requestAnimationFrame(run);
