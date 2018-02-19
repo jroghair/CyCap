@@ -7,13 +7,13 @@ let bullet_image = new Image();
 bullet_image.src = "bullets.png";
 bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];
 
-let background_image = new Image();
-background_image.src = "grid_map_30x20.png";
-background_image.sprites = [{x:0, y:0, w:1080, h:720}];
-let bg_width_px = 1080;
-let bg_height_px = 720;
-let bg_width_grids = 30;
-let bg_height_grids = 20;
+let background_tiles = new Image();
+background_tiles.src = "res/images/map_tiles_ss.png";
+background_tiles.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}];
+background_tiles.chances = [0.95, 0.04, 0.007, 0.003];
+let grid_length = 32;
+let bg_width_grids = 41;
+let bg_height_grids = 30;
 
 let wall_image = new Image();
 wall_image.src = "wall2.png";

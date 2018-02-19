@@ -17,10 +17,9 @@ let map;
 let masks = [];
 
 let player;
-let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
+//let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
 let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
-let mouseX;
-let mouseY;
+let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
@@ -37,7 +36,7 @@ function setup() {
 	gt6 = 0; //y trans
 	
 	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
-	map = new Background(background_image);
+	map = new TiledBackground(background_tiles);
 	walls.push(new Wall(wall_image, 5, 10));
 	walls.push(new Wall(wall_image, 5, 11));
 	walls.push(new Wall(wall_image, 5, 12));
@@ -46,7 +45,7 @@ function setup() {
 	walls.push(new Wall(wall_image, 7, 11));
 	walls.push(new Wall(wall_image, 7, 12));
 	walls.push(new Wall(wall_image, 7, 13));
-	placeBorder();
+	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
 	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	
@@ -64,10 +63,15 @@ function setup() {
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouseX, mouseY, bullet_image, player.team, blast1_image));
+		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouse_hand.mouseX, mouse_hand.mouseY, bullet_image, player.team, blast1_image));
 	});
 	//mouse listener for coordinates
-	window.addEventListener('mousemove', getMousePosition, false);
+	mouse_hand = new MouseHandler();
+	window.addEventListener('mousemove', function(event){
+		this.rect = canvas.getBoundingClientRect();
+		mouse_hand.x_pos_rel_canvas = (event.clientX - rect.left);
+		mouse_hand.y_pos_rel_canvas = (event.clientY - rect.top);
+	}, false);
 }
 
 function run() {
@@ -76,6 +80,7 @@ function run() {
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
 	//update everything
+	mouse_hand.update();
 	player.update();
 	for(let i = bullets.length - 1; i >= 0; i--){
 		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
@@ -167,7 +172,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.draw = function(){
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		//need to include compatability with global transforms
-		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
 		context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
@@ -176,8 +181,8 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 }
 
 function Bullet(width, height, img, x, y, team) {
-	this.x_diff = mouseX - x;
-	this.y_diff = (mouseY - y) * -1;
+	this.x_diff = mouse_hand.mouseX - x;
+	this.y_diff = (mouse_hand.mouseY - y) * -1;
 	let angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
 
 	if (this.x_diff < 0 && this.y_diff > 0) {
@@ -260,7 +265,7 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 		}
 		else{
 			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor((this.end_x/bg_width_px)*bg_width_grids), Math.floor((this.end_y/bg_height_px)*bg_height_grids), 3, 1));
+			masks.push(new GroundMask(this.blast_img, Math.floor(this.end_x/grid_length), Math.floor(this.end_y/grid_length), 3, 1));
 			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
 			//TODO: deal damage
 			//remove from draw list
@@ -281,7 +286,7 @@ function Player(width, height, img, x, y, role, team) {
 	//decide health based on role
 	this.max_hp = 100;
 	this.health = 37;
-	//^^^^these are temporary!!! FIX THIS
+	//^^^^these are temporary!!! TODO: FIX THIS
 	
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role 
@@ -417,15 +422,28 @@ function GuiElement(img, x, y, width, height, elemIndex, num_frames){
 	}
 }
 
-/*
 function TiledBackground(img){
+	this.img = img;
+	this.tile_list = [];
+	for(let i = 0; i < bg_width_grids; i++){
+		for(let j = 0; j < bg_height_grids; j++){
+			this.tile_list.push(new BGTile(img, i, j, getWeightedIndex(this.img.chances)));
+		}
+	}
 	
-}*/
+	this.draw = function(){
+		for(let i = 0; i < this.tile_list.length; i++){
+			this.tile_list[i].draw();
+		}
+	}
+}
 
-//need to make this a subclass of entity
-function Background(img){
+function BGTile(img, grid_x, grid_y, index){
+	this.grid_x = grid_x;
+	this.grid_y = grid_y;
 	this.base = Entity;
-	this.base(img, 0, bg_width_px/2, bg_height_px/2, bg_width_px, bg_height_px, 0, 1);
+	//we will use rotate 0, trans 1
+	this.base(img, index, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length, grid_length, 0, 1);
 }
 
 //this code executes right when the page is loaded

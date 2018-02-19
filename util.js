@@ -28,15 +28,28 @@ const TANK_SPEED = 3;
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 
 
-//this will eventually be taken out, but i am using it for simplicity for now
-function placeBorder(){
-	wallLine(0, 0, 30, "x");
-	wallLine(0, 19, 30, "x");
-	wallLine(0, 1, 18, "y");
-	wallLine(29, 1, 18, "y");
+//draws a complete border given a grid height & height. it starts at an X & Y grid position
+function placeBorder(width, height, x, y){
+	wallLine(x, y, width, "x");
+	wallLine(x, height + y - 1, width, "x");
+	wallLine(x, y + 1, height - 2, "y");
+	wallLine(width + x - 1, y + 1, height - 2, "y");
+}
+
+function getWeightedIndex(list){
+	let temp = Math.random();
+	let sum = 0;
+	for(let i = 0; i < list.length; i++){
+		sum += list[i];
+		if(temp < sum){
+			return i;
+		}
+	}
+	return -1; //this should error
 }
 
 //takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
+//this will travel in the positive direction of which ever axis you give it
 function wallLine(start_x, start_y, length, axis){
 	if(axis === "x"){
 		for(var i = 0; i < length; i++){
@@ -91,11 +104,17 @@ function isBetween(num, lower, upper){
 		return false;
 	}
 }
-
-function getMousePosition(event) {
-  this.rect = canvas.getBoundingClientRect();
-  mouseX = ((event.clientX - rect.left) - gt5) / gt1;
-  mouseY = ((event.clientY - rect.top) - gt6) / gt4;
+function MouseHandler(){
+	
+	this.x_pos_rel_canvas = 0;
+	this.y_pos_rel_canvas = 0;
+	this.mouseX = 0;
+	this.mouseY = 0;
+	
+	this.update = function(){
+		this.mouseX = (this.x_pos_rel_canvas - gt5) / gt1;
+		this.mouseY = (this.y_pos_rel_canvas - gt6) / gt4;
+	}
 }
 
 function toRadians(angle) {
