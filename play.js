@@ -16,6 +16,8 @@ let guis = [];
 let map;
 let masks = [];
 
+//make bullet sound
+
 let player;
 //let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
 let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
@@ -35,7 +37,9 @@ function setup() {
 	gt5 = 0; //x trans
 	gt6 = 0; //y trans
 	
-	player = new Player(grid_length, grid_length, player_image, canvas.width / 2, canvas.height / 2, "recruit", "1");
+	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1");
+	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2)); //I don't think this messes anything up right now
+	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	map = new TiledBackground(background_tiles);
 	walls.push(new Wall(wall_image, 5, 10));
 	walls.push(new Wall(wall_image, 5, 11));
@@ -209,11 +213,6 @@ function Bullet(width, height, img, x, y, team) {
 	this.update = function(){
 		this.x += bullet_speed * this.x_ratio;
 		this.y += bullet_speed * this.y_ratio;
-		if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-			let temp_index = bullets.indexOf(this);
-			bullets.splice(temp_index, 1);
-			return;
-		}
 			
 		for(var j = 0; j < walls.length; j++){
 			if (isColliding(this, walls[j]))
