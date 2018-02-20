@@ -1,4 +1,4 @@
-function SoundEmiter(src, is_looping, x, y, start_vol){
+function SoundEmitter(src, is_looping, x, y, start_vol){
 	this.x = x;
 	this.y = y;
 	this.sound = document.createElement("audio");
@@ -20,3 +20,5 @@ function SoundEmiter(src, is_looping, x, y, start_vol){
         this.sound.pause();
     }
 }
+
+let gunshot1 = "res/sounds/m9_gunshot.mp3";

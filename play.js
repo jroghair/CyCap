@@ -16,11 +16,9 @@ let guis = [];
 let map;
 let masks = [];
 
-//make bullet sound
-
 let player;
 //let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
-let player_speed = 2, bullet_speed = 5; //pixels. eventually we will want this to be based on grid_length/seconds
+let player_speed = 2, bullet_speed = 15; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
@@ -119,6 +117,11 @@ function run() {
 		part_fx[i].draw();
 	}
 	//draw fog of war
+	
+	//need to draw rectangles outside of the map that
+	//are essentially below the GUI, but above pretty much everything else
+	//this keeps the fog of war and particle effects from displaying outside of the map
+	
 	//draw GUI
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
@@ -338,10 +341,16 @@ function Player(width, height, img, x, y, role, team) {
 		if (keys_down.includes(32)) {
 			if (last_shot_time == 0) {
 				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
+				//make bullet sound
+				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
+				sound_test.play();
 				last_shot_time = Date.now();
 			}
 			else if ((Date.now() - last_shot_time) >= TIME_BETWEEN_SHOTS) {
 				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
+				//make bullet sound
+				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
+				sound_test.play();
 				last_shot_time = Date.now();
 			}
 		}

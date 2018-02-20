@@ -1,7 +1,7 @@
 //CONSTANTS
 const GRAVITY = 9.81;
 const ARTILLERY_TIME = 3000; //milliseconds
-const TIME_BETWEEN_SHOTS = 150; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+const TIME_BETWEEN_SHOTS = 50; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
 /*PLAYER CLASS STATS*/
 //Recruit

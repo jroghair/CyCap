@@ -9,7 +9,7 @@ html{
 body {
 	margin: 0.0;
 	background-color: #141414;
-	background-image: url("res/html/gameplay_test.png");
+	background-image: url("res/webpage/gameplay_test.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 	height: 100%;
