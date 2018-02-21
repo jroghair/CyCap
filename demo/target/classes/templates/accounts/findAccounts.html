@@ -3,7 +3,7 @@
 
 <body>
 
-  <h2>Find Players</h2>
+  <h2>Find Friends</h2>
 
   <form th:object="${account}" th:action="@{/accounts}" method="get"
     class="form-horizontal" id="search-account-form">
@@ -22,14 +22,14 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-default">Find
-          Player</button>
+          Friends</button>
       </div>
     </div>
 
   </form>
 
   <br />
-  <a class="btn btn-default" th:href="@{/account/new}">Add Player</a>
+  <a class="btn btn-default" th:href="@{/accounts/new}">Add Friend</a>
 
 </body>
 </html>

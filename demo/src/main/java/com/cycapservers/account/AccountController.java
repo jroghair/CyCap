@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.thymeleaf.util.MapUtils;
 
 import com.cycapservers.account.AccountRepository; 
 
@@ -23,7 +24,7 @@ import com.cycapservers.account.AccountRepository;
 @Repository
 public class AccountController {
 
-	private static final String VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM = "acccounts/createOrUpdateAccountForm";
+	private static final String VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM = "accounts/createOrUpdateAccountForm";
 	private final AccountRepository accounts;
 	//private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
@@ -41,13 +42,14 @@ public class AccountController {
 	public String initCreationForm(Map<String, Object> model) {
 		Account account = new Account();
 		model.put("account", account);
-		return VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM;
+		//System.out.println("this method executes: new");
+		return "accounts/createOrUpdateAccountForm";
 	}
 
 	@PostMapping("/accounts/new")
 	public String processCreationForm(@Valid Account account, BindingResult result) {
 		if (result.hasErrors()) {
-			return VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM;
+			return "accounts/createOrUpdateAccountForm";
 		} else {
 			this.accounts.save(account);
 			return "redirect:/accounts/" + account.getUserID();
@@ -56,14 +58,17 @@ public class AccountController {
 
 	@GetMapping("/accounts/find")
 	public String initFindForm(Map<String, Object> model) {
+		//System.out.println(MapUtils.isEmpty(model));
 		model.put("account", new Account());
+		//System.out.println("this executes");
+		//System.out.println(MapUtils.isEmpty(model));
 		return "accounts/findAccounts";
 	}
 
 	@GetMapping("/accounts")
 	public String processFindForm(Account account, BindingResult result, Map<String, Object> model) {
-	
-		System.out.print(account.getUserID() == null);
+		//System.out.println("this method executes: processFindForm");
+		//System.out.print(account.getUserID() == null);
 		// allow parameterless GET request for /owners to return all records
 		if (account.getUserID() == null) {
 			account.setUserID(""); // empty string signifies broadest possible
@@ -71,9 +76,9 @@ public class AccountController {
 		}
 
 		// find users by last name
-		System.out.println(account.getUserID());
+		//System.out.println(account.getUserID());
 		Collection<Account> results = this.accounts.findByUserID(account.getUserID());
-		System.out.println("Size of results: " + results.size());
+		//System.out.println("Size of results: " + results.size());
 		if (results.isEmpty()) {
 			// no users found
 			result.rejectValue("userID", "notFound", "not found");

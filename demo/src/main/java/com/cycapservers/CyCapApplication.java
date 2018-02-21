@@ -26,4 +26,3 @@ public class CyCapApplication {
         SpringApplication.run(CyCapApplication.class, args);
     }
 }
-
