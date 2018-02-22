@@ -1,11 +1,13 @@
 //CONSTANTS
 const GRAVITY = 9.81;
 const ARTILLERY_TIME = 3000; //milliseconds
-const TIME_BETWEEN_SHOTS = 100; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
-const CLOSE_ZOOM_LEVEL = 2.5;
+const TIME_BETWEEN_SHOTS = 50; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+
+const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
 const FAR_ZOOM_LEVEL = 0.5;
 const VISIBILITY = 8;
+const FOG_DARKNESS = 100;
 
 /*PLAYER CLASS STATS*/
 //Recruit
@@ -31,6 +33,7 @@ const TANK_SPEED = 3;
 /*PLAYER CLASS STATS END*/
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
+let fog_norm, fog_close, fog_far; //Fog of War image data
 
 
 //draws a complete border given a grid height & height. it starts at an X & Y grid position
@@ -68,6 +71,66 @@ function wallLine(start_x, start_y, length, axis){
 	}
 	else{
 		return;
+	}
+}
+
+//Draws three F.O.W. images and stores them in 3 variables for later drawing
+function drawFogOfWarImages(){
+	//create the image data for the three settings
+	fog_norm = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
+	fog_close = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
+	fog_far = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
+	let x, y, dist, r_in, r_out, grad_level; //variables used in generation
+	
+	//draw the normal zoom image first
+	for(let i = 0; i < fog_norm.data.length; i+=4){
+		x = (i/4) %  fog_canvas.width;
+		y = Math.floor((i/4) / fog_canvas.width);
+		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
+		r_in = (((grid_length * VISIBILITY) - (grid_length/2)) * NORMAL_ZOOM_LEVEL);//inner radius of fade ring
+		r_out = (((grid_length * VISIBILITY) + (grid_length/2)) * NORMAL_ZOOM_LEVEL);//outer radius of fade ring
+		
+		if(dist > r_out){
+			fog_norm.data[i+3] = FOG_DARKNESS;
+		}
+		else if((dist > r_in) && (dist <= r_out)){
+			grad_level = ((dist - r_in) / (r_out - r_in)) * FOG_DARKNESS;
+			fog_norm.data[i+3] = grad_level;
+		}
+	}
+	
+	//draw the far zoom
+	for(let i = 0; i < fog_far.data.length; i+=4){
+		x = (i/4) %  fog_canvas.width;
+		y = Math.floor((i/4) / fog_canvas.width);
+		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
+		r_in = (((grid_length * VISIBILITY) - (grid_length/2)) * FAR_ZOOM_LEVEL); //inner radius of fade ring
+		r_out = (((grid_length * VISIBILITY) + (grid_length/2)) * FAR_ZOOM_LEVEL);//outer radius of fade ring
+		
+		if(dist > r_out){
+			fog_far.data[i+3] = FOG_DARKNESS;
+		}
+		else if((dist > r_in) && (dist <= r_out)){
+			grad_level = ((dist - r_in) / (r_out - r_in)) * FOG_DARKNESS;
+			fog_far.data[i+3] = grad_level;
+		}
+	}
+	
+	//draw the close zoom
+	for(let i = 0; i < fog_close.data.length; i+=4){
+		x = (i/4) %  fog_canvas.width;
+		y = Math.floor((i/4) / fog_canvas.width);
+		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
+		r_in = (((grid_length * VISIBILITY) - (grid_length/2)) * CLOSE_ZOOM_LEVEL);//inner radius of fade ring
+		r_out = (((grid_length * VISIBILITY) + (grid_length/2)) * CLOSE_ZOOM_LEVEL);//outer radius of fade ring
+		
+		if(dist > r_out){
+			fog_close.data[i+3] = FOG_DARKNESS;
+		}
+		else if((dist > r_in) && (dist <= r_out)){
+			grad_level = ((dist - r_in) / (r_out - r_in)) * FOG_DARKNESS;
+			fog_close.data[i+3] = grad_level;
+		}
 	}
 }
 

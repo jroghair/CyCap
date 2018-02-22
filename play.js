@@ -1,13 +1,11 @@
-"use strict";
-
 //global variables
 var canvas = document.getElementById("game_canvas");
 var context = canvas.getContext("2d");
 canvas.height = document.documentElement.clientHeight;
 canvas.width = document.documentElement.clientWidth;
 
-var fog_canvas = document.getElementById("fog_canvas");
-var fog_context = fog_canvas.getContext("2d");
+let fog_canvas = document.getElementById("fog_canvas");
+let fog_context = fog_canvas.getContext("2d");
 fog_canvas.height = canvas.height;
 fog_canvas.width = canvas.width;
 
@@ -22,7 +20,6 @@ let map;
 let masks = [];
 
 let player;
-//let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
 let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
@@ -32,28 +29,8 @@ let last_shot_time = 0; //don't change
 function setup() {
 	
 	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
-	//draw to the fog of war context
-	let test = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
-	let data = test.data;
-	let x, y;
-	let r = (grid_length * VISIBILITY);
-	/*
-	for(let i = 0; i < fog_canvas.width; i++){
-		for(let j = 0; j < fog_canvas.height; j++){
-			if(r < Math.sqrt(Math.pow((canvas.width/2) - i, 2) + Math.pow((canvas.height/2) - j, 2))){
-				test[i*(j+1)*4 + 3] = 80;
-			}
-			test[i*(j+1)*4 + 3] = 80;
-		}
-	}*/
-	for(let i = 0; i < data.length; i+=4){
-		x = (i/4) %  fog_canvas.width;
-		y = Math.floor((i/4) / fog_canvas.width);
-		if(r < Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2))){
-			data[i+3] = 100;
-		}
-	}
-	fog_context.putImageData(test, 0, 0);
+	drawFogOfWarImages();
+	fog_context.putImageData(fog_norm, 0, 0);
 	//KEEP THIS SHIT ^^^ AWAY FROM EVERYTHING ELSE
 	
 	
@@ -200,6 +177,7 @@ function ToggleZoom(){
 		gt4 = NORMAL_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		fog_context.putImageData(fog_norm, 0, 0);
 	}
 	else if(current_zoom_lvl == 2){
 		current_zoom_lvl = 3;
@@ -207,6 +185,7 @@ function ToggleZoom(){
 		gt4 = FAR_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		fog_context.putImageData(fog_far, 0, 0);
 	}
 	else if(current_zoom_lvl == 3){
 		current_zoom_lvl = 1;
@@ -214,6 +193,7 @@ function ToggleZoom(){
 		gt4 = CLOSE_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		fog_context.putImageData(fog_close, 0, 0);
 	}
 }
 
