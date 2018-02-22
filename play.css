@@ -3,6 +3,15 @@
 	padding: 0;
 }
 
-#myCanvas{
+#game_canvas{
 	display: block;
+	z-index: 1;
+}
+
+#fog_canvas{
+	display: block;
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	left: 0;
 }

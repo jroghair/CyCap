@@ -1,10 +1,15 @@
 "use strict";
 
 //global variables
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById("game_canvas");
 var context = canvas.getContext("2d");
 canvas.height = document.documentElement.clientHeight;
 canvas.width = document.documentElement.clientWidth;
+
+var fog_canvas = document.getElementById("fog_canvas");
+var fog_context = fog_canvas.getContext("2d");
+fog_canvas.height = canvas.height;
+fog_canvas.width = canvas.width;
 
 let keys_down = []; //keys being pressed
 let keys_pnr = []; //keys that have been pushed and released
@@ -18,13 +23,40 @@ let masks = [];
 
 let player;
 //let grid_length = (bg_width_px / bg_width_grids); //this comes from the images.js file
-let player_speed = 2, bullet_speed = 15; //pixels. eventually we will want this to be based on grid_length/seconds
+let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
 //all functions
 function setup() {
+	
+	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
+	//draw to the fog of war context
+	let test = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
+	let data = test.data;
+	let x, y;
+	let r = (grid_length * VISIBILITY);
+	/*
+	for(let i = 0; i < fog_canvas.width; i++){
+		for(let j = 0; j < fog_canvas.height; j++){
+			if(r < Math.sqrt(Math.pow((canvas.width/2) - i, 2) + Math.pow((canvas.height/2) - j, 2))){
+				test[i*(j+1)*4 + 3] = 80;
+			}
+			test[i*(j+1)*4 + 3] = 80;
+		}
+	}*/
+	for(let i = 0; i < data.length; i+=4){
+		x = (i/4) %  fog_canvas.width;
+		y = Math.floor((i/4) / fog_canvas.width);
+		if(r < Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2))){
+			data[i+3] = 100;
+		}
+	}
+	fog_context.putImageData(test, 0, 0);
+	//KEEP THIS SHIT ^^^ AWAY FROM EVERYTHING ELSE
+	
+	
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
 	
 	//set the global transforms
@@ -38,16 +70,45 @@ function setup() {
 	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1");
 	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2)); //I don't think this messes anything up right now
 	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+	
 	map = new TiledBackground(background_tiles);
-	walls.push(new Wall(wall_image, 5, 10));
-	walls.push(new Wall(wall_image, 5, 11));
-	walls.push(new Wall(wall_image, 5, 12));
-	walls.push(new Wall(wall_image, 5, 13));
-	walls.push(new Wall(wall_image, 7, 10));
-	walls.push(new Wall(wall_image, 7, 11));
-	walls.push(new Wall(wall_image, 7, 12));
-	walls.push(new Wall(wall_image, 7, 13));
 	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
+	wallLine(5, 10, 5, 'x');  //
+	wallLine(9, 3, 7, 'y');   //
+	wallLine(12, 3, 15, 'x'); //
+	wallLine(12, 4, 4, 'y');  //
+	wallLine(12, 10, 8, 'x'); //
+	wallLine(20, 4, 8, 'y');  //
+	wallLine(21, 7, 3, 'x');  //
+	wallLine(26, 4, 4, 'y');  //
+	wallLine(29, 1, 2, 'y');  //
+	wallLine(29, 5, 2, 'y');  //
+	wallLine(29, 7, 2, 'x');  //
+	wallLine(31, 7, 19, 'y'); //
+	wallLine(34, 1, 8, 'y');  //
+	wallLine(38, 5, 2, 'x');  //
+	wallLine(32, 9, 6, 'x');  //
+	wallLine(34, 12, 6, 'x'); //
+	wallLine(34, 13, 4, 'y'); //
+	wallLine(34, 19, 10, 'y');//
+	wallLine(24, 10, 5, 'x'); //
+	wallLine(23, 10, 16, 'y');//
+	wallLine(28, 14, 3, 'x'); //
+	wallLine(26, 17, 3, 'x'); //
+	wallLine(26, 20, 4, 'y'); //
+	wallLine(27, 23, 4, 'x'); //
+	wallLine(23, 26, 9, 'x'); //
+	wallLine(20, 14, 13, 'y');//
+	wallLine(1, 15, 19, 'x'); //
+	wallLine(1, 18, 2, 'x');  //
+	wallLine(5, 18, 3, 'x');  //
+	wallLine(8, 18, 11, 'y'); //
+	wallLine(11, 18, 8, 'y'); //
+	wallLine(12, 18, 6, 'x'); //
+	wallLine(3, 24, 2, 'y');  //
+	wallLine(3, 26, 3, 'x');  //
+	wallLine(11, 26, 5, 'x'); //
+	wallLine(18, 26, 2, 'x'); //
 	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	
@@ -135,22 +196,22 @@ function run() {
 function ToggleZoom(){
 	if(current_zoom_lvl == 1){
 		current_zoom_lvl = 2;
-		gt1 = 1; //setting scaling to normal levels
-		gt4 = 1;
+		gt1 = NORMAL_ZOOM_LEVEL; //setting scaling to normal levels
+		gt4 = NORMAL_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	}
 	else if(current_zoom_lvl == 2){
 		current_zoom_lvl = 3;
-		gt1 = 0.5; //setting scaling to wide levels
-		gt4 = 0.5;
+		gt1 = FAR_ZOOM_LEVEL; //setting scaling to wide levels
+		gt4 = FAR_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	}
 	else if(current_zoom_lvl == 3){
 		current_zoom_lvl = 1;
-		gt1 = 2; //setting scaling to zoomed levels
-		gt4 = 2;
+		gt1 = CLOSE_ZOOM_LEVEL; //setting scaling to zoomed levels
+		gt4 = CLOSE_ZOOM_LEVEL;
 		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	}

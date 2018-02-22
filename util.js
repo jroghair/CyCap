@@ -1,13 +1,18 @@
 //CONSTANTS
 const GRAVITY = 9.81;
 const ARTILLERY_TIME = 3000; //milliseconds
-const TIME_BETWEEN_SHOTS = 50; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+const TIME_BETWEEN_SHOTS = 100; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+const CLOSE_ZOOM_LEVEL = 2.5;
+const NORMAL_ZOOM_LEVEL = 1.0;
+const FAR_ZOOM_LEVEL = 0.5;
+const VISIBILITY = 8;
 
 /*PLAYER CLASS STATS*/
 //Recruit
 const RECRUIT_DMG = 10;
 const RECRUIT_MAX_HP = 100;
 const RECRUIT_SPEED = 5;
+const RECRUIT_VIS = 5;
 
 //Artillery
 const ART_DMG = 10;
