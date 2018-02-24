@@ -6,8 +6,8 @@ const TIME_BETWEEN_SHOTS = 80; //milliseconds. this will eventually be dependent
 const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
 const FAR_ZOOM_LEVEL = 0.5;
-const VISIBILITY = 6;
-const FOG_DARKNESS = 100;
+const VISIBILITY = 8;
+const FOG_DARKNESS = 110;
 const FADE_RING_WIDTH = 40;
 
 /*PLAYER CLASS STATS*/

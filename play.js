@@ -20,10 +20,13 @@ let map;
 let masks = [];
 
 let player;
+let client_id = 11111111; //this will eventually come from the server
 let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
+
+let speed_test;
 
 //all functions
 function setup() {
@@ -44,50 +47,51 @@ function setup() {
 	gt5 = 0; //x trans
 	gt6 = 0; //y trans
 	
-	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1");
-	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2)); //I don't think this messes anything up right now
+	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1", client_id);
+	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 	
 	map = new TiledBackground(background_tiles);
 	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
-	wallLine(5, 10, 5, 'x');  //
-	wallLine(9, 3, 7, 'y');   //
-	wallLine(12, 3, 15, 'x'); //
-	wallLine(12, 4, 4, 'y');  //
-	wallLine(12, 10, 8, 'x'); //
-	wallLine(20, 4, 8, 'y');  //
-	wallLine(21, 7, 3, 'x');  //
-	wallLine(26, 4, 4, 'y');  //
-	wallLine(29, 1, 2, 'y');  //
-	wallLine(29, 5, 2, 'y');  //
-	wallLine(29, 7, 2, 'x');  //
-	wallLine(31, 7, 19, 'y'); //
-	wallLine(34, 1, 8, 'y');  //
-	wallLine(38, 5, 2, 'x');  //
-	wallLine(32, 9, 6, 'x');  //
-	wallLine(34, 12, 6, 'x'); //
-	wallLine(34, 13, 4, 'y'); //
-	wallLine(34, 19, 10, 'y');//
-	wallLine(24, 10, 5, 'x'); //
-	wallLine(23, 10, 16, 'y');//
-	wallLine(28, 14, 3, 'x'); //
-	wallLine(26, 17, 3, 'x'); //
-	wallLine(26, 20, 4, 'y'); //
-	wallLine(27, 23, 4, 'x'); //
-	wallLine(23, 26, 9, 'x'); //
-	wallLine(20, 14, 13, 'y');//
-	wallLine(1, 15, 19, 'x'); //
-	wallLine(1, 18, 2, 'x');  //
-	wallLine(5, 18, 3, 'x');  //
-	wallLine(8, 18, 11, 'y'); //
-	wallLine(11, 18, 8, 'y'); //
-	wallLine(12, 18, 6, 'x'); //
-	wallLine(3, 24, 2, 'y');  //
-	wallLine(3, 26, 3, 'x');  //
-	wallLine(11, 26, 5, 'x'); //
-	wallLine(18, 26, 2, 'x'); //
+	wallLine(5, 10, 5, 'x');  //done
+	wallLine(9, 3, 7, 'y');   //done
+	wallLine(12, 3, 15, 'x'); //done
+	wallLine(12, 4, 4, 'y');  //done
+	wallLine(12, 10, 8, 'x'); //done
+	wallLine(20, 4, 8, 'y');  //done
+	wallLine(21, 7, 3, 'x');  //done
+	wallLine(26, 4, 4, 'y');  //done
+	wallLine(29, 1, 2, 'y');  //done
+	wallLine(29, 5, 2, 'y');  //done
+	wallLine(29, 7, 2, 'x');  //done
+	wallLine(31, 7, 19, 'y'); //done
+	wallLine(34, 1, 8, 'y');  //done
+	wallLine(38, 5, 2, 'x');  //done
+	wallLine(32, 9, 6, 'x');  //done
+	wallLine(34, 12, 6, 'x'); //done
+	wallLine(34, 13, 4, 'y'); //done
+	wallLine(34, 19, 10, 'y');//done
+	wallLine(24, 10, 5, 'x'); //done
+	wallLine(23, 10, 16, 'y');//done
+	wallLine(28, 14, 3, 'x'); //done
+	wallLine(26, 17, 3, 'x'); //done
+	wallLine(26, 20, 4, 'y'); //done
+	wallLine(27, 23, 4, 'x'); //done
+	wallLine(23, 26, 9, 'x'); //done
+	wallLine(20, 14, 13, 'y');//done
+	wallLine(1, 15, 19, 'x'); //done
+	wallLine(1, 18, 2, 'x');  //done
+	wallLine(5, 18, 3, 'x');  //done
+	wallLine(8, 18, 11, 'y'); //done
+	wallLine(11, 18, 8, 'y'); //done
+	wallLine(12, 18, 6, 'x'); //done
+	wallLine(3, 24, 2, 'y');  //done
+	wallLine(3, 26, 3, 'x');  //done
+	wallLine(11, 26, 5, 'x'); //done
+	wallLine(18, 26, 2, 'x'); //done
 	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
+	speed_test = new SpeedPotion(256, 256);
 	
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -134,6 +138,7 @@ function run() {
 	for(let i = guis.length - 1; i >= 0; i--){
 		guis[i].update();
 	}
+	speed_test.update();
 	
 	if(keys_pnr.includes(90)){
 		//switch zoom level!
@@ -148,6 +153,7 @@ function run() {
 		walls[i].draw();
 	}
 	player.draw();
+	speed_test.draw();
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
 	}
@@ -218,6 +224,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.a = a;
 	
 	this.draw = function(){
+		//if(Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)) <= (VISIBILITY * grid_length)){ //this keeps things from drawing if they are too far away
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		//need to include compatability with global transforms
 		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
@@ -225,6 +232,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+		//}
 	}
 }
 
@@ -318,7 +326,9 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 	}
 }
 
-function Player(width, height, img, x, y, role, team) {
+function Player(width, height, img, x, y, role, team, client_id) {
+	this.client_id = client_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
+	
 	this.base = Entity;
 	//sprite 0, rotate 0, transparency 1
 	this.base(img, 0, x, y, width, height, 0, 1);
@@ -331,8 +341,26 @@ function Player(width, height, img, x, y, role, team) {
 	this.health = 37;
 	//^^^^these are temporary!!! TODO: FIX THIS
 	
+	//variables for the different power-ups and if they are affecting the player
+	this.is_invincible = false;
+	this.speed_boost = 1.0; //2.0 if boosted
+	this.damage_boost = 1.0; //1.5 if boosted
+	
 	this.has_flag = false;
-	this.mov_speed = player_speed; //this will eventually be dependent on role 
+	this.mov_speed = player_speed; //this will eventually be dependent on role
+	
+	this.die = function(){
+		//handle the player dying and respawning
+	}
+	
+	this.takeDamage = function(amount){
+		if(!this.is_invincible){
+			this.health -= amount;
+		}
+		if(this.health <= 0){
+			this.die(); //idk what this is gonna do yet
+		}
+	}
 
 	this.update = function() {
 		//save last positions in case the new ones are no good

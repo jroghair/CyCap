@@ -23,6 +23,15 @@ let blast1_image = new Image();
 blast1_image.src = "res/images/blast1.png";
 blast1_image.sprites = [{x:0, y:0, w:128, h:128}];
 
+let speed_potion_ss = new Image();
+speed_potion_ss.src = "res/images/speed_potion.png";
+speed_potion_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128}, {x:384, y:0, w:128, h:128},
+						   {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}, {x:384, y:128, w:128, h:128}];
+
+let shield_potion = new Image();
+shield_potion.src = "res/images/shield_potion.png";
+speed_potion.sprites = [{x:0, y:0, h:256, w:256}];
+
 let health_gui = new Image();
 health_gui.src = "res/images/health_bar_good.png";
 health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},

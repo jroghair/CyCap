@@ -3,15 +3,21 @@
 	padding: 0;
 }
 
-#game_canvas{
+canvas{
 	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#game_canvas{
 	z-index: 1;
 }
 
 #fog_canvas{
-	display: block;
 	z-index: 2;
-	position: absolute;
-	top: 0;
-	left: 0;
+}
+
+#gui_canvas{
+	z-index: 3;
 }
