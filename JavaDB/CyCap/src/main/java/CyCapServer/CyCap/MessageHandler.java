@@ -1,5 +1,9 @@
 package CyCapServer.CyCap;
 
+import java.io.IOException;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -21,5 +25,7 @@ public class MessageHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
         System.out.println("Message received: " + textMessage.getPayload());
     }
+    
+    
 }
 

@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 public class GameMessage {
 
-	@Id
+	
 	private String username;
 	
 	private String movement;
@@ -15,11 +15,22 @@ public class GameMessage {
 		
 	}
 	
-	public GameMessage(String movement, String bullets, String status){
+	
+	public GameMessage(String movement, String bullets, String status, String username){
 		this.movement = movement;
 		this.bullets = bullets;
 		this.status = status;
+		this.username = username;
 	}
+	
+	public String getUserName(){
+		return this.username;
+	}
+	
+	public void SetUserName(String username){
+		this.username = username;
+	}
+	
 	
 	public String getMovement(){
 		return movement;
