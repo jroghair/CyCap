@@ -26,7 +26,7 @@ let map;
 let masks = [];
 
 let player;
-let client_id = 11111111; //this will eventually come from the server
+let client_id; //this will eventually come from the server
 let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
@@ -42,6 +42,7 @@ let speed_test;
 
 //all functions
 function setup() {
+	client_id = prompt("What is your username?");
 	
 	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
 	drawFogOfWarImages();
@@ -137,7 +138,7 @@ function run() {
 		if(fps_frame_times.length == (rolling_buffer_length + 1)){
 			fps_frame_times.splice(0, 1); //remove the oldest element
 			let temp = Math.round((1 / (listAverage(fps_frame_times) / 1000)));
-			document.getElementById("fps").innerHTML = temp;
+			document.getElementById("fps").innerHTML = client_id + ": " + temp;
 		}
 	}
 	
