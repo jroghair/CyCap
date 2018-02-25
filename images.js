@@ -30,7 +30,7 @@ speed_potion_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128},
 
 let shield_potion = new Image();
 shield_potion.src = "res/images/shield_potion.png";
-speed_potion.sprites = [{x:0, y:0, h:256, w:256}];
+shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
 let health_gui = new Image();
 health_gui.src = "res/images/health_bar_good.png";
@@ -73,3 +73,8 @@ boom_ss.sprites = [{x:0, y:0, w:114, h:114}, {x:114, y:0, w:114, h:114}, {x:227,
 				   {x:682, y:796, w:114, h:114}, {x:796, y:796, w:114, h:114}, {x:910, y:796, w:114, h:114},
 				   
 				   {x:0, y:910, w:114, h:114}, {x:114, y:910, w:114, h:114}];
+				   
+let flags_ss = new Image();
+flags_ss.src = "res/images/flags.png";
+flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
+                    {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];

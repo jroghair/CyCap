@@ -1,36 +1,38 @@
 //CONSTANTS
 const GRAVITY = 9.81;
+const SIN_45 = Math.sin(Math.PI/4);
+const SIN_30 = 0.5;
+const SIN_60 = Math.sin(Math.PI/3);
 const ARTILLERY_TIME = 3000; //milliseconds
 const TIME_BETWEEN_SHOTS = 80; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
 const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
 const FAR_ZOOM_LEVEL = 0.5;
-const VISIBILITY = 8;
-const FOG_DARKNESS = 110;
+const VISIBILITY = 5;
+const FOG_DARKNESS = 100;
 const FADE_RING_WIDTH = 40;
 
 /*PLAYER CLASS STATS*/
 //Recruit
-const RECRUIT_DMG = 10;
 const RECRUIT_MAX_HP = 100;
 const RECRUIT_SPEED = 5;
 const RECRUIT_VIS = 5;
 
 //Artillery
-const ART_DMG = 10;
 const ART_MAX_HP = 100;
 const ART_SPEED = 5;
+const ART_VIS = 5;
 
 //Scout
-const SCOUT_DMG = 10;
 const SCOUT_MAX_HP = 100;
 const SCOUT_SPEED = 5;
+const SCOUT_VIS = 6;
 
 //Tank
-const TANK_DMG = 10;
 const TANK_MAX_HP = 150;
 const TANK_SPEED = 3;
+const TANK_VIS = 4;
 /*PLAYER CLASS STATS END*/
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
@@ -55,6 +57,14 @@ function getWeightedIndex(list){
 		}
 	}
 	return -1; //this should error
+}
+
+function listAverage(list){
+	let sum = 0;
+	for(let i = 0; i < list.length; i++){
+		sum += list[i];
+	}
+	return (sum/list.length);
 }
 
 //takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
@@ -174,7 +184,7 @@ function isColliding(ent_1, ent_2){
 
 //returns true if num is between lower and upper, exclusive
 function isBetween(num, lower, upper){
-	if(num > lower && num < upper){
+	if(num >= lower && num <= upper){
 		return true;
 	}
 	else{

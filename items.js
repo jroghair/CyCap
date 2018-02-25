@@ -32,6 +32,12 @@ function AnimatedItem(img, x, y, dWidth, dHeight, response_time, num_of_frames, 
 	}
 }
 
+function PowerUpHandler(){
+	//how often a power up spawns, weights for which power ups are going to spawn, 
+	this.power_ups = [];
+	
+}
+
 function SpeedPotion(x, y){
 	this.base = AnimatedItem;
 	this.base(speed_potion_ss, x, y, grid_length, grid_length, 100, 8, 800);

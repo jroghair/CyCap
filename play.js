@@ -12,6 +12,12 @@ fog_canvas.width = canvas.width;
 let keys_down = []; //keys being pressed
 let keys_pnr = []; //keys that have been pushed and released
 
+//MOVEMENT AND COLLISION CONSTANTS
+const UP    = 0b1000;
+const DOWN  = 0b0100;
+const LEFT  = 0b0010;
+const RIGHT = 0b0001;
+
 let bullets = []; //all bullets, including artillery shells
 let walls = [];
 let part_fx = [];
@@ -25,6 +31,12 @@ let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this t
 let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
+
+//stuff for fps testing
+let is_fps_running = true;
+let fps_last_frame_time = Date.now();
+let fps_frame_times = [];
+let rolling_buffer_length = 30;
 
 let speed_test;
 
@@ -119,6 +131,16 @@ function setup() {
 }
 
 function run() {
+	if(is_fps_running){
+		fps_frame_times.push(Date.now() - fps_last_frame_time);
+		fps_last_frame_time = Date.now();
+		if(fps_frame_times.length == (rolling_buffer_length + 1)){
+			fps_frame_times.splice(0, 1); //remove the oldest element
+			let temp = Math.round((1 / (listAverage(fps_frame_times) / 1000)));
+			document.getElementById("fps").innerHTML = temp;
+		}
+	}
+	
 	context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
@@ -363,48 +385,94 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	}
 
 	this.update = function() {
-		//save last positions in case the new ones are no good
-		let last_x = this.x;
-		let last_y = this.y;
-		let last_gt5 = gt5;
-		let last_gt6 = gt6;
+		let movement_code  = 0b0000; //the binary code for which directions the player moving
 		
 		//this section will probably end up on the server
 		if (keys_down.includes(87)) {
-			this.y -= this.mov_speed;
-			gt6 -= (-this.mov_speed * gt4);
+			movement_code |= UP; //trying to move up
 		}
 		if (keys_down.includes(65)) {
-			this.x -= this.mov_speed;
-			gt5 -= (-this.mov_speed * gt1);
+			movement_code |= LEFT; //trying to move left
 		}
 		if (keys_down.includes(68)) {
-			this.x += this.mov_speed;
-			gt5 += (-this.mov_speed * gt1);
+			movement_code |= RIGHT; //trying to move right
 		}
 		if (keys_down.includes(83)) {
-			this.y += this.mov_speed;
-			gt6 += (-this.mov_speed * gt4);
+			movement_code |= DOWN; //trying to move down
 		}
+		
+		if((movement_code & (UP | DOWN)) == 0b1100){ //if both up and down are pressed
+			movement_code &= ~(UP | DOWN); //clear the up and down bits
+		}
+		if((movement_code & (LEFT | RIGHT)) == 0b0011){ //if both left and right are pressed
+			movement_code &= ~(LEFT | RIGHT); //clear the left and right bits
+		}
+		
+		let delta_x = 0;
+		let delta_y = 0;
+		if(movement_code == 0b1010){
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45;
+		}
+		else if(movement_code == 0b1001){
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45;
+		}
+		else if(movement_code == 0b0110){
+			delta_y = this.mov_speed * this.speed_boost * SIN_45;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45;
+		}
+		else if(movement_code == 0b0101){
+			delta_y = this.mov_speed * this.speed_boost * SIN_45;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45;
+		}
+		else if(movement_code == 0b1000){
+			delta_y = -1 * this.mov_speed * this.speed_boost;
+		}
+		else if(movement_code == 0b0100){
+			delta_y = this.mov_speed * this.speed_boost;
+		}
+		else if(movement_code == 0b0010){
+			delta_x = -1 * this.mov_speed * this.speed_boost;
+		}
+		else if(movement_code == 0b0001){
+			delta_x = this.mov_speed * this.speed_boost;
+		}
+		
+		if(delta_x != 0){
+			this.x += delta_x;
+			gt5 -= (delta_x * gt1);
+			for(let i = 0; i < walls.length; i++){
+				if(isColliding(this, walls[i]))
+				{
+					//if the player hit a wall, reset the player positions and global transforms
+					this.x -= delta_x;
+					gt5 += (delta_x * gt1);
+					break; //does not check the other walls if at least one was hit
+				}
+			}
+		}
+		if(delta_y != 0){
+			this.y += delta_y;
+			gt6 -= (delta_y * gt4);
+			for(let i = 0; i < walls.length; i++){
+				if(isColliding(this, walls[i]))
+				{
+					//if the player hit a wall, reset the player positions and global transforms
+					this.y -= delta_y;
+					gt6 += (delta_y * gt4);
+					break; //does not check the other walls if at least one was hit
+				}
+			}
+		}
+		
+		
 		if(keys_down.includes(49)){
 			this.health -= 1;
 		}
 		if(keys_down.includes(50)){
 			this.health += 1;
 		}
-		
-		//check if you hit a wall after that move
-		for(let j = 0; j < walls.length; j++){
-				if (isColliding(this, walls[j]))
-				{
-					//if the player hit a wall, reset the player positions and global transforms
-					this.x = last_x;
-					this.y = last_y;
-					gt5 = last_gt5;
-					gt6 = last_gt6;
-					break; //does not check the other walls if at least one was hit
-				}
-			}
 		
 		//shoot bullets
 		if (keys_down.includes(32)) {
