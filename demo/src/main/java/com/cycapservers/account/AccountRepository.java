@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 //import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
+
 public interface AccountRepository extends Repository<Account, Integer> {
 
 	/**
@@ -20,6 +23,7 @@ public interface AccountRepository extends Repository<Account, Integer> {
 	 * @return a Collection of matching {@link Accounts}s (or an empty
 	 *         Collection if none found)
 	 */
+	//String query1 = "SELECT DISTINCT Account FROM Account account WHERE account.userID LIKE :userID%";
 	//@Query("SELECT DISTINCT userID FROM Account a WHERE a.userID LIKE :userID%")
     @Query("SELECT DISTINCT account FROM Account account WHERE account.userID LIKE :userID%")
 	 //@Query("SELECT DISTINCT account FROM Account account WHERE account.userID =:userID")
