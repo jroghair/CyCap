@@ -25,16 +25,20 @@ let guis = [];
 let map;
 let masks = [];
 
+//FRAME TIME & DELTA_T
+let lastFrameTime;
+let global_delta_t = 0; //the time that this frame took in SECONDS
+
 let player;
 let client_id; //this will eventually come from the server
-let player_speed = 2, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
+
+let player_speed = 120, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
 let mouse_hand;
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
 //stuff for fps testing
 let is_fps_running = true;
-let fps_last_frame_time = Date.now();
 let fps_frame_times = [];
 let rolling_buffer_length = 30;
 
@@ -129,15 +133,19 @@ function setup() {
 		mouse_hand.x_pos_rel_canvas = (event.clientX - rect.left);
 		mouse_hand.y_pos_rel_canvas = (event.clientY - rect.top);
 	}, false);
+	
+	lastFrameTime = Date.now();
 }
 
 function run() {
+	global_delta_t = (Date.now() - lastFrameTime) / 1000;
+	lastFrameTime = Date.now();
+	
 	if(is_fps_running){
-		fps_frame_times.push(Date.now() - fps_last_frame_time);
-		fps_last_frame_time = Date.now();
+		fps_frame_times.push(global_delta_t);
 		if(fps_frame_times.length == (rolling_buffer_length + 1)){
 			fps_frame_times.splice(0, 1); //remove the oldest element
-			let temp = Math.round((1 / (listAverage(fps_frame_times) / 1000)));
+			let temp = Math.round((1 / listAverage(fps_frame_times)));
 			document.getElementById("fps").innerHTML = client_id + ": " + temp;
 		}
 	}
@@ -257,6 +265,18 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 		//}
 	}
+	
+	this.toDataString = function(){
+		let output = "000" + ","; //the temporary image code
+		output += this.sprIdx + ",";
+		output += this.x + ",";
+		output += this.y + ",";
+		output += this.dWidth + ",";
+		output += this.dHeight + ",";
+		output += this.r + ","; //in radians!
+		output += this.a;
+		return output;
+	}
 }
 
 function Bullet(width, height, img, x, y, team) {
@@ -302,7 +322,6 @@ function Bullet(width, height, img, x, y, team) {
 
 function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
 	this.start_time = Date.now();
-	this.lastUpdate = this.start_time;
 	
 	this.start_x = start_x;
 	this.start_y = start_y;
@@ -325,17 +344,14 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 	
 	this.update = function(){
 		if((Date.now() - this.start_time) < ARTILLERY_TIME){
-			let delta_t = Date.now() - this.lastUpdate;
-			this.x += (this.x_vel * delta_t);
-			this.y += (this.y_vel * delta_t);
+			this.x += (this.x_vel * global_delta_t * 1000);
+			this.y += (this.y_vel * global_delta_t * 1000);
 			
 			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
 			
 			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + this.v_init*total_time) + 1
 			this.dWidth = this.start_width * temp_multiplier;
 			this.dHeight = this.start_height * temp_multiplier;
-			
-			this.lastUpdate = Date.now();
 		}
 		else{
 			//place mask
@@ -412,32 +428,32 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		let delta_x = 0;
 		let delta_y = 0;
 		if(movement_code == 0b1010){
-			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45;
-			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45;
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
 		}
 		else if(movement_code == 0b1001){
-			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45;
-			delta_x = this.mov_speed * this.speed_boost * SIN_45;
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
 		}
 		else if(movement_code == 0b0110){
-			delta_y = this.mov_speed * this.speed_boost * SIN_45;
-			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45;
+			delta_y = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
 		}
 		else if(movement_code == 0b0101){
-			delta_y = this.mov_speed * this.speed_boost * SIN_45;
-			delta_x = this.mov_speed * this.speed_boost * SIN_45;
+			delta_y = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
 		}
 		else if(movement_code == 0b1000){
-			delta_y = -1 * this.mov_speed * this.speed_boost;
+			delta_y = -1 * this.mov_speed * this.speed_boost * global_delta_t;
 		}
 		else if(movement_code == 0b0100){
-			delta_y = this.mov_speed * this.speed_boost;
+			delta_y = this.mov_speed * this.speed_boost * global_delta_t;
 		}
 		else if(movement_code == 0b0010){
-			delta_x = -1 * this.mov_speed * this.speed_boost;
+			delta_x = -1 * this.mov_speed * this.speed_boost * global_delta_t;
 		}
 		else if(movement_code == 0b0001){
-			delta_x = this.mov_speed * this.speed_boost;
+			delta_x = this.mov_speed * this.speed_boost * global_delta_t;
 		}
 		
 		if(delta_x != 0){
@@ -492,6 +508,25 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				last_shot_time = Date.now();
 			}
 		}
+	}
+	
+	this.toDataString = function(){
+		/*
+		let output = "000" + ","; //the temporary image code
+		output += this.sprIdx + ",";
+		output += this.x + ",";
+		output += this.y + ",";
+		output += this.dWidth + ",";
+		output += this.dHeight + ",";
+		output += this.r + ","; //in radians!
+		output += this.a + ",";
+		output += this.team;
+		return output;
+		*/
+		let output = this.client_id + ",";
+		output += this.x + ",";
+		output += this.y;
+		return output;
 	}
 }
 
