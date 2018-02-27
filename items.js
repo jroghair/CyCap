@@ -4,11 +4,11 @@ function Item(img, sprIdx, x, y, dWidth, dHeight, response_time){
 	//100% opacity, 0 rotation
 	this.base(img, sprIdx, x, y, dWidth, dHeight, 0, 1.0);
 	this.reponse_time = response_time;
+	this.targetPlayer = null;
 	
 	//grabber is the player who picked up the item
 	this.pickup = function(grabber){
-		//if the grabber has space, give them the item
-		return;
+		this.targetPlayer = grabber;
 	}
 }
 
@@ -41,4 +41,14 @@ function PowerUpHandler(){
 function SpeedPotion(x, y){
 	this.base = AnimatedItem;
 	this.base(speed_potion_ss, x, y, grid_length, grid_length, 100, 8, 800);
+	this.startTime;
+	
+	this.use = function(){
+		if(this.targetPlayer == null){
+			console.log("Error, no target player for item. Cannot use.");
+			return;
+		}
+		
+		
+	}
 }

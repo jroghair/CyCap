@@ -1,4 +1,4 @@
-//global variables
+//CANVAS INFORMATION
 var canvas = document.getElementById("game_canvas");
 var context = canvas.getContext("2d");
 canvas.height = document.documentElement.clientHeight;
@@ -9,8 +9,10 @@ let fog_context = fog_canvas.getContext("2d");
 fog_canvas.height = canvas.height;
 fog_canvas.width = canvas.width;
 
+//INPUT INFORMATION
 let keys_down = []; //keys being pressed
 let keys_pnr = []; //keys that have been pushed and released
+let mouse_hand;
 
 //MOVEMENT AND COLLISION CONSTANTS
 const UP    = 0b1000;
@@ -18,6 +20,7 @@ const DOWN  = 0b0100;
 const LEFT  = 0b0010;
 const RIGHT = 0b0001;
 
+//WORLD OBJECTS
 let bullets = []; //all bullets, including artillery shells
 let walls = [];
 let part_fx = [];
@@ -32,11 +35,11 @@ let global_delta_t = 0; //the time that this frame took in SECONDS
 let player;
 let client_id; //this will eventually come from the server
 
-let player_speed = 120, bullet_speed = 7; //pixels. eventually we will want this to be based on grid_length/seconds
-let mouse_hand;
+let player_speed = 120, bullet_speed = 450; //pixels per second
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
+//TESTING
 //stuff for fps testing
 let is_fps_running = true;
 let fps_frame_times = [];
@@ -46,6 +49,7 @@ let speed_test;
 
 //all functions
 function setup() {
+	
 	client_id = prompt("What is your username?");
 	
 	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
@@ -135,22 +139,24 @@ function setup() {
 	}, false);
 	
 	lastFrameTime = Date.now();
+	//connectToServer();
 }
 
 function run() {
-	global_delta_t = (Date.now() - lastFrameTime) / 1000;
+	global_delta_t = (Date.now() - lastFrameTime) / 1000; //set the time of the most recent frame (in seconds)
 	lastFrameTime = Date.now();
 	
+	//For FPS testing purposes
 	if(is_fps_running){
 		fps_frame_times.push(global_delta_t);
 		if(fps_frame_times.length == (rolling_buffer_length + 1)){
 			fps_frame_times.splice(0, 1); //remove the oldest element
 			let temp = Math.round((1 / listAverage(fps_frame_times)));
-			document.getElementById("fps").innerHTML = client_id + ": " + temp;
+			document.getElementById("fps").innerHTML = (client_id + ": " + temp);
 		}
 	}
 	
-	context.beginPath(); //so styles dont interfere
+	//context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
@@ -202,7 +208,7 @@ function run() {
 		guis[i].draw();
 	}
   
-	context.closePath(); //so styles dont interfere
+	//context.closePath(); //so styles dont interfere
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
 }
@@ -258,8 +264,8 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 		//if(Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)) <= (VISIBILITY * grid_length)){ //this keeps things from drawing if they are too far away
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		//need to include compatability with global transforms
-		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
-		context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
+		context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5), Math.round(gt6)); //we must round the X & Y positions so that it doesn't break the textures
+		context.transform(1, 0, 0, 1, Math.round(this.x), Math.round(this.y)); //set draw position
 		context.rotate(this.r); //this is in radians
 		context.globalAlpha = this.a;
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
@@ -306,8 +312,8 @@ function Bullet(width, height, img, x, y, team) {
 	this.x_ratio += ((Math.random() - 0.5) * 0.05);
 	
 	this.update = function(){
-		this.x += bullet_speed * this.x_ratio;
-		this.y += bullet_speed * this.y_ratio;
+		this.x += bullet_speed * this.x_ratio * global_delta_t;
+		this.y += bullet_speed * this.y_ratio * global_delta_t;
 			
 		for(var j = 0; j < walls.length; j++){
 			if (isColliding(this, walls[j]))
@@ -374,6 +380,14 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	
 	this.role = role;
 	this.team = team;
+	
+	//WEAPONS AND ITEMS
+	this.currentWeapon = 1;
+	this.weapon1;
+	this.weapon2;
+	this.weapon3;
+	this.weapon4;
+	this.item_slot = "EMPTY";
 	
 	//decide health based on role
 	this.max_hp = 100;

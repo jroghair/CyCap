@@ -4,7 +4,7 @@ const SIN_45 = Math.sin(Math.PI/4);
 const SIN_30 = 0.5;
 const SIN_60 = Math.sin(Math.PI/3);
 const ARTILLERY_TIME = 3000; //milliseconds
-const TIME_BETWEEN_SHOTS = 80; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
+const TIME_BETWEEN_SHOTS = 100; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
 const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
@@ -37,6 +37,8 @@ const TANK_VIS = 4;
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 let fog_norm, fog_close, fog_far; //Fog of War image data
+
+let serverSocket; //the web socket to connect to the server with
 
 
 //draws a complete border given a grid height & height. it starts at an X & Y grid position
@@ -210,4 +212,22 @@ function toRadians(angle) {
 
 function toDegrees(angle) {
   return (angle * (180.0 / Math.PI));
+}
+
+function connectToServer(){
+	serverSocket = new WebSocket('ws://' + window.location.hostname + '/my-websocket-endpoint');
+	serverSocket.onopen = function() {
+		//console.log('WebSocket connection opened. Ready to send messages.');
+		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
+	};
+}
+
+function sendMessageToServer(msg){
+	serverSocket.send(msg); //in the future, we may want to send the IP address too
+}
+
+//event listener for when the socket receives a message from the server
+serverSocket.onmessage = function(msg){
+	console.log("Message received:" + msg);
+	//TODO do something meaningful with the message
 }
