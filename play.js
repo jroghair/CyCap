@@ -111,6 +111,10 @@ function setup() {
 	wallLine(11, 26, 5, 'x'); //done
 	wallLine(18, 26, 2, 'x'); //done
 	
+	//AI NODE BUILDING MUST BE AFTER WALLS ARE BUILT
+	generateNodes();
+	ai_player1 = new AI_player(grid_length, grid_length, player_image, 100, 430, "recruit", "1");
+	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	speed_test = new SpeedPotion(256, 256);
 	
@@ -156,7 +160,7 @@ function run() {
 		}
 	}
 	
-	//context.beginPath(); //so styles dont interfere
+	context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
   
@@ -190,6 +194,7 @@ function run() {
 		walls[i].draw();
 	}
 	player.draw();
+	ai_player1.draw();
 	speed_test.draw();
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
@@ -208,7 +213,9 @@ function run() {
 		guis[i].draw();
 	}
   
-	//context.closePath(); //so styles dont interfere
+	context.closePath(); //so styles dont interfere
+	
+	drawAIPath();
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
 }

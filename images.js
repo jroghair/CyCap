@@ -7,6 +7,7 @@ let bullet_image = new Image();
 bullet_image.src = "res/images/bullets.png";
 bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];
 
+//MAP INFORMATION
 let background_tiles = new Image();
 background_tiles.src = "res/images/map_tiles_ss.png";
 background_tiles.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}];
