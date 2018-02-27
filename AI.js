@@ -7,15 +7,36 @@ Purpose:
 */
 
 //this is the resolution of the node map. pixels in between nodes.
-var node_pixel_dist = 5;
+var node_pixel_dist = 4;
+let nodes = [];
+let pathLastUpdated = Date.now();
 
+//for the ocmputer player //NEW
+function AI_player(width, height, img, x, y, role, team) {
+	this.base = Entity;
+	this.base(img, 0, x, y, width, height, 0, 1);
+	this.role = role;
+	this.team = team;
+	this.hp = 100;
+	this.has_flag = false;
+	this.mov_speed = player_speed;
+	this.path = getFinalPath(this, player);
+
+	this.update = function() {
+		//TODO
+	}
+	
+	this.generateNewPath = function(){
+		this.path = getFinalPath(this, player);
+	}
+
+}
 
 function generateNodes() {
   //go through all coordinates
-  var time1 = Date.now();
-  for (var i = 0; i < canvas.width; i += node_pixel_dist) {
+  for (var i = 0; i < (grid_length * bg_width_grids); i += node_pixel_dist) {
     var node_col = []; //for storing a column of nodes
-    for (var j = 0; j < canvas.height; j += node_pixel_dist) {
+    for (var j = 0; j < (grid_length * bg_height_grids); j += node_pixel_dist) {
       //make a test entity for player
       var test_player_ent = new Entity(player_image, 0, i, j, grid_length, grid_length, 0, 1);
       //go through all walls and check collision
@@ -81,6 +102,24 @@ function getNodeFromList(arr, node) {
   }
 }
 
+function drawAIPath(){
+	if(Date.now() - pathLastUpdated > 250){
+		ai_player1.generateNewPath();
+		pathLastUpdated = Date.now();
+	}
+	for(var i = 0; i < ai_player1.path.length; i++){ //THIS CAUSES AN ISSUE
+		context.beginPath();
+		context.strokeStyle = "red";
+
+		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+		context.transform(1, 0, 0, 1, 0, 0); //set draw position
+
+		context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 2, 2);
+		context.stroke();
+		context.closePath(); //so styles dont interfere
+	}
+}
+
 function node_contains(arr, node) {
   for (var i = 0; i < arr.length; i++) {
     if (arr[i].x == node.x && arr[i].y == node.y) {
@@ -99,7 +138,7 @@ function getNeighbors(node) {
   if (nodes[nindex.x - 1][nindex.y].trav == true) {
     neighbors.push(nodes[nindex.x - 1][nindex.y]);
   }
-  if (nodes[nindex.x - 1][nindex.y + 1].trav == true) {
+  if (nodes[nindex.x - 1][nindex.y + 1].trav == true) { //THIS ONE IS CAUSING THE ISSUE
     neighbors.push(nodes[nindex.x - 1][nindex.y + 1]);
   }
   if (nodes[nindex.x][nindex.y + 1].trav == true) {
@@ -155,8 +194,7 @@ function getLowestF(open) {
 function getNearestNode(ent) {
   this.x = (Math.ceil((ent.x / node_pixel_dist)) * node_pixel_dist);
   this.y = (Math.ceil((ent.y / node_pixel_dist)) * node_pixel_dist);
-  var i = 0,
-    j = 0;
+  var i = 0, j = 0;
   while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
     if (nodes[i][j].x != this.x) {
       i++;
