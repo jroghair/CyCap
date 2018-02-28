@@ -3,6 +3,10 @@ let player_image = new Image();
 player_image.src = "res/images/player.png";
 player_image.sprites = [{x:0, y:0, w:128, h:128}];
 
+let enemy_image = new Image();
+enemy_image.src = "res/images/enemy.png";
+enemy_image.sprites = [{x:0, y:0, h:128, w:128}];
+
 let bullet_image = new Image();
 bullet_image.src = "res/images/bullets.png";
 bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];

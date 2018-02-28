@@ -7,7 +7,7 @@ Purpose:
 */
 
 //this is the resolution of the node map. pixels in between nodes.
-var node_pixel_dist = 4;
+var node_pixel_dist = 8;
 let nodes = [];
 let pathLastUpdated = Date.now();
 
@@ -15,11 +15,14 @@ let pathLastUpdated = Date.now();
 function AI_player(width, height, img, x, y, role, team) {
 	this.base = Entity;
 	this.base(img, 0, x, y, width, height, 0, 1);
+	
 	this.role = role;
 	this.team = team;
 	this.hp = 100;
+	
 	this.has_flag = false;
 	this.mov_speed = player_speed;
+	
 	this.path = getFinalPath(this, player);
 
 	this.update = function() {
@@ -103,7 +106,7 @@ function getNodeFromList(arr, node) {
 }
 
 function drawAIPath(){
-	if(Date.now() - pathLastUpdated > 250){
+	if(Date.now() - pathLastUpdated > 500){
 		ai_player1.generateNewPath();
 		pathLastUpdated = Date.now();
 	}
@@ -111,10 +114,11 @@ function drawAIPath(){
 		context.beginPath();
 		context.strokeStyle = "red";
 
-		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
 		context.transform(1, 0, 0, 1, 0, 0); //set draw position
 
 		context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 2, 2);
+		context.lineWidth = 2;
 		context.stroke();
 		context.closePath(); //so styles dont interfere
 	}

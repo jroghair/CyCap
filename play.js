@@ -113,7 +113,7 @@ function setup() {
 	
 	//AI NODE BUILDING MUST BE AFTER WALLS ARE BUILT
 	generateNodes();
-	ai_player1 = new AI_player(grid_length, grid_length, player_image, 100, 430, "recruit", "1");
+	ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	speed_test = new SpeedPotion(256, 256);
@@ -212,9 +212,28 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
-  
 	context.closePath(); //so styles dont interfere
 	
+	//following is to test coordinates
+	//context.resetTransform();
+	//context.lineWidth = "1";
+	//keep the following code
+	//it is for showing traversable v. non traversable nodes
+	/*
+	for (var i = 0; i < nodes.length; i++) {
+		for (var j = 0; j < nodes[i].length; j++) {
+			context.beginPath();
+			if (nodes[i][j].trav == false) {
+				context.strokeStyle = "red";
+			} else {
+				context.strokeStyle = "green";
+			}
+			context.rect(nodes[i][j].x, nodes[i][j].y, 2, 2);
+			context.stroke();
+			context.closePath(); //so styles dont interfere
+		}
+	}
+	*/
 	drawAIPath();
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
