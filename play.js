@@ -192,16 +192,18 @@ function run() {
 	for(let i = 0; i < walls.length; i++){
 		walls[i].draw();
 	}
+	
 	player.draw();
 	ai_player1.draw();
+	
 	speed_test.draw();
+	
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
 	}
 	for(let i = 0; i < part_fx.length; i++){
 		part_fx[i].draw();
 	}
-	//draw fog of war
 
 	//need to draw rectangles outside of the map that
 	//are essentially below the GUI, but above pretty much everything else
@@ -213,12 +215,11 @@ function run() {
 	}
 	context.closePath(); //so styles dont interfere
 	
-	//following is to test coordinates
-	context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
-	context.lineWidth = "1";
+	/*following is to test coordinates
+	//context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
+	//context.lineWidth = "1";
 	//keep the following code
 	//it is for showing traversable vs. non traversable nodes
-	///*
 	for (var i = 0; i < nodes.length; i++) {
 		for (var j = 0; j < nodes[i].length; j++) {
 			context.beginPath();
@@ -232,8 +233,9 @@ function run() {
 			context.closePath(); //so styles dont interfere
 		}
 	}
-	//*/
+	*/
 	drawAIPath();
+	
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
 }
@@ -288,7 +290,6 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.draw = function(){
 		//if(Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)) <= (VISIBILITY * grid_length)){ //this keeps things from drawing if they are too far away
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-		//need to include compatability with global transforms
 		context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5), Math.round(gt6)); //we must round the X & Y positions so that it doesn't break the textures
 		context.transform(1, 0, 0, 1, Math.round(this.x), Math.round(this.y)); //set draw position
 		context.rotate(this.r); //this is in radians
@@ -353,7 +354,7 @@ function Bullet(width, height, img, x, y, team) {
 
 function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
 	this.start_time = Date.now();
-
+	this.blast_img = blast_img;
 	this.start_x = start_x;
 	this.start_y = start_y;
 	this.end_x = end_x;
@@ -361,15 +362,19 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 	this.start_width = width;//this is the initial width
 	this.start_height = height;//this is the initial height
 
+	this.x_vel = 1000 * (this.end_x - this.start_x) / ARTILLERY_TIME; //pixels per second
+	this.y_vel = 1000 * (this.end_y - this.start_y) / ARTILLERY_TIME; //pixels per second
+	this.v_init = GRAVITY * (ARTILLERY_TIME/1000);
+
+	
 	this.base = Entity;
 	//sprite 1 on the bullet sheet, rotation 0, transparency 1
-	//i am setting this to 0 temporarily
 	this.base(img, 1, this.start_x, this.start_y, width, height, 0, 1);
 
 	this.update = function(){
 		if((Date.now() - this.start_time) < ARTILLERY_TIME){
-			this.x += (this.x_vel * global_delta_t * 1000);
-			this.y += (this.y_vel * global_delta_t * 1000);
+			this.x += (this.x_vel * global_delta_t);
+			this.y += (this.y_vel * global_delta_t);
 
 			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
 

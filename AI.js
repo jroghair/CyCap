@@ -7,7 +7,7 @@ Purpose:
 */
 
 //this is the resolution of the node map. pixels in between nodes.
-var node_pixel_dist = 8;
+var node_pixel_dist = 16;
 let nodes = [];
 let pathLastUpdated = Date.now();
 
@@ -32,7 +32,6 @@ function AI_player(width, height, img, x, y, role, team) {
 
   this.generateNewPath = function() {
     this.path = getFinalPath(this, player);
-    //console.log(this.path);
   }
 
 }
@@ -130,25 +129,21 @@ function getNodeFromList(arr, node) {
 
 
 function drawAIPath() {
-  if (Date.now() - pathLastUpdated >= 250) {
-    ai_player1.generateNewPath();
-    pathLastUpdated = Date.now();
-  }
-  try {
-    for (var i = 0; i < ai_player1.path.length; i++) { //THIS CAUSES AN ISSUE
-      context.beginPath();
-      context.strokeStyle = "red";
+	if (Date.now() - pathLastUpdated >= 1000) {
+		ai_player1.generateNewPath();
+		pathLastUpdated = Date.now();
+	}
 
-      context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
-      context.transform(1, 0, 0, 1, 0, 0); //set draw position
+    for (var i = 0; i < ai_player1.path.length; i++) {
+		context.beginPath();
+		context.strokeStyle = "orange";
 
-      context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 2, 2);
-      context.stroke();
-      context.closePath(); //so styles dont interfere
+		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
+
+		context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 4, 4);
+		context.stroke();
+		context.closePath(); //so styles dont interfere
     }
-  } catch (err) {
-    console.log('drawing the path failed.');
-  }
 }
 
 function node_contains(arr, node) {
