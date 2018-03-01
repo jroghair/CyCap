@@ -112,7 +112,7 @@ function drawAIPath(){
 	}
 	for(var i = 0; i < ai_player1.path.length; i++){ //THIS CAUSES AN ISSUE
 		context.beginPath();
-		context.strokeStyle = "red";
+		context.strokeStyle = "orange";
 
 		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
 		context.transform(1, 0, 0, 1, 0, 0); //set draw position

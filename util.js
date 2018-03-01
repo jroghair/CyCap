@@ -38,7 +38,7 @@ const TANK_VIS = 4;
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 let fog_norm, fog_close, fog_far; //Fog of War image data
 
-let serverSocket; //the web socket to connect to the server with
+let serverSocket = {}; //the web socket to connect to the server with
 
 
 //draws a complete border given a grid height & height. it starts at an X & Y grid position
@@ -220,6 +220,7 @@ function connectToServer(){
 		//console.log('WebSocket connection opened. Ready to send messages.');
 		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
 	};
+	serverSocket.onmessage = message_handler;
 }
 
 function sendMessageToServer(msg){
@@ -227,7 +228,7 @@ function sendMessageToServer(msg){
 }
 
 //event listener for when the socket receives a message from the server
-serverSocket.onmessage = function(msg){
+function message_handler(msg){
 	console.log("Message received:" + msg);
 	//TODO do something meaningful with the message
 }

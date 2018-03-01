@@ -215,11 +215,11 @@ function run() {
 	context.closePath(); //so styles dont interfere
 	
 	//following is to test coordinates
-	//context.resetTransform();
-	//context.lineWidth = "1";
+	context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
+	context.lineWidth = "1";
 	//keep the following code
-	//it is for showing traversable v. non traversable nodes
-	/*
+	//it is for showing traversable vs. non traversable nodes
+	///*
 	for (var i = 0; i < nodes.length; i++) {
 		for (var j = 0; j < nodes[i].length; j++) {
 			context.beginPath();
@@ -233,7 +233,7 @@ function run() {
 			context.closePath(); //so styles dont interfere
 		}
 	}
-	*/
+	//*/
 	drawAIPath();
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
