@@ -94,7 +94,7 @@ function drawFogOfWarImages(){
 	fog_close = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
 	fog_far = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
 	let x, y, dist, r_in, r_out, grad_level; //variables used in generation
-	
+
 	//draw the normal zoom image first
 	for(let i = 0; i < fog_norm.data.length; i+=4){
 		x = (i/4) %  fog_canvas.width;
@@ -102,7 +102,7 @@ function drawFogOfWarImages(){
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
 		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//inner radius of fade ring
 		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//outer radius of fade ring
-		
+
 		if(dist > r_out){
 			fog_norm.data[i+3] = FOG_DARKNESS;
 		}
@@ -113,7 +113,7 @@ function drawFogOfWarImages(){
 			fog_norm.data[i+3] = 0;
 		}
 	}
-	
+
 	//draw the far zoom
 	for(let i = 0; i < fog_far.data.length; i+=4){
 		x = (i/4) %  fog_canvas.width;
@@ -121,7 +121,7 @@ function drawFogOfWarImages(){
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
 		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL); //inner radius of fade ring
 		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL);//outer radius of fade ring
-		
+
 		if(dist > r_out){
 			fog_far.data[i+3] = FOG_DARKNESS;
 		}
@@ -133,7 +133,7 @@ function drawFogOfWarImages(){
 			fog_far.data[i+3] = 0;
 		}
 	}
-	
+
 	//draw the close zoom
 	for(let i = 0; i < fog_close.data.length; i+=4){
 		x = (i/4) %  fog_canvas.width;
@@ -141,7 +141,7 @@ function drawFogOfWarImages(){
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
 		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//inner radius of fade ring
 		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//outer radius of fade ring
-		
+
 		if(dist > r_out){
 			fog_close.data[i+3] = FOG_DARKNESS;
 		}
@@ -160,7 +160,7 @@ function drawFogOfWarImages(){
 //allowing the player to slide along a wall while pushing into it and other smarter collision detection
 function isColliding(ent_1, ent_2){
 	var y_collision = isBetween(ent_1.y - (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y + (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2));
-	
+
 	if(isBetween(ent_1.x - (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
 		return true;
 	}
@@ -194,12 +194,12 @@ function isBetween(num, lower, upper){
 	}
 }
 function MouseHandler(){
-	
+
 	this.x_pos_rel_canvas = 0;
 	this.y_pos_rel_canvas = 0;
 	this.mouseX = 0;
 	this.mouseY = 0;
-	
+
 	this.update = function(){
 		this.mouseX = (this.x_pos_rel_canvas - gt5) / gt1;
 		this.mouseY = (this.y_pos_rel_canvas - gt6) / gt4;
@@ -220,6 +220,7 @@ function connectToServer(){
 		//console.log('WebSocket connection opened. Ready to send messages.');
 		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
 	};
+
 	serverSocket.onmessage = message_handler;
 }
 

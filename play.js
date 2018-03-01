@@ -49,17 +49,16 @@ let speed_test;
 
 //all functions
 function setup() {
-	
 	client_id = prompt("What is your username?");
-	
+
 	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
 	drawFogOfWarImages();
 	fog_context.putImageData(fog_norm, 0, 0);
 	//KEEP THIS SHIT ^^^ AWAY FROM EVERYTHING ELSE
-	
+		
 	
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
-	
+
 	//set the global transforms
 	gt1 = 1; //x scale
 	gt2 = 0; //x skew
@@ -67,11 +66,11 @@ function setup() {
 	gt4 = 1; //y scale
 	gt5 = 0; //x trans
 	gt6 = 0; //y trans
-	
+
 	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1", client_id);
 	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
-	
+
 	map = new TiledBackground(background_tiles);
 	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
 	wallLine(5, 10, 5, 'x');  //done
@@ -110,14 +109,14 @@ function setup() {
 	wallLine(3, 26, 3, 'x');  //done
 	wallLine(11, 26, 5, 'x'); //done
 	wallLine(18, 26, 2, 'x'); //done
-	
+
 	//AI NODE BUILDING MUST BE AFTER WALLS ARE BUILT
 	generateNodes();
 	ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
 	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
 	speed_test = new SpeedPotion(256, 256);
-	
+
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
 	document.addEventListener("keydown", function(event) {
@@ -141,7 +140,7 @@ function setup() {
 		mouse_hand.x_pos_rel_canvas = (event.clientX - rect.left);
 		mouse_hand.y_pos_rel_canvas = (event.clientY - rect.top);
 	}, false);
-	
+
 	lastFrameTime = Date.now();
 	//connectToServer();
 }
@@ -159,11 +158,11 @@ function run() {
 			document.getElementById("fps").innerHTML = (client_id + ": " + temp);
 		}
 	}
-	
+
 	context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
-  
+
 	//update everything
 	mouse_hand.update();
 	player.update();
@@ -180,12 +179,12 @@ function run() {
 		guis[i].update();
 	}
 	speed_test.update();
-	
+
 	if(keys_pnr.includes(90)){
 		//switch zoom level!
 		ToggleZoom();
 	}
-  
+
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
 		masks[i].draw();
@@ -203,11 +202,11 @@ function run() {
 		part_fx[i].draw();
 	}
 	//draw fog of war
-	
+
 	//need to draw rectangles outside of the map that
 	//are essentially below the GUI, but above pretty much everything else
 	//this keeps the fog of war and particle effects from displaying outside of the map
-	
+
 	//draw GUI
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
@@ -285,7 +284,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.dHeight = dHeight;
 	this.r = toRadians(r);
 	this.a = a;
-	
+
 	this.draw = function(){
 		//if(Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)) <= (VISIBILITY * grid_length)){ //this keeps things from drawing if they are too far away
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
@@ -297,7 +296,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 		//}
 	}
-	
+
 	this.toDataString = function(){
 		let output = "000" + ","; //the temporary image code
 		output += this.sprIdx + ",";
@@ -324,23 +323,23 @@ function Bullet(width, height, img, x, y, team) {
 	}
 	else if (this.x_diff > 0 && this.y_diff < 0) {
 		angle += 360;
-	}	
+	}
 	
 	this.base = Entity;
 	//sprIdx 0, transparency 1, angle is calculated based off of stuff
 	this.base(img, 0, x, y, width, height, angle - 90, 1);
 
 	this.team = team; //this is so we can avoid friendly fire (and maybe reduce the amount of collision checks)
-	
+
 	this.y_ratio = Math.sin(toRadians(angle)) * -1;
 	this.x_ratio = Math.cos(toRadians(angle));
 	this.y_ratio += ((Math.random() - 0.5) * 0.05);
 	this.x_ratio += ((Math.random() - 0.5) * 0.05);
-	
+
 	this.update = function(){
 		this.x += bullet_speed * this.x_ratio * global_delta_t;
 		this.y += bullet_speed * this.y_ratio * global_delta_t;
-			
+
 		for(var j = 0; j < walls.length; j++){
 			if (isColliding(this, walls[j]))
 			{
@@ -354,33 +353,26 @@ function Bullet(width, height, img, x, y, team) {
 
 function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
 	this.start_time = Date.now();
-	
+
 	this.start_x = start_x;
 	this.start_y = start_y;
 	this.end_x = end_x;
 	this.end_y = end_y;
 	this.start_width = width;//this is the initial width
 	this.start_height = height;//this is the initial height
-	
-	this.team = team;
-	this.blast_img = blast_img;
-	
-	this.x_vel = (this.end_x - this.start_x) / ARTILLERY_TIME; //pixels per millisecond
-	this.y_vel = (this.end_y - this.start_y) / ARTILLERY_TIME; //pixels per millisecond
-	this.v_init = GRAVITY * (ARTILLERY_TIME/1000);
-	
+
 	this.base = Entity;
 	//sprite 1 on the bullet sheet, rotation 0, transparency 1
 	//i am setting this to 0 temporarily
 	this.base(img, 1, this.start_x, this.start_y, width, height, 0, 1);
-	
+
 	this.update = function(){
 		if((Date.now() - this.start_time) < ARTILLERY_TIME){
 			this.x += (this.x_vel * global_delta_t * 1000);
 			this.y += (this.y_vel * global_delta_t * 1000);
-			
+
 			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
-			
+
 			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + this.v_init*total_time) + 1
 			this.dWidth = this.start_width * temp_multiplier;
 			this.dHeight = this.start_height * temp_multiplier;
@@ -399,14 +391,14 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 
 function Player(width, height, img, x, y, role, team, client_id) {
 	this.client_id = client_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
-	
+
 	this.base = Entity;
 	//sprite 0, rotate 0, transparency 1
 	this.base(img, 0, x, y, width, height, 0, 1);
 	
 	this.role = role;
 	this.team = team;
-	
+
 	//WEAPONS AND ITEMS
 	this.currentWeapon = 1;
 	this.weapon1;
@@ -414,17 +406,17 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.weapon3;
 	this.weapon4;
 	this.item_slot = "EMPTY";
-	
+
 	//decide health based on role
 	this.max_hp = 100;
 	this.health = 37;
 	//^^^^these are temporary!!! TODO: FIX THIS
-	
+
 	//variables for the different power-ups and if they are affecting the player
 	this.is_invincible = false;
 	this.speed_boost = 1.0; //2.0 if boosted
 	this.damage_boost = 1.0; //1.5 if boosted
-	
+
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role
 	
@@ -443,7 +435,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 
 	this.update = function() {
 		let movement_code  = 0b0000; //the binary code for which directions the player moving
-		
+
 		//this section will probably end up on the server
 		if (keys_down.includes(87)) {
 			movement_code |= UP; //trying to move up
@@ -457,14 +449,14 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		if (keys_down.includes(83)) {
 			movement_code |= DOWN; //trying to move down
 		}
-		
+
 		if((movement_code & (UP | DOWN)) == 0b1100){ //if both up and down are pressed
 			movement_code &= ~(UP | DOWN); //clear the up and down bits
 		}
 		if((movement_code & (LEFT | RIGHT)) == 0b0011){ //if both left and right are pressed
 			movement_code &= ~(LEFT | RIGHT); //clear the left and right bits
 		}
-		
+
 		let delta_x = 0;
 		let delta_y = 0;
 		if(movement_code == 0b1010){
@@ -495,7 +487,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		else if(movement_code == 0b0001){
 			delta_x = this.mov_speed * this.speed_boost * global_delta_t;
 		}
-		
+
 		if(delta_x != 0){
 			this.x += delta_x;
 			gt5 -= (delta_x * gt1);
@@ -522,15 +514,14 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				}
 			}
 		}
-		
-		
+
 		if(keys_down.includes(49)){
 			this.health -= 1;
 		}
 		if(keys_down.includes(50)){
 			this.health += 1;
 		}
-		
+
 		//shoot bullets
 		if (keys_down.includes(32)) {
 			if (last_shot_time == 0) {
@@ -549,7 +540,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 			}
 		}
 	}
-	
+
 	this.toDataString = function(){
 		/*
 		let output = "000" + ","; //the temporary image code
@@ -612,12 +603,13 @@ function ParticleEffect(img, x, y, width, height, num_frames, life_time){
 	this.num_frames = num_frames;
 	this.base = Entity;
 	this.base(img, 0, x, y, width, height, 0, 1);
-	
+
 	this.update = function(){
 		if(this.sprIdx >= (this.num_frames - 1)){
 			let temp_index = part_fx.indexOf(this);
 			part_fx.splice(temp_index, 1);
 		}	
+
 		else if((Date.now() - this.last_frame) > this.frame_speed){
 			this.last_frame = Date.now();
 			this.sprIdx++;
@@ -629,11 +621,11 @@ function GuiElement(img, x, y, width, height, elemIndex, num_frames){
 	this.base = Entity;
 	this.base(img, elemIndex, x, y, width, height, 0, 1);
 	this.num_frames = num_frames;
-	
+
 	this.update = function(){
 		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
 	}
-	
+
 	this.draw = function(){
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
 		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
@@ -651,7 +643,7 @@ function TiledBackground(img){
 			this.tile_list.push(new BGTile(img, i, j, getWeightedIndex(this.img.chances)));
 		}
 	}
-	
+
 	this.draw = function(){
 		for(let i = 0; i < this.tile_list.length; i++){
 			this.tile_list[i].draw();
@@ -671,4 +663,5 @@ function BGTile(img, grid_x, grid_y, index){
 //but it needs to be at the end of the file because it references
 //certain functions in util.js that require classes (that exist in this file)
 //to have already been defined
+
 setup(); //only call setup once
