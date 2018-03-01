@@ -7,28 +7,32 @@ Purpose:
 */
 
 //this is the resolution of the node map. pixels in between nodes.
-var node_pixel_dist = 4;
+var node_pixel_dist = 8;
 let nodes = [];
 let pathLastUpdated = Date.now();
+var closed_node_list = [];
+var open_node_list = [];
 
-//for the ocmputer player //NEW
+//for the computer player //NEW
 function AI_player(width, height, img, x, y, role, team) {
-	this.base = Entity;
-	this.base(img, 0, x, y, width, height, 0, 1);
-	this.role = role;
-	this.team = team;
-	this.hp = 100;
-	this.has_flag = false;
-	this.mov_speed = player_speed;
-	this.path = getFinalPath(this, player);
+  this.base = Entity;
+  this.base(img, 0, x, y, width, height, 0, 1);
+  this.role = role;
+  this.team = team;
+  this.hp = 100;
+  this.has_flag = false;
+  this.mov_speed = player_speed;
+  this.path = getFinalPath(this, player);
+  //throw ''; //make it crash on purpose
 
-	this.update = function() {
-		//TODO
-	}
-	
-	this.generateNewPath = function(){
-		this.path = getFinalPath(this, player);
-	}
+  this.update = function() {
+    //TODO
+  }
+
+  this.generateNewPath = function() {
+    this.path = getFinalPath(this, player);
+    //console.log(this.path);
+  }
 
 }
 
@@ -54,42 +58,63 @@ function generateNodes() {
   return 'success';
 }
 
+/*
+current error seems to be with calculations involving g costs possibly
+*/
+
+//typically AI_player and then real player
 function aStarPath(moving_point, target_point) {
+  closed_node_list = [];
+  open_node_list = [];
   var start_node = nodes[moving_point.x][moving_point.y];
   var goal_node = nodes[target_point.x][target_point.y];
-  var open = [];
-  open.push(start_node);
-  var closed = [];
-  var current_node = undefined;
+  //avar test_arr = [];
+  //test_arr.push(start_node);test_arr.push(goal_node);console.log(test_arr);
+
+  var current_node;
   start_node.g = 0;
-  start_node.f = start_node.g + heuristic(start_node, goal_node);
-  while (open.length != 0) {
-    current_node = getLowestF(open);
+  //start_node.f = heuristic(start_node, goal_node);
+  open_node_list.push(start_node);
+  while (open_node_list.length != 0) {
+    current_node = getLowestF(open_node_list);
+    //console.log(current_node);
+    //if this is the last node
     if (current_node === goal_node) {
       var path = constructPath(current_node);
       return path;
     }
-    open.splice(getIndex(open, current_node), 1);
-    closed.push(current_node);
+    open_node_list.splice(getIndex(open_node_list, current_node), 1);
+    closed_node_list.push(current_node);
+
+    // if(closed_node_list.length == 1){
+    // 	console.log(closed_node_list[0].g);
+    // 	console.log(closed_node_list[0]);
+    // }
+
     var neighbors = getNeighbors(current_node);
     for (var i = 0; i < neighbors.length; i++) {
       var neighbor = neighbors[i];
-      if (closed.includes(neighbor) != true) {
 
-
-        var temp_gscore = current_node.g + 1;
-        if (open.includes(neighbor)) {
-          if (temp_gscore < neighbor.g) {
-            neighbor.g = temp_gscore;
-          }
-        } else {
-          neighbor.g = temp_gscore
-          open.push(neighbor);
-        }
-        neighbor.h = heuristic(neighbor, goal_node);
-        neighbor.f = neighbor.g + neighbor.h;
-        neighbor.previous = current_node;
+      if (closed_node_list.includes(neighbor) == true) {
+        //console.log(neighbor + ' in closed list');
+        continue;
       }
+
+      var temp_gscore = 0;
+      if (i % 2 == 0) {
+        temp_gscore = current_node.g + (1.414 * node_pixel_dist);
+      } else {
+        temp_gscore = current_node.g + (1.0 * node_pixel_dist);
+      }
+      if (open_node_list.includes(neighbor) == false) {
+        open_node_list.push(neighbor);
+      } else if (temp_gscore >= neighbor.g) {
+        continue;
+      }
+      neighbor.previous = current_node;
+      neighbor.g = temp_gscore;
+      neighbor.f = neighbor.g + heuristic(neighbor, goal_node);
+
     }
   }
 }
@@ -102,22 +127,26 @@ function getNodeFromList(arr, node) {
   }
 }
 
-function drawAIPath(){
-	if(Date.now() - pathLastUpdated > 250){
-		ai_player1.generateNewPath();
-		pathLastUpdated = Date.now();
-	}
-	for(var i = 0; i < ai_player1.path.length; i++){ //THIS CAUSES AN ISSUE
-		context.beginPath();
-		context.strokeStyle = "red";
+function drawAIPath() {
+  if (Date.now() - pathLastUpdated >= 250) {
+    ai_player1.generateNewPath();
+    pathLastUpdated = Date.now();
+  }
+  try {
+    for (var i = 0; i < ai_player1.path.length; i++) { //THIS CAUSES AN ISSUE
+      context.beginPath();
+      context.strokeStyle = "red";
 
-		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
-		context.transform(1, 0, 0, 1, 0, 0); //set draw position
+      context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6); //this 100% fucks up the mouse stuff
+      context.transform(1, 0, 0, 1, 0, 0); //set draw position
 
-		context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 2, 2);
-		context.stroke();
-		context.closePath(); //so styles dont interfere
-	}
+      context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 2, 2);
+      context.stroke();
+      context.closePath(); //so styles dont interfere
+    }
+  } catch (err) {
+    console.log('drawing the path failed.');
+  }
 }
 
 function node_contains(arr, node) {
@@ -157,14 +186,18 @@ function getNeighbors(node) {
     neighbors.push(nodes[nindex.x][nindex.y - 1]);
   }
   for (var i = 0; i < neighbors.length; i++) {
-    neighbors[i].g = node.g + 1;
+    if (i % 2 == 0 && closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
+      neighbors[i].g = node.g + (1.414 * node_pixel_dist);
+    } else if (closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
+      neighbors[i].g = node.g + (1.0 * node_pixel_dist);
+    }
   }
   return neighbors;
 }
 
-function getIndex(open, node) {
-  for (var i = 0; i < open.length; i++) {
-    if (open[i].x == node.x && open[i].y == node.y) {
+function getIndex(open_node_list, node) {
+  for (var i = 0; i < open_node_list.length; i++) {
+    if (open_node_list[i].x == node.x && open_node_list[i].y == node.y) {
       return i;
     }
   }
@@ -178,14 +211,15 @@ function constructPath(enode) {
     path.push(temp.previous);
     temp = temp.previous;
   }
+  console.log(path);
   return path;
 }
 
-function getLowestF(open) {
-  var lowest = open[0];
-  for (var i = 0; i < open.length; i++) {
-    if (open[i].f < lowest.f) {
-      lowest = open[i];
+function getLowestF(open_node_list) {
+  var lowest = open_node_list[0];
+  for (var i = 0; i < open_node_list.length; i++) {
+    if (open_node_list[i].f < lowest.f) {
+      lowest = open_node_list[i];
     }
   }
   return lowest;
@@ -194,7 +228,8 @@ function getLowestF(open) {
 function getNearestNode(ent) {
   this.x = (Math.ceil((ent.x / node_pixel_dist)) * node_pixel_dist);
   this.y = (Math.ceil((ent.y / node_pixel_dist)) * node_pixel_dist);
-  var i = 0, j = 0;
+  var i = 0,
+    j = 0;
   while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
     if (nodes[i][j].x != this.x) {
       i++;
@@ -203,15 +238,67 @@ function getNearestNode(ent) {
       j++;
     }
   }
-  return (new point(i, j));
+  if (nodes[i][j].trav != false) {
+    return (new point(i, j));
+  } else {
+    this.x = (Math.floor((ent.x / node_pixel_dist)) * node_pixel_dist);
+    this.y = (Math.floor((ent.y / node_pixel_dist)) * node_pixel_dist);
+    var i = 0,
+      j = 0;
+    while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+      if (nodes[i][j].x != this.x) {
+        i++;
+      }
+      if (nodes[i][j].y != this.y) {
+        j++;
+      }
+    }
+		if(nodes[i][j].trav == true){
+			return (new point(i, j));
+		}else{
+			this.x = (Math.ceil((ent.x / node_pixel_dist)) * node_pixel_dist);
+	    this.y = (Math.floor((ent.y / node_pixel_dist)) * node_pixel_dist);
+	    var i = 0,
+	      j = 0;
+	    while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+	      if (nodes[i][j].x != this.x) {
+	        i++;
+	      }
+	      if (nodes[i][j].y != this.y) {
+	        j++;
+	      }
+	    }
+			if(nodes[i][j].trav == true){
+				return (new point(i, j));
+			}else{
+				this.x = (Math.floor((ent.x / node_pixel_dist)) * node_pixel_dist);
+		    this.y = (Math.ceil((ent.y / node_pixel_dist)) * node_pixel_dist);
+		    var i = 0,
+		      j = 0;
+		    while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+		      if (nodes[i][j].x != this.x) {
+		        i++;
+		      }
+		      if (nodes[i][j].y != this.y) {
+		        j++;
+		      }
+		    }
+				if(nodes[i][j].trav == true){
+					return (new point(i, j));
+				}
+			}
+		}
+  }
 }
 
+//sent AI_player, actual player
 function getFinalPath(moving_ent, target_ent) {
   this.moving_point = getNearestNode(moving_ent);
   this.target_point = getNearestNode(target_ent);
   return aStarPath(this.moving_point, this.target_point);
 }
 
+//just return distance between current point and goal point
 function heuristic(node1, node2) {
   return Math.sqrt(Math.pow((node1.x - node2.x), 2) + Math.pow((node1.y - node2.y), 2));
 }
@@ -221,8 +308,8 @@ function node(x, y, trav) {
   this.y = y;
   this.previous = undefined;
   this.trav = trav;
-  this.f = 0;
-  this.g = 1;
+  this.f = Infinity;
+  this.g = 0;
   this.h;
 
   this.print_prev = function() {
