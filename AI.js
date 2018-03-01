@@ -9,7 +9,6 @@ Purpose:
 //this is the resolution of the node map. pixels in between nodes.
 var node_pixel_dist = 16;
 let nodes = [];
-let pathLastUpdated = Date.now();
 
 var closed_node_list = [];
 var open_node_list = [];
@@ -24,16 +23,33 @@ function AI_player(width, height, img, x, y, role, team) {
   this.has_flag = false;
   this.mov_speed = player_speed;
   this.path = getFinalPath(this, player);
-  //throw ''; //make it crash on purpose
+  this.pathLastUpdated = Date.now();
 
-  this.update = function() {
-    //TODO
-  }
+	this.update = function() {
+		//TODO
+	}
 
-  this.generateNewPath = function() {
-    this.path = getFinalPath(this, player);
-  }
+	this.generateNewPath = function() {
+		this.path = getFinalPath(this, player);
+	}
+  
+	this.drawAIPath = function(){
+		if (Date.now() - this.pathLastUpdated >= 1000) {
+			this.generateNewPath();
+			this.pathLastUpdated = Date.now();
+		}
 
+		for (var i = 0; i < this.path.length; i++) {
+			context.beginPath();
+			context.strokeStyle = "orange";
+
+			context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
+
+			context.rect(this.path[i].x, this.path[i].y, 4, 4);
+			context.stroke();
+			context.closePath(); //so styles dont interfere
+		}
+	}
 }
 
 function generateNodes() {
@@ -125,25 +141,6 @@ function getNodeFromList(arr, node) {
       return arr[i];
     }
   }
-}
-
-
-function drawAIPath() {
-	if (Date.now() - pathLastUpdated >= 1000) {
-		ai_player1.generateNewPath();
-		pathLastUpdated = Date.now();
-	}
-
-    for (var i = 0; i < ai_player1.path.length; i++) {
-		context.beginPath();
-		context.strokeStyle = "orange";
-
-		context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
-
-		context.rect(ai_player1.path[i].x, ai_player1.path[i].y, 4, 4);
-		context.stroke();
-		context.closePath(); //so styles dont interfere
-    }
 }
 
 function node_contains(arr, node) {

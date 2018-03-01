@@ -234,7 +234,7 @@ function run() {
 		}
 	}
 	*/
-	drawAIPath();
+	ai_player1.drawAIPath();
 	
 	keys_pnr.splice(0, keys_pnr.length);
 	requestAnimationFrame(run);
@@ -411,6 +411,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.weapon3;
 	this.weapon4;
 	this.item_slot = "EMPTY";
+	//setWeapons() based on your class/role
 
 	//decide health based on role
 	this.max_hp = 100;
@@ -439,6 +440,56 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	}
 
 	this.update = function() {
+		this.movePlayer(); //move the player first
+		
+		switch(this.currentWeapon){
+			case 1:
+				//do something
+				break;
+				
+			case 1:
+				//do something
+				break;
+				
+			case 1:
+				//do something
+				break;
+				
+			case 1:
+				//do something
+				break;
+				
+			default:
+				//error!!
+		}
+
+		if(keys_down.includes(49)){
+			this.health -= 1;
+		}
+		if(keys_down.includes(50)){
+			this.health += 1;
+		}
+
+		//shoot bullets
+		if (keys_down.includes(32)) {
+			if (last_shot_time == 0) {
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
+				//make bullet sound
+				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
+				sound_test.play();
+				last_shot_time = Date.now();
+			}
+			else if ((Date.now() - last_shot_time) >= TIME_BETWEEN_SHOTS) {
+				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
+				//make bullet sound
+				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
+				sound_test.play();
+				last_shot_time = Date.now();
+			}
+		}
+	}
+	
+	this.movePlayer = function(){
 		let movement_code  = 0b0000; //the binary code for which directions the player moving
 
 		//this section will probably end up on the server
@@ -517,31 +568,6 @@ function Player(width, height, img, x, y, role, team, client_id) {
 					gt6 += (delta_y * gt4);
 					break; //does not check the other walls if at least one was hit
 				}
-			}
-		}
-
-		if(keys_down.includes(49)){
-			this.health -= 1;
-		}
-		if(keys_down.includes(50)){
-			this.health += 1;
-		}
-
-		//shoot bullets
-		if (keys_down.includes(32)) {
-			if (last_shot_time == 0) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
-				//make bullet sound
-				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-				sound_test.play();
-				last_shot_time = Date.now();
-			}
-			else if ((Date.now() - last_shot_time) >= TIME_BETWEEN_SHOTS) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
-				//make bullet sound
-				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-				sound_test.play();
-				last_shot_time = Date.now();
 			}
 		}
 	}
@@ -666,7 +692,6 @@ function BGTile(img, grid_x, grid_y, index){
 
 //this code executes right when the page is loaded
 //but it needs to be at the end of the file because it references
-//certain functions in util.js that require classes (that exist in this file)
+//certain functions in other files that require classes that exist in this file
 //to have already been defined
-
 setup(); //only call setup once
