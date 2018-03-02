@@ -69,6 +69,16 @@ function listAverage(list){
 	return (sum/list.length);
 }
 
+//returns a random int between 0 and max, not including max
+function getRandomInt(max){
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
+//returns a random int between lower and upper, inclusive
+function getRandomInRange(lower, upper){
+	return getRandomInt(upper - lower + 1) + lower;
+}
+
 //takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
 //this will travel in the positive direction of which ever axis you give it
 function wallLine(start_x, start_y, length, axis){

@@ -9,7 +9,7 @@ enemy_image.sprites = [{x:0, y:0, h:128, w:128}];
 
 let bullet_image = new Image();
 bullet_image.src = "res/images/bullets.png";
-bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}];
+bullet_image.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}];
 
 //MAP INFORMATION
 let background_tiles = new Image();

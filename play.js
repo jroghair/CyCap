@@ -13,6 +13,7 @@ fog_canvas.width = canvas.width;
 let keys_down = []; //keys being pressed
 let keys_pnr = []; //keys that have been pushed and released
 let mouse_hand;
+let mouse_clicked = false;
 
 //MOVEMENT AND COLLISION CONSTANTS
 const UP    = 0b1000;
@@ -35,7 +36,7 @@ let global_delta_t = 0; //the time that this frame took in SECONDS
 let player;
 let client_id; //this will eventually come from the server
 
-let player_speed = 120, bullet_speed = 450; //pixels per second
+let player_speed = 120;//pixels per second
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
@@ -128,11 +129,15 @@ function setup() {
 		keys_down.splice(keys_down.indexOf(event.keyCode), 1);
 		keys_pnr.push(event.keyCode);
 	});
+	
+	//mouse click listener
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouse_hand.mouseX, mouse_hand.mouseY, bullet_image, player.team, blast1_image));
+		mouse_clicked = true;
+		//bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouse_hand.mouseX, mouse_hand.mouseY, bullet_image, player.team, blast1_image));
 	});
+	
 	//mouse listener for coordinates
 	mouse_hand = new MouseHandler();
 	window.addEventListener('mousemove', function(event){
@@ -236,8 +241,11 @@ function run() {
 	*/
 	ai_player1.drawAIPath();
 	
+	//reset the 1 frame inputs
 	keys_pnr.splice(0, keys_pnr.length);
-	requestAnimationFrame(run);
+	mouse_clicked = false;
+	
+	requestAnimationFrame(run); //run again please
 }
 
 function ToggleZoom(){
@@ -311,89 +319,6 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	}
 }
 
-function Bullet(width, height, img, x, y, team) {
-	this.x_diff = mouse_hand.mouseX - x;
-	this.y_diff = (mouse_hand.mouseY - y) * -1;
-	let angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
-
-	if (this.x_diff < 0 && this.y_diff > 0) {
-		angle += 180;
-	}
-	else if (this.x_diff < 0 && this.y_diff < 0) {
-		angle += 180;
-	}
-	else if (this.x_diff > 0 && this.y_diff < 0) {
-		angle += 360;
-	}
-	
-	this.base = Entity;
-	//sprIdx 0, transparency 1, angle is calculated based off of stuff
-	this.base(img, 0, x, y, width, height, angle - 90, 1);
-
-	this.team = team; //this is so we can avoid friendly fire (and maybe reduce the amount of collision checks)
-
-	this.y_ratio = Math.sin(toRadians(angle)) * -1;
-	this.x_ratio = Math.cos(toRadians(angle));
-	this.y_ratio += ((Math.random() - 0.5) * 0.05);
-	this.x_ratio += ((Math.random() - 0.5) * 0.05);
-
-	this.update = function(){
-		this.x += bullet_speed * this.x_ratio * global_delta_t;
-		this.y += bullet_speed * this.y_ratio * global_delta_t;
-
-		for(var j = 0; j < walls.length; j++){
-			if (isColliding(this, walls[j]))
-			{
-				let temp_index = bullets.indexOf(this);
-				bullets.splice(temp_index, 1);
-				break;
-			}
-		}
-	}
-}
-
-function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team, blast_img){
-	this.start_time = Date.now();
-	this.blast_img = blast_img;
-	this.start_x = start_x;
-	this.start_y = start_y;
-	this.end_x = end_x;
-	this.end_y = end_y;
-	this.start_width = width;//this is the initial width
-	this.start_height = height;//this is the initial height
-
-	this.x_vel = 1000 * (this.end_x - this.start_x) / ARTILLERY_TIME; //pixels per second
-	this.y_vel = 1000 * (this.end_y - this.start_y) / ARTILLERY_TIME; //pixels per second
-	this.v_init = GRAVITY * (ARTILLERY_TIME/1000);
-
-	
-	this.base = Entity;
-	//sprite 1 on the bullet sheet, rotation 0, transparency 1
-	this.base(img, 1, this.start_x, this.start_y, width, height, 0, 1);
-
-	this.update = function(){
-		if((Date.now() - this.start_time) < ARTILLERY_TIME){
-			this.x += (this.x_vel * global_delta_t);
-			this.y += (this.y_vel * global_delta_t);
-
-			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
-
-			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + this.v_init*total_time) + 1
-			this.dWidth = this.start_width * temp_multiplier;
-			this.dHeight = this.start_height * temp_multiplier;
-		}
-		else{
-			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor(this.end_x/grid_length), Math.floor(this.end_y/grid_length), 3, 1));
-			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
-			//TODO: deal damage
-			//remove from draw list
-			let temp_index = bullets.indexOf(this);
-			bullets.splice(temp_index, 1);
-		}
-	}
-}
-
 function Player(width, height, img, x, y, role, team, client_id) {
 	this.client_id = client_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
 
@@ -405,11 +330,11 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.team = team;
 
 	//WEAPONS AND ITEMS
-	this.currentWeapon = 1;
-	this.weapon1;
-	this.weapon2;
-	this.weapon3;
-	this.weapon4;
+	this.weapon1 = shotgun;
+	this.weapon2 = m1911;
+	this.weapon3 = "EMPTY";
+	this.weapon4 = "EMPTY";
+	this.currentWeapon = this.weapon1;
 	this.item_slot = "EMPTY";
 	//setWeapons() based on your class/role
 
@@ -441,51 +366,71 @@ function Player(width, height, img, x, y, role, team, client_id) {
 
 	this.update = function() {
 		this.movePlayer(); //move the player first
+		//switch weapon
+		this.currentWeapon.update(this); //checks to see if the current weapon is to be fired
 		
-		switch(this.currentWeapon){
+		//WEAPON RELATED KEYPRESSES
+		if(keys_pnr.includes(49)){
+			//this.health -= 1;
+			this.switchWeapon(1);
+		}
+		else if(keys_pnr.includes(50)){
+			//this.health += 1;
+			this.switchWeapon(2);
+		}
+		else if(keys_pnr.includes(51)){
+			//this.health -= 1;
+			this.switchWeapon(3);
+		}
+		else if(keys_pnr.includes(52)){
+			//this.health += 1;
+			this.switchWeapon(4);
+		}
+		if(keys_pnr.includes(82)){
+			this.currentWeapon.reload();
+		}
+	}
+	
+	this.switchWeapon = function(weapon_num){
+		switch(weapon_num){
 			case 1:
-				//do something
+				if(this.weapon1 != "EMPTY"){
+					this.currentWeapon = this.weapon1;
+				}
+				else{
+					//TODO: play cannot switch to that weapon sound
+				}
 				break;
 				
-			case 1:
-				//do something
+			case 2:
+				if(this.weapon2 != "EMPTY"){
+					this.currentWeapon = this.weapon2;
+				}
+				else{
+					//TODO: play cannot switch to that weapon sound
+				}
 				break;
 				
-			case 1:
-				//do something
+			case 3:
+				if(this.weapon3 != "EMPTY"){
+					this.currentWeapon = this.weapon3;
+				}
+				else{
+					//TODO: play cannot switch to that weapon sound
+				}
 				break;
 				
-			case 1:
-				//do something
+			case 4:
+				if(this.weapon4 != "EMPTY"){
+					this.currentWeapon = this.weapon4;
+				}
+				else{
+					//TODO: play cannot switch to that weapon sound
+				}
 				break;
 				
 			default:
-				//error!!
-		}
-
-		if(keys_down.includes(49)){
-			this.health -= 1;
-		}
-		if(keys_down.includes(50)){
-			this.health += 1;
-		}
-
-		//shoot bullets
-		if (keys_down.includes(32)) {
-			if (last_shot_time == 0) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
-				//make bullet sound
-				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-				sound_test.play();
-				last_shot_time = Date.now();
-			}
-			else if ((Date.now() - last_shot_time) >= TIME_BETWEEN_SHOTS) {
-				bullets.push(new Bullet(grid_length * 0.15, grid_length * 0.15, bullet_image, this.x, this.y, this.team));
-				//make bullet sound
-				let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-				sound_test.play();
-				last_shot_time = Date.now();
-			}
+				console.log("Error: cannot switch to that weapon");
 		}
 	}
 	
