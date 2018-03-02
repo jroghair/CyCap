@@ -2,43 +2,18 @@ package com.cycapservers.account;
 
 import java.util.Collection;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-
-//import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
 
+@Repository
+public interface AccountRepository extends CrudRepository<Account, String> {
 
+    Collection<Account> findAll();
 
-public interface AccountRepository extends Repository<Account, Integer> {
+    Collection<Account> findById(@Param("userID") String userID);
 
-	/**
-	 * Retrieve {@link account}s from the data store by UserID, returning that
-	 * distinct users ID
-	 * 
-	 * @param userID
-	 *            Value to search for
-	 * @return a Collection of matching {@link Accounts}s (or an empty
-	 *         Collection if none found)
-	 */
-	//String query1 = "SELECT DISTINCT Account FROM Account account WHERE account.userID LIKE :userID%";
-	//@Query("SELECT DISTINCT userID FROM Account a WHERE a.userID LIKE :userID%")
-    @Query("SELECT DISTINCT account FROM Account account WHERE account.userID LIKE :userID%")
-	 //@Query("SELECT DISTINCT account FROM Account account WHERE account.userID =:userID")
-	@Transactional(readOnly = true)
-	Collection<Account> findByUserID(@Param("userID") String userID);
-    
+    Account save(Account account);
 	
-	
-	//@Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
-    
-	@Query("SELECT userID FROM Account a WHERE a.userID =:userID")
-    @Transactional(readOnly = true)
-    Account findBySpecificUserID(@Param("userID") String userID);
-
-
-	void save(Account account);
-
 }

@@ -12,9 +12,4 @@ public class HomepageController {
     public String homepage() {
         return "homepage";
     }
-    /*
-    @GetMapping("/fragments/how_to")
-    public String howToPlay(){
-    	return "how_to";
-    }*/
 }
