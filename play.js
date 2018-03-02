@@ -35,7 +35,7 @@ let global_delta_t = 0; //the time that this frame took in SECONDS
 let player;
 let client_id; //this will eventually come from the server
 
-let player_speed = 120, bullet_speed = 450; //pixels per second
+let player_speed = 250, bullet_speed = 450; //pixels per second
 let current_zoom_lvl = 2;
 let last_shot_time = 0; //don't change
 
