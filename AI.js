@@ -84,8 +84,6 @@ function aStarPath(moving_point, target_point) {
   open_node_list = [];
   var start_node = nodes[moving_point.x][moving_point.y];
   var goal_node = nodes[target_point.x][target_point.y];
-  //avar test_arr = [];
-  //test_arr.push(start_node);test_arr.push(goal_node);console.log(test_arr);
 
   var current_node;
   start_node.g = 0;
@@ -93,8 +91,6 @@ function aStarPath(moving_point, target_point) {
   open_node_list.push(start_node);
   while (open_node_list.length != 0) {
     current_node = getLowestF(open_node_list);
-    //console.log(current_node);
-    //if this is the last node
     if (current_node === goal_node) {
       var path = constructPath(current_node);
       return path;
@@ -102,11 +98,6 @@ function aStarPath(moving_point, target_point) {
 
     open_node_list.splice(getIndex(open_node_list, current_node), 1);
     closed_node_list.push(current_node);
-
-    // if(closed_node_list.length == 1){
-    // 	console.log(closed_node_list[0].g);
-    // 	console.log(closed_node_list[0]);
-    // }
 
     var neighbors = getNeighbors(current_node);
     for (var i = 0; i < neighbors.length; i++) {
@@ -118,7 +109,7 @@ function aStarPath(moving_point, target_point) {
       }
 
       var temp_gscore = 0;
-      if (i % 2 == 0) {
+      if (neighbors[i].corner == true) {
         temp_gscore = current_node.g + (1.414 * node_pixel_dist);
       } else {
         temp_gscore = current_node.g + (1.0 * node_pixel_dist);
@@ -157,35 +148,75 @@ function getNeighbors(node) {
   var neighbors = [];
   if (nodes[nindex.x - 1][nindex.y - 1].trav == true) {
     neighbors.push(nodes[nindex.x - 1][nindex.y - 1]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.414 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = true;
   }
   if (nodes[nindex.x - 1][nindex.y].trav == true) {
     neighbors.push(nodes[nindex.x - 1][nindex.y]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.0 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = false;
   }
-  if (nodes[nindex.x - 1][nindex.y + 1].trav == true) { //THIS ONE IS CAUSING THE ISSUE
+  if (nodes[nindex.x - 1][nindex.y + 1].trav == true) {
     neighbors.push(nodes[nindex.x - 1][nindex.y + 1]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.414 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = true;
   }
   if (nodes[nindex.x][nindex.y + 1].trav == true) {
     neighbors.push(nodes[nindex.x][nindex.y + 1]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.0 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = false;
   }
   if (nodes[nindex.x + 1][nindex.y + 1].trav == true) {
     neighbors.push(nodes[nindex.x + 1][nindex.y + 1]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.414 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = true;
   }
   if (nodes[nindex.x + 1][nindex.y].trav == true) {
     neighbors.push(nodes[nindex.x + 1][nindex.y]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.0 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = false;
   }
   if (nodes[nindex.x + 1][nindex.y - 1].trav == true) {
     neighbors.push(nodes[nindex.x + 1][nindex.y - 1]);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.414 * node_pixel_dist);
+    }
+		neighbors[neighbors.length - 1].corner = true;
   }
   if (nodes[nindex.x][nindex.y - 1].trav == true) {
     neighbors.push(nodes[nindex.x][nindex.y - 1]);
-  }
-  for (var i = 0; i < neighbors.length; i++) {
-    if (i % 2 == 0 && closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
-      neighbors[i].g = node.g + (1.414 * node_pixel_dist);
-    } else if (closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
-      neighbors[i].g = node.g + (1.0 * node_pixel_dist);
+    if (closed_node_list.includes(neighbors[neighbors.length - 1]) == false &&
+      open_node_list.includes(neighbors[neighbors.length - 1]) == false) {
+      neighbors[neighbors.length - 1].g = node.g + (1.0 * node_pixel_dist);
     }
+		neighbors[neighbors.length - 1].corner = false;
   }
+  // for (var i = 0; i < neighbors.length; i++) {
+  //   if (i % 2 == 0 && closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
+  //     neighbors[i].g = node.g + (1.414 * node_pixel_dist);
+  //   } else if (closed_node_list.includes(neighbors[i]) == false && open_node_list.includes(neighbors[i]) == false) {
+  //     neighbors[i].g = node.g + (1.0 * node_pixel_dist);
+  //   }
+  // }
   return neighbors;
 }
 
@@ -205,7 +236,6 @@ function constructPath(enode) {
     path.push(temp.previous);
     temp = temp.previous;
   }
-
   return path;
 }
 
@@ -247,41 +277,41 @@ function getNearestNode(ent) {
         j++;
       }
     }
-		if(nodes[i][j].trav == true){
-			return (new point(i, j));
-		}else{
-			this.x = (Math.ceil((ent.x / node_pixel_dist)) * node_pixel_dist);
-	    this.y = (Math.floor((ent.y / node_pixel_dist)) * node_pixel_dist);
-	    var i = 0,
-	      j = 0;
-	    while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
-	      if (nodes[i][j].x != this.x) {
-	        i++;
-	      }
-	      if (nodes[i][j].y != this.y) {
-	        j++;
-	      }
-	    }
-			if(nodes[i][j].trav == true){
-				return (new point(i, j));
-			}else{
-				this.x = (Math.floor((ent.x / node_pixel_dist)) * node_pixel_dist);
-		    this.y = (Math.ceil((ent.y / node_pixel_dist)) * node_pixel_dist);
-		    var i = 0,
-		      j = 0;
-		    while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
-		      if (nodes[i][j].x != this.x) {
-		        i++;
-		      }
-		      if (nodes[i][j].y != this.y) {
-		        j++;
-		      }
-		    }
-				if(nodes[i][j].trav == true){
-					return (new point(i, j));
-				}
-			}
-		}
+    if (nodes[i][j].trav == true) {
+      return (new point(i, j));
+    } else {
+      this.x = (Math.ceil((ent.x / node_pixel_dist)) * node_pixel_dist);
+      this.y = (Math.floor((ent.y / node_pixel_dist)) * node_pixel_dist);
+      var i = 0,
+        j = 0;
+      while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+        if (nodes[i][j].x != this.x) {
+          i++;
+        }
+        if (nodes[i][j].y != this.y) {
+          j++;
+        }
+      }
+      if (nodes[i][j].trav == true) {
+        return (new point(i, j));
+      } else {
+        this.x = (Math.floor((ent.x / node_pixel_dist)) * node_pixel_dist);
+        this.y = (Math.ceil((ent.y / node_pixel_dist)) * node_pixel_dist);
+        var i = 0,
+          j = 0;
+        while ((nodes[i][j].y != this.y) || (nodes[i][j].x != this.x)) {
+          if (nodes[i][j].x != this.x) {
+            i++;
+          }
+          if (nodes[i][j].y != this.y) {
+            j++;
+          }
+        }
+        if (nodes[i][j].trav == true) {
+          return (new point(i, j));
+        }
+      }
+    }
   }
 }
 
@@ -305,7 +335,7 @@ function node(x, y, trav) {
   this.trav = trav;
   this.f = Infinity;
   this.g = 0;
-  this.h;
+  this.corner = undefined;
 
   this.print_prev = function() {
     console.log(this.previous);
