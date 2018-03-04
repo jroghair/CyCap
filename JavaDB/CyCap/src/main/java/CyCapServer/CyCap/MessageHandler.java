@@ -11,7 +11,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class MessageHandler extends TextWebSocketHandler {
 	
+	public volatile GameManager game = new GameManager();
 	
+	/*
+	 * 1. Look into thread local variables;
+	 * 2. fix the squedualer
+	 * 3. make sure bryans game works with the basic code
+	 * 
+	 * 
+	 */
     
 	@Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -26,6 +34,8 @@ public class MessageHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
         System.out.println("Message received: " + textMessage.getPayload());
+        game.getMessage(textMessage.getPayload());
+        session.sendMessage(new TextMessage(game.toString()));
     }
     
     
