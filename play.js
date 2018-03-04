@@ -1,6 +1,6 @@
 //CANVAS INFORMATION
-var canvas = document.getElementById("game_canvas");
-var context = canvas.getContext("2d");
+let canvas = document.getElementById("game_canvas");
+let context = canvas.getContext("2d");
 canvas.height = document.documentElement.clientHeight;
 canvas.width = document.documentElement.clientWidth;
 
@@ -8,6 +8,11 @@ let fog_canvas = document.getElementById("fog_canvas");
 let fog_context = fog_canvas.getContext("2d");
 fog_canvas.height = canvas.height;
 fog_canvas.width = canvas.width;
+
+let gui_canvas = document.getElementById("gui_canvas");
+let gui_context = gui_canvas.getContext("2d");
+gui_canvas.height = canvas.height;
+gui_canvas.width = canvas.width;
 
 //INPUT INFORMATION
 let keys_down = []; //keys being pressed
@@ -27,6 +32,7 @@ let walls = [];
 let part_fx = [];
 let guis = [];
 let map;
+let canvas_box;
 let masks = [];
 
 //FRAME TIME & DELTA_T
@@ -38,7 +44,6 @@ let client_id; //this will eventually come from the server
 
 let player_speed = 120;//pixels per second
 let current_zoom_lvl = 2;
-let last_shot_time = 0; //don't change
 
 //TESTING
 //stuff for fps testing
@@ -46,13 +51,15 @@ let is_fps_running = true;
 let fps_frame_times = [];
 let rolling_buffer_length = 30;
 
-let speed_test;
+//GAME MANAGERS
+//referee
+let power_handler;
 
 //all functions
 function setup() {
 	client_id = prompt("What is your username?");
 
-	//
+	//Draw fog of war images and put the normal zoom one on
 	drawFogOfWarImages();
 	fog_context.putImageData(fog_norm, 0, 0);
 	
@@ -70,6 +77,7 @@ function setup() {
 	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
 	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 
+	canvas_box = new Entity(background_tiles, 0, player.x, player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
 	map = new TiledBackground(background_tiles);
 	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
 	wallLine(5, 10, 5, 'x');  //done
@@ -113,8 +121,8 @@ function setup() {
 	generateNodes();
 	ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
-	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8));
-	speed_test = new SpeedPotion(256, 256);
+	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
+	power_handler = new PowerUpHandler()
 
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -130,10 +138,7 @@ function setup() {
 	
 	//mouse click listener
 	document.addEventListener("click", function(event) {
-		//place trap at player position
-		//places a blast mask just for testing
 		mouse_hand.mouse_clicked = true;
-		//bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouse_hand.mouseX, mouse_hand.mouseY, bullet_image, player.team, blast1_image));
 	});
 	
 	//mouse listener for coordinates
@@ -165,10 +170,15 @@ function run() {
 	context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
+	gui_context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
+	gui_context.clearRect(0, 0, gui_canvas.width, gui_canvas.height); //clear the canvas
+	
 
 	//update everything
 	mouse_hand.update();
 	player.update();
+	canvas_box.x = player.x; //update the canvas_box position
+	canvas_box.y = player.y;
 	for(let i = bullets.length - 1; i >= 0; i--){
 		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
@@ -181,7 +191,7 @@ function run() {
 	for(let i = guis.length - 1; i >= 0; i--){
 		guis[i].update();
 	}
-	speed_test.update();
+	power_handler.updateItems();
 
 	if(keys_pnr.includes(90)){
 		//switch zoom level!
@@ -202,7 +212,7 @@ function run() {
 	}
 	player.draw();
 	
-	speed_test.draw();
+	power_handler.drawItems();
 	
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
@@ -240,13 +250,13 @@ function run() {
 		}
 	}
 	*/
-	ai_player1.drawAIPath();
+	//ai_player1.drawAIPath();
 	
 	//reset the 1 frame inputs
 	keys_pnr.splice(0, keys_pnr.length);
 	mouse_hand.mouse_clicked = false;
 	
-	sendMessageToServer(player.toDataString());
+	//sendMessageToServer(player.toDataString()); //send data about player to the server
 	
 	requestAnimationFrame(run); //run again please
 }
@@ -276,6 +286,8 @@ function ToggleZoom(){
 		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
 		fog_context.putImageData(fog_close, 0, 0);
 	}
+	canvas_box.dWidth = canvas.width / gt1; //update the height and width of the canvas box
+	canvas_box.dHeight = canvas.height / gt4;
 }
 
 /*
@@ -299,14 +311,14 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.a = a;
 
 	this.draw = function(){
-		//if(Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)) <= (VISIBILITY * grid_length)){ //this keeps things from drawing if they are too far away
-		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-		context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5), Math.round(gt6)); //we must round the X & Y positions so that it doesn't break the textures
-		context.transform(1, 0, 0, 1, Math.round(this.x), Math.round(this.y)); //set draw position
-		context.rotate(this.r); //this is in radians
-		context.globalAlpha = this.a;
-		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
-		//}
+		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
+			this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5), Math.round(gt6)); //we must round the X & Y positions so that it doesn't break the textures
+			context.transform(1, 0, 0, 1, Math.round(this.x), Math.round(this.y)); //set draw position
+			context.rotate(this.r); //this is in radians
+			context.globalAlpha = this.a;
+			context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+		}
 	}
 
 	this.toDataString = function(){
@@ -369,10 +381,18 @@ function Player(width, height, img, x, y, role, team, client_id) {
 
 	this.update = function() {
 		this.movePlayer(); //move the player first
-		//switch weapon
+		if(this.item_slot == "EMPTY"){
+			for(let i = 0; i < power_handler.power_ups.length; i++){
+				if(isColliding(this, power_handler.power_ups[i])){
+					this.item_slot = power_handler.power_ups[i];
+					this.item_slot.pickup(this);
+					break;
+				}
+			}
+		}
 		this.currentWeapon.update(this); //checks to see if the current weapon is to be fired
 		
-		//WEAPON RELATED KEYPRESSES
+		//WEAPON AND ITEM RELATED KEYPRESSES
 		if(keys_pnr.includes(49)){
 			//this.health -= 1;
 			this.switchWeapon(1);
@@ -391,6 +411,19 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		}
 		if(keys_pnr.includes(82)){
 			this.currentWeapon.reload();
+		}
+		if(keys_pnr.includes(70)){
+			this.useItem();
+		}
+	}
+	
+	this.useItem = function(){
+		if(this.item_slot == "EMPTY"){
+			//play bad sound
+			return;
+		}
+		else{
+			this.item_slot.use();
 		}
 	}
 	
@@ -658,10 +691,10 @@ function GuiElement(img, x, y, width, height, elemIndex, num_frames){
 
 	this.draw = function(){
 		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-		context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
-		context.rotate(this.r); //this is in radians
-		context.globalAlpha = this.a;
-		context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+		gui_context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
+		gui_context.rotate(this.r); //this is in radians
+		gui_context.globalAlpha = this.a;
+		gui_context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 	}
 }
 

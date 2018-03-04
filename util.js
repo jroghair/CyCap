@@ -166,8 +166,6 @@ function drawFogOfWarImages(){
 }
 
 //returns true if ent_1 is colliding with ent_2
-//in the future, I want this to somehow return which walls the player is colliding with, this will help with
-//allowing the player to slide along a wall while pushing into it and other smarter collision detection
 function isColliding(ent_1, ent_2){
 	var y_collision = isBetween(ent_1.y - (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y + (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2));
 

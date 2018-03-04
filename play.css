@@ -21,3 +21,8 @@ canvas{
 #gui_canvas{
 	z-index: 3;
 }
+
+#fps{
+	position: absolute;
+	z-index: 99;
+}
