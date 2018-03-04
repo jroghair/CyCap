@@ -209,6 +209,7 @@ function MouseHandler(){
 	this.y_pos_rel_canvas = 0;
 	this.mouseX = 0;
 	this.mouseY = 0;
+	this.mouse_clicked = false;
 
 	this.update = function(){
 		this.mouseX = (this.x_pos_rel_canvas - gt5) / gt1;
@@ -227,7 +228,6 @@ function toDegrees(angle) {
 function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.hostname + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
-		//console.log('WebSocket connection opened. Ready to send messages.');
 		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
 	};
 
@@ -241,5 +241,16 @@ function sendMessageToServer(msg){
 //event listener for when the socket receives a message from the server
 function message_handler(msg){
 	console.log("Message received:" + msg);
+	let arr = msg.split(","); //the split array of the server message
+	let found = false;
+	for(let i = 0; i < other_players.length; i++){
+		if(arr[0] == other_players[i].user_id){
+			found = true;
+			other_players[i].update(arr[1], arr[2]);
+		}
+	}
+	if(!found){
+		other_players.push(new OtherPlayer(grid_length, grid_length, player_image, arr[1], arr[2], 1, arr[0]));
+	}
 	//TODO do something meaningful with the message
 }

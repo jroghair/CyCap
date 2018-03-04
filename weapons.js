@@ -37,7 +37,7 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 				//intentional fall-through, spray guns like a shotgun are triggered the same way as single fire guns
 				
 			case "single":
-				if(mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){
+				if(mouse_hand.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){
 					if(this.ammo_in_clip - 1 != -1){
 						this.fire(player);
 						this.lastShot = Date.now();
@@ -122,7 +122,8 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 
 //DIFFERENT WEAPONS
 let m1911 = new Pistol(11, 100, 400, 8, 2, 200, 0.05);
-let shotgun = new Shotgun(30, 500, 500, 5, 4, 6000, 0.5);
+let remington870 = new Shotgun(30, 500, 500, 5, 4, 6000, 0.35);
+let sawedOffShotgun = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7);
 
 /////DIFFERENT TYPES OF AMMUNITION/////
 function Bullet(width, height, sprIdx, player, damage, speed, shot_variation) {

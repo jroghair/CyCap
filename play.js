@@ -13,7 +13,6 @@ fog_canvas.width = canvas.width;
 let keys_down = []; //keys being pressed
 let keys_pnr = []; //keys that have been pushed and released
 let mouse_hand;
-let mouse_clicked = false;
 
 //MOVEMENT AND COLLISION CONSTANTS
 const UP    = 0b1000;
@@ -22,6 +21,7 @@ const LEFT  = 0b0010;
 const RIGHT = 0b0001;
 
 //WORLD OBJECTS
+let other_players = [];
 let bullets = []; //all bullets, including artillery shells
 let walls = [];
 let part_fx = [];
@@ -52,11 +52,9 @@ let speed_test;
 function setup() {
 	client_id = prompt("What is your username?");
 
-	//KEEP THIS AWAY FROM ALL OF THE OTHER CODE \/\/\/
+	//
 	drawFogOfWarImages();
 	fog_context.putImageData(fog_norm, 0, 0);
-	//KEEP THIS SHIT ^^^ AWAY FROM EVERYTHING ELSE
-		
 	
 	requestAnimationFrame(run); //more synchronized method similar to setInterval
 
@@ -134,7 +132,7 @@ function setup() {
 	document.addEventListener("click", function(event) {
 		//place trap at player position
 		//places a blast mask just for testing
-		mouse_clicked = true;
+		mouse_hand.mouse_clicked = true;
 		//bullets.push(new ArtilleryShell(10, 10, player.x, player.y, mouse_hand.mouseX, mouse_hand.mouseY, bullet_image, player.team, blast1_image));
 	});
 	
@@ -147,7 +145,7 @@ function setup() {
 	}, false);
 
 	lastFrameTime = Date.now();
-	//connectToServer();
+	connectToServer();
 }
 
 function run() {
@@ -198,8 +196,11 @@ function run() {
 		walls[i].draw();
 	}
 	
-	player.draw();
 	ai_player1.draw();
+	for(let i = 0; i < other_players.length; i++){
+		other_players[i].draw();
+	}
+	player.draw();
 	
 	speed_test.draw();
 	
@@ -220,7 +221,7 @@ function run() {
 	}
 	context.closePath(); //so styles dont interfere
 	
-	/*following is to test coordinates
+	/*the following is to test nodes
 	//context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
 	//context.lineWidth = "1";
 	//keep the following code
@@ -243,7 +244,7 @@ function run() {
 	
 	//reset the 1 frame inputs
 	keys_pnr.splice(0, keys_pnr.length);
-	mouse_clicked = false;
+	mouse_hand.mouse_clicked = false;
 	
 	requestAnimationFrame(run); //run again please
 }
@@ -330,7 +331,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.team = team;
 
 	//WEAPONS AND ITEMS
-	this.weapon1 = shotgun;
+	this.weapon1 = remington870;
 	this.weapon2 = m1911;
 	this.weapon3 = "EMPTY";
 	this.weapon4 = "EMPTY";
@@ -531,6 +532,57 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		return output;
 		*/
 		let output = this.client_id + ",";
+		output += this.x + ",";
+		output += this.y;
+		return output;
+	}
+}
+
+function OtherPlayer(width, height, img, x, y, team, user_id) {
+	this.user_id = user_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
+
+	this.base = Entity;
+	//sprite 0, rotate 0, transparency 1
+	this.base(img, 0, x, y, width, height, 0, 1);
+	
+	//this.team = team;
+
+	//decide health based on role
+	this.max_hp = 100;
+	this.health = 37;
+	//^^^^these are temporary!!! TODO: FIX THIS
+
+	//variables for the different power-ups and if they are affecting the player
+	this.is_invincible = false;
+	this.speed_boost = 1.0; //2.0 if boosted
+	this.damage_boost = 1.0; //1.5 if boosted
+
+	this.has_flag = false;
+	this.mov_speed = player_speed; //this will eventually be dependent on role
+	
+	this.die = function(){
+		//handle the player dying and respawning
+	}
+
+	this.update = function(newX, newY) {
+		this.x = newX;
+		this.y = newY;
+	}
+
+	this.toDataString = function(){
+		/*
+		let output = "000" + ","; //the temporary image code
+		output += this.sprIdx + ",";
+		output += this.x + ",";
+		output += this.y + ",";
+		output += this.dWidth + ",";
+		output += this.dHeight + ",";
+		output += this.r + ","; //in radians!
+		output += this.a + ",";
+		output += this.team;
+		return output;
+		*/
+		let output = this.user_id + ",";
 		output += this.x + ",";
 		output += this.y;
 		return output;
