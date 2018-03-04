@@ -246,6 +246,8 @@ function run() {
 	keys_pnr.splice(0, keys_pnr.length);
 	mouse_hand.mouse_clicked = false;
 	
+	sendMessageToServer(player.toDataString());
+	
 	requestAnimationFrame(run); //run again please
 }
 
