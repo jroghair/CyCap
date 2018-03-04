@@ -5,7 +5,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -14,17 +14,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotEmpty
+    @NotNull
     //@GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name="UserID")
     private String userID;
-    @NotEmpty
+    @NotNull
     @Column(name="Password")
     private String password;
-    @NotEmpty
+    @NotNull
     @Column(name="Email")
     private String email;
-    @NotEmpty
+    @NotNull
     @Column(name="Creation_Date")
     //private DateTimeFormatter dateOfCreation;
     @JsonFormat(pattern="yyyy-MM-dd")

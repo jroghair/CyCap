@@ -1,5 +1,6 @@
 package com.cycapservers.account;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -42,22 +43,22 @@ public class AccountController {
             return "redirect:/accounts";
         }
     }
-
+/*
     @GetMapping("/accounts")
     public String getAllAccounts(Map<String, Object> model) {
-
-        logger.info("Entered into Controller Layer");
+    	
+        logger.info("Entered into Controller /accounts Layer");
         Collection<Account> results = accountsRepository.findAll();
         logger.info("Number of Records Fetched:" + results.size());
         model.put("selections", results);
         return "accounts/accountsList";
-    }
+    }*/
 
-    @GetMapping("/accounts/{accountId}")
+    @GetMapping("/accounts/{userID}")
     public String findAccountByUserID(@PathVariable("userID") String userID, Map<String, Object> model) {
-
-        logger.info("Entered into Controller Layer");
-        Collection<Account> results = accountsRepository.findById(userID);
+    	System.out.println(userID);
+        logger.info("Entered into Controller /accounts/{userID} Layer");
+        Collection<Account> results = accountsRepository.findByUserID(userID);
         logger.info("Number of Records Fetched:" + results.size());
         model.put("selections", results);
         return "accounts/accountsList";
@@ -68,5 +69,7 @@ public class AccountController {
         model.put("account", new Account());
         return "accounts/findAccounts";
     }
+    
+    
 	
 }

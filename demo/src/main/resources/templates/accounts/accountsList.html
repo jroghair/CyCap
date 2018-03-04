@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-
+<html>
+<!--
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'accounts')}">
+-->
+
 
   <body>
 
@@ -15,7 +18,8 @@
         <tbody>
           <tr th:each="account : ${selections}">
               <td>
-                  <a th:href="@{/accounts/__${account.userID}__}" th:text="${account.userID}"/></a>
+              hello
+                  <!-- a th:href="@{/accounts/__${account.userID}__}" th:text="${account.userID}"/></a -->
               </td>
           </tr>
         </tbody>
