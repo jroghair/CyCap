@@ -9,30 +9,31 @@ public class GameManager {
 
 	//private volatile ArrayList<Game> games = new ArrayList<Game>();
 	
-	private String Player1;
-	
-	private String Player2;
-	
-	private int Player1X;
-	
-	private int Player2X;
-	
-	private int Player1Y;
-	
-	private int Player2Y;
+	private volatile ArrayList<BasicPlayer> player = new ArrayList<BasicPlayer>();
 	
 	public GameManager(){
-		this.Player1 = null;
-		this.Player2 = null;
 		
 	}
 	
 	//Ask about sending purpose of message;
 	public void getMessage(String message){
-		int before = 0;
-		int after = 0;
 		int i = 0;
-		int player = 0;
+		String[] s = message.split(",");
+		if(s[0].equals("start")){
+			BasicPlayer temp = new BasicPlayer(s[1]);
+			temp.updateX(Double.parseDouble(s[2]));
+			temp.updateY(Double.parseDouble(s[3]));
+			this.player.add(temp);
+		}
+		else{
+			for(i = 0; i < this.player.size(); i++){
+				if(this.player.get(i).getName().equals(s[0])){
+					this.player.get(i).updateX(Double.parseDouble(s[1]));
+					this.player.get(i).updateY(Double.parseDouble(s[2]));
+				}		
+			}
+		}
+		/*
 		while(i < message.length()){
 			before = i;
 			while(message.charAt(i) != ',' && message.charAt(i) != ':'){
@@ -41,19 +42,22 @@ public class GameManager {
 			after = i - 1;
 			i++;
 			if(before == 0){
-				if(Player1 == null || Player1.equals(message.substring(before, after))){
-					if(Player1 == null){
-						Player1 = message.substring(before, after);
+				if(message.substring(before, after).equals("start")){
+					before = i;
+					while(message.charAt(i) != ','){
+						i++;
 					}
-					player = 1;
+					after = i - 1;
+					i++;
+					this.player.add(new BasicPlayer(message.substring(before, after)));
 				}
-				else if(Player2 == null || Player2.equals(message.substring(before, after))){
-					if(Player2 == null){
-						Player2 = message.substring(before, after);
+				else{
+					for(int j = 0; j < this.player.size(); j++){
+						if(this.player.get(j).getName().equals(message.substring(before, after))){
+							player = j;
+						}
 					}
-					player = 2;
 				}
-			}
 			else if(player == 1){
 				if(message.charAt(after + 1) == ':'){
 					Player1Y = Integer.parseInt(message.substring(before, after));
@@ -71,14 +75,15 @@ public class GameManager {
 				}
 			}
 		}
-		
+		*/
 	}
 	
-	public String toString(){
-		if(Player1 != null && Player2 != null){
-			return Player1 + "," + Player1X + "," + Player1Y + ":" + Player2 + "," + Player2X + "," + Player2Y + ":";
-		}
-		return null;
+	public int getPlayers(){
+		return this.player.size();
+	}
+	
+	public String playerString(int i){
+		return this.player.get(i).toString();
 	}
 	
 	public void MakeGame(String ids, int playerNum){

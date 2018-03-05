@@ -15,7 +15,7 @@ public class MessageHandler extends TextWebSocketHandler {
 	
 	/*
 	 * 1. Look into thread local variables;
-	 * 2. fix the squedualer
+	 * 2. fix the scheduler
 	 * 3. make sure bryans game works with the basic code
 	 * 
 	 * 
@@ -35,7 +35,9 @@ public class MessageHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
         System.out.println("Message received: " + textMessage.getPayload());
         game.getMessage(textMessage.getPayload());
-        session.sendMessage(new TextMessage(game.toString()));
+        for(int i = 0; i < game.getPlayers(); i++){
+        	session.sendMessage(new TextMessage(game.playerString(i)));
+        }
     }
     
     

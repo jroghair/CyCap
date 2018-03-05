@@ -18,7 +18,7 @@ public class Main {
 	
 	@GetMapping("/")
 	public String main_Page(){
-		return "button";
+		return "play";
 	}
 	
 	
