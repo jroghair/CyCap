@@ -224,7 +224,7 @@ function toDegrees(angle) {
 }
 
 function connectToServer(){
-	serverSocket = new WebSocket('ws://' + window.location.hostname + '/my-websocket-endpoint');
+	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
 	};
@@ -242,7 +242,10 @@ function message_handler(msg){
 	let arr = msg.split(","); //the split array of the server message
 	let found = false;
 	for(let i = 0; i < other_players.length; i++){
-		if(arr[0] == other_players[i].user_id){
+		if(arr[0] == player.client_id){
+			found = true;
+		}
+		else if(arr[0] == other_players[i].user_id){
 			found = true;
 			other_players[i].update(arr[1], arr[2]);
 		}

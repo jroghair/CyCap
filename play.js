@@ -154,6 +154,8 @@ function setup() {
 }
 
 function run() {
+	//debugger; keeps people from messing with code
+	
 	global_delta_t = (Date.now() - lastFrameTime) / 1000; //set the time of the most recent frame (in seconds)
 	lastFrameTime = Date.now();
 	
@@ -256,7 +258,9 @@ function run() {
 	keys_pnr.splice(0, keys_pnr.length);
 	mouse_hand.mouse_clicked = false;
 	
-	//sendMessageToServer(player.toDataString()); //send data about player to the server
+	if(serverSocket.readyState == serverSocket.OPEN){
+		sendMessageToServer(player.toDataString()); //send data about player to the server
+	}
 	
 	requestAnimationFrame(run); //run again please
 }
@@ -313,8 +317,8 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
 			this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5), Math.round(gt6)); //we must round the X & Y positions so that it doesn't break the textures
-			context.transform(1, 0, 0, 1, Math.round(this.x), Math.round(this.y)); //set draw position
+			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
+			//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
 			context.rotate(this.r); //this is in radians
 			context.globalAlpha = this.a;
 			context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
