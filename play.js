@@ -121,7 +121,8 @@ function setup() {
 	generateNodes();
 	ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
-	guis.push(new GuiElement(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
+	guis.push(new HealthGUI(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
+	guis.push(new WeaponSelectGUI());
 	power_handler = new PowerUpHandler()
 
 	//setting up two key listeners to improve movement
@@ -684,13 +685,12 @@ function ParticleEffect(img, x, y, width, height, num_frames, life_time){
 	}
 }
 
-function GuiElement(img, x, y, width, height, elemIndex, num_frames){
+function GuiElement(img, x, y, width, height, elemIndex){
 	this.base = Entity;
 	this.base(img, elemIndex, x, y, width, height, 0, 1);
-	this.num_frames = num_frames;
 
 	this.update = function(){
-		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
+		return;
 	}
 
 	this.draw = function(){
@@ -699,6 +699,37 @@ function GuiElement(img, x, y, width, height, elemIndex, num_frames){
 		gui_context.rotate(this.r); //this is in radians
 		gui_context.globalAlpha = this.a;
 		gui_context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+	}
+}
+
+function HealthGUI(img, x, y, width, height, elemIndex, num_frames){
+	this.base = GuiElement;
+	this.base(img, x, y, width, height, elemIndex);
+	this.num_frames = num_frames;
+	
+	this.update = function(){
+		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
+	}
+}
+
+function WeaponSelectGUI(){
+	this.gui_frame = new GuiElement(weapon_select_frame, 800, 400, 1600, 800, 0);
+	this.weapon1_icon = new GuiElement(player.weapon1.selector_icon, 94, 74, 111, 111, 0); 
+	/*weapon 1 (94, 74)
+	 *weapon 2 (223, 74)
+	 *weapon 3 (352, 74)
+	 *weapon 4 (481, 74)
+	 */
+	
+	this.update = function(){
+		this.gui_frame.update();
+		//update everything else
+	}
+
+	this.draw = function(){
+		this.gui_frame.draw();
+		this.weapon1_icon.draw();
+		//draw everything else
 	}
 }
 

@@ -1,5 +1,6 @@
-function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation){
+function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, selector_icon){
 	this.name = name;
+	this.selector_icon = selector_icon;
 	
 	this.fire_type = ft;	//this can be single, burst, auto, spray, artillery, and blast
 	this.bullet_type = bt;  //this is the index in the sprite sheet of the bullet used
@@ -92,7 +93,7 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 
 function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation){
 	this.base = Weapon;
-	this.base("Pistol", "single", 2, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation); 
+	this.base("Pistol", "single", 2, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, pistol_icon); 
 	
 	this.fire = function(player){
 		this.ammo_in_clip--; //lose one bullet from the clip
@@ -105,7 +106,7 @@ function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, s
 
 function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation){
 	this.base = Weapon;
-	this.base("Shotgun", "spray", 3, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation);
+	this.base("Shotgun", "spray", 3, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, shotgun_icon);
 	
 	this.fire = function(player){
 		this.ammo_in_clip--; //lose one bullet from the clip

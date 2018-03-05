@@ -41,6 +41,23 @@ let health_gui = new Image();
 health_gui.src = "res/images/health_bar_good.png";
 health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},
 					  {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}, {x:128, y:64, w:64, h:64}, {x:192, y:64, w:64, h:64}];
+					  
+//WEAPON SELECTION GUI IMAGES
+let weapon_select_frame = new Image();
+weapon_select_frame.src = "res/images/weapon_select_frame.png";
+weapon_select_frame.sprites = [{x:0, y:0, h:800, w:1600}];
+
+let shotgun_icon = new Image();
+shotgun_icon.src = "res/images/shotgun_icon.png";
+shotgun_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+let empty_icon = new Image();
+empty_icon.src = "res/images/empty_icon.png";
+empty_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+let pistol_icon = new Image();
+pistol_icon.src = "res/images/pistol_icon.png";
+pistol_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
 let boom_ss = new Image();
 boom_ss.src = "res/images/explosion_ss.png";
