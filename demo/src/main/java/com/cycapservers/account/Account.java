@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name="account")
 public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     //@GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name="UserID")
@@ -30,8 +28,19 @@ public class Account {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfCreation;  
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private int id=100;
+    
+    
+    public Account() {
+    	this.setDateOfCreation();
+    }
+    
     
 	public String getUserID() {
+		
 		return this.userID;
 	}
     

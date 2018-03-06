@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class AccountController {
     private AccountRepository accountsRepository;
 
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-
+/*
     @GetMapping("/accounts/new")
     public String initCreationForm(Map<String, Object> model) {
     	logger.info("Entered into Controller Layer");
@@ -42,7 +43,7 @@ public class AccountController {
             accountsRepository.save(account);
             return "redirect:/accounts";
         }
-    }
+    }*/
 /*
     @GetMapping("/accounts")
     public String getAllAccounts(Map<String, Object> model) {
@@ -70,6 +71,25 @@ public class AccountController {
         return "accounts/findAccounts";
     }
     
+    @GetMapping("/accounts/register")
+    public String initCreationForm(Map<String, Object> model) {
+    	logger.info("Entered into accounts registration controller Layer");
+        Account account = new Account();
+        model.put("account", account);
+        return "accounts/registration";
+    }
+    
+
+    @PostMapping("/accounts/registration")
+    public String processCreationForm(@Valid Account account, BindingResult result) {
+    	logger.info("Entered into account registration POST controller Layer");
+       /* if (result.hasErrors()) {
+            return "/accounts/registration";
+        } else {*/
+            this.accountsRepository.save(account);
+            return "accounts/successfulregistration";
+       // }
+    }
     
 	
 }
