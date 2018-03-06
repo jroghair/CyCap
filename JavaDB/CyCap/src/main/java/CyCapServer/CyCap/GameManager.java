@@ -1,6 +1,7 @@
 package CyCapServer.CyCap;
 
 import java.util.ArrayList;
+import java.time.Clock;
 
 import org.springframework.stereotype.Controller;
 
@@ -10,6 +11,10 @@ public class GameManager {
 	//private volatile ArrayList<Game> games = new ArrayList<Game>();
 	
 	private volatile ArrayList<BasicPlayer> player = new ArrayList<BasicPlayer>();
+	
+	private long time = 0;
+	
+	//Get a method to check last message.
 	
 	public GameManager(){
 		
@@ -28,55 +33,39 @@ public class GameManager {
 		else{
 			for(i = 0; i < this.player.size(); i++){
 				if(this.player.get(i).getName().equals(s[0])){
-					this.player.get(i).updateX(Double.parseDouble(s[1]));
-					this.player.get(i).updateY(Double.parseDouble(s[2]));
+					this.player.get(i).updateXY(Double.parseDouble(s[1]), Double.parseDouble(s[2]));
+					this.player.get(i).setTime(System.currentTimeMillis());
 				}		
 			}
-		}
-		/*
-		while(i < message.length()){
-			before = i;
-			while(message.charAt(i) != ',' && message.charAt(i) != ':'){
-				i++;
-			}
-			after = i - 1;
-			i++;
-			if(before == 0){
-				if(message.substring(before, after).equals("start")){
-					before = i;
-					while(message.charAt(i) != ','){
-						i++;
-					}
-					after = i - 1;
-					i++;
-					this.player.add(new BasicPlayer(message.substring(before, after)));
-				}
-				else{
-					for(int j = 0; j < this.player.size(); j++){
-						if(this.player.get(j).getName().equals(message.substring(before, after))){
-							player = j;
-						}
-					}
-				}
-			else if(player == 1){
-				if(message.charAt(after + 1) == ':'){
-					Player1Y = Integer.parseInt(message.substring(before, after));
-				}
-				else{
-					Player1X = Integer.parseInt(message.substring(before, after));
-				}
-			}
-			else if(player == 2){
-				if(message.charAt(after + 1) == ':'){
-					Player2Y = Integer.parseInt(message.substring(before, after));
-				}
-				else{
-					Player2X = Integer.parseInt(message.substring(before, after));
-				}
+			if((System.currentTimeMillis() - time) > 30000){
+				this.getAFK();
+				time = System.currentTimeMillis();
 			}
 		}
-		*/
 	}
+	
+	public void removePlayer(String Id){
+		for(int i = 0; i < this.player.size(); i++){
+			if(this.player.get(i).getName().equals(Id)){
+				this.player.remove(i);
+				break;
+			}
+		}
+	}
+	
+	public void getAFK(){
+		long time = System.currentTimeMillis();
+		for(int i = 0; i < this.player.size(); i++){
+			if((time - this.player.get(i).getTime()) > 5000){
+				this.player.remove(i);
+			}
+		}
+	}
+	
+	public long GetPlayerTime(int i){
+		return this.player.get(i).getTime();
+	}
+	
 	
 	public int getPlayers(){
 		return this.player.size();

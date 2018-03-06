@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 public class Game {
 	
-	public String gameId;
+	private String gameId;
+	
+	private int maxPlayers;
 
 	ArrayList<PlayerInfo> GameState = new ArrayList<PlayerInfo>();
 	
