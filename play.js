@@ -53,6 +53,7 @@ let rolling_buffer_length = 30;
 
 //GAME MANAGERS
 //referee
+let flag1, flag2;
 let power_handler;
 
 //all functions
@@ -123,7 +124,10 @@ function setup() {
 	
 	guis.push(new HealthGUI(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
 	guis.push(new WeaponSelectGUI());
-	power_handler = new PowerUpHandler()
+	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
+	power_handler = new PowerUpHandler();
+	flag1 = new Flag(320, 64, 0);
+	flag2 = new Flag(64, 320, 4);
 
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
@@ -152,6 +156,7 @@ function setup() {
 
 	lastFrameTime = Date.now();
 	connectToServer();
+	console.log(walls.length);
 }
 
 function run() {
@@ -195,6 +200,8 @@ function run() {
 		guis[i].update();
 	}
 	power_handler.updateItems();
+	flag1.update();
+	flag2.update();
 
 	if(keys_pnr.includes(90)){
 		//switch zoom level!
@@ -216,6 +223,8 @@ function run() {
 	player.draw();
 	
 	power_handler.drawItems();
+	flag1.draw();
+	flag2.draw();
 	
 	for(let i = 0; i < bullets.length; i++){
 		bullets[i].draw();
@@ -253,7 +262,7 @@ function run() {
 		}
 	}
 	*/
-	//ai_player1.drawAIPath();
+	ai_player1.drawAIPath();
 	
 	//reset the 1 frame inputs
 	keys_pnr.splice(0, keys_pnr.length);
@@ -293,6 +302,7 @@ function ToggleZoom(){
 	}
 	canvas_box.dWidth = canvas.width / gt1; //update the height and width of the canvas box
 	canvas_box.dHeight = canvas.height / gt4;
+	canvas_box.updateCollisionRadius(); //update the collision_radius so that culling still works properly with zoom
 }
 
 /*
@@ -310,11 +320,16 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.sprite = this.image.sprites[this.sprIdx];
 	this.x = x;
 	this.y = y;
+	this.collision_radius = distanceBetween(x, y, (x + (dWidth/2)), (y + (dHeight/2))); //TODO: update this if dWidth or dHeight ever changes!
 	this.dWidth = dWidth;
 	this.dHeight = dHeight;
 	this.r = toRadians(r);
 	this.a = a;
-
+	
+	this.updateCollisionRadius = function(){
+		this.collision_radius = distanceBetween(this.x, this.y, (this.x + (this.dWidth/2)), (this.y + (this.dHeight/2)));
+	}
+	
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
 			this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
@@ -394,6 +409,14 @@ function Player(width, height, img, x, y, role, team, client_id) {
 					break;
 				}
 			}
+			if(isColliding(this, flag1)){
+					this.item_slot = flag1;
+					this.item_slot.pickup(this);
+			}
+			else if(isColliding(this, flag2)){
+					this.item_slot = flag2;
+					this.item_slot.pickup(this);
+			}
 		}
 		this.currentWeapon.update(this); //checks to see if the current weapon is to be fired
 		
@@ -429,6 +452,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		}
 		else{
 			this.item_slot.use();
+			this.item_slot = "EMPTY";
 		}
 	}
 	
@@ -682,54 +706,6 @@ function ParticleEffect(img, x, y, width, height, num_frames, life_time){
 			this.last_frame = Date.now();
 			this.sprIdx++;
 		}
-	}
-}
-
-function GuiElement(img, x, y, width, height, elemIndex){
-	this.base = Entity;
-	this.base(img, elemIndex, x, y, width, height, 0, 1);
-
-	this.update = function(){
-		return;
-	}
-
-	this.draw = function(){
-		this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-		gui_context.setTransform(1, 0, 0, 1, this.x, this.y); //set draw position
-		gui_context.rotate(this.r); //this is in radians
-		gui_context.globalAlpha = this.a;
-		gui_context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
-	}
-}
-
-function HealthGUI(img, x, y, width, height, elemIndex, num_frames){
-	this.base = GuiElement;
-	this.base(img, x, y, width, height, elemIndex);
-	this.num_frames = num_frames;
-	
-	this.update = function(){
-		this.sprIdx = 8 - Math.round(player.health/player.max_hp * this.num_frames);
-	}
-}
-
-function WeaponSelectGUI(){
-	this.gui_frame = new GuiElement(weapon_select_frame, 800, 400, 1600, 800, 0);
-	this.weapon1_icon = new GuiElement(player.weapon1.selector_icon, 94, 74, 111, 111, 0); 
-	/*weapon 1 (94, 74)
-	 *weapon 2 (223, 74)
-	 *weapon 3 (352, 74)
-	 *weapon 4 (481, 74)
-	 */
-	
-	this.update = function(){
-		this.gui_frame.update();
-		//update everything else
-	}
-
-	this.draw = function(){
-		this.gui_frame.draw();
-		this.weapon1_icon.draw();
-		//draw everything else
 	}
 }
 

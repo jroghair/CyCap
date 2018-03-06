@@ -20,6 +20,42 @@ function Item(img, sprIdx, x, y, dWidth, dHeight, response_time){
 	}
 }
 
+function Flag(x, y, color){
+	this.base = Item;
+	this.base(flags_ss, color, x, y, grid_length, grid_length, 100);
+	
+	//grabber is the player who picked up the item
+	this.pickup = function(grabber){
+		if(!this.grabbed){
+			this.targetPlayer = grabber;
+			this.grabbed = true;
+			this.dWidth = 16;
+			this.dHeight = 16;
+		}
+	}
+	
+	this.update = function(){
+		if(this.grabbed){
+			this.x = this.targetPlayer.x;
+			this.y = this.targetPlayer.y;
+		}
+	}
+	
+	this.use = function(){
+		if(this.targetPlayer == null){
+			console.log("Error, no target player for item. Cannot use.");
+			return;
+		}
+		else{
+			this.targetPlayer = null;
+			this.grabbed = false;
+			this.dWidth = 32;
+			this.dHeight = 32;
+		}
+		
+	}
+}
+
 //An animatedItem will cycle through its spritesheet when it runs out
 //cycle_time is in milliseconds
 function AnimatedItem(img, x, y, dWidth, dHeight, response_time, num_of_frames, cycle_time){
@@ -78,7 +114,6 @@ function SpeedPotion(x, y){
 			this.targetPlayer.speed_boost /= this.boost_amt;
 			let temp_index = power_handler.power_ups.indexOf(this);
 			power_handler.power_ups.splice(temp_index, 1);
-			this.targetPlayer.item_slot = "EMPTY";
 		}
 	}
 	

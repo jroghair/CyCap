@@ -79,6 +79,14 @@ function getRandomInRange(lower, upper){
 	return getRandomInt(upper - lower + 1) + lower;
 }
 
+function distanceBetween(x1, y1, x2, y2){
+	return Math.sqrt(Math.pow(x2 -x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+function distanceBetweenEntities(ent1, ent2){
+	return Math.sqrt(Math.pow(ent1.x - ent2.x, 2) + Math.pow(ent1.y - ent2.y, 2));
+}
+
 //takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
 //this will travel in the positive direction of which ever axis you give it
 function wallLine(start_x, start_y, length, axis){
@@ -167,6 +175,13 @@ function drawFogOfWarImages(){
 
 //returns true if ent_1 is colliding with ent_2
 function isColliding(ent_1, ent_2){
+	
+	//QUICK COLLISION DETECTION
+	if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
+		return false;
+	}
+	
+	//ADVANCED COLLISION DETECTION
 	var y_collision = isBetween(ent_1.y - (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y + (ent_1.dHeight/2), ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.dHeight/2), ent_2.y + (ent_2.dHeight/2));
 
 	if(isBetween(ent_1.x - (ent_1.dWidth/2), ent_2.x - (ent_2.dWidth/2), ent_2.x + (ent_2.dWidth/2)) && y_collision){
@@ -253,5 +268,5 @@ function message_handler(msg){
 	if(!found){
 		other_players.push(new OtherPlayer(grid_length, grid_length, player_image, arr[1], arr[2], 1, arr[0]));
 	}
-	//TODO do something meaningful with the message
+	//TODO parse other kinds of information coming in
 }
