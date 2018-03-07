@@ -10,8 +10,26 @@ public class BasicPlayer {
 	
 	private long time;
 	
+	private String passCode;
+	
+	
 	public BasicPlayer(String PlayerName){
 		this.PlayerName = PlayerName;
+	}
+	
+	public void setPassCode(String s){
+		this.passCode = s;
+	}
+	
+	public String getPassCode(){
+		return this.passCode;
+	}
+	
+	public boolean verifyPassCode(String s){
+		if(s.equals(this.passCode)){
+			return true;
+		}
+		return false;
 	}
 	
 	public void updateX(double x){

@@ -22,5 +22,9 @@ public class Main {
 		return "play";
 	}
 	
+	@GetMapping("/button")
+	public String button(){
+		return "button";
+	}
 	
 }

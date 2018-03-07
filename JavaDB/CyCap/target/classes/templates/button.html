@@ -9,9 +9,9 @@
 
   </body>
   <script>
-  var socket //= new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
+  var socket;
   function connect(){
-	socket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
+	socket = new WebSocket('ws://' + window.location.host + '/endpoint-Loggin');
 	console.log(window.location.host); 
 	socket.onopen = function() {
 		console.log('WebSocket connection opened. Ready to send messages.');

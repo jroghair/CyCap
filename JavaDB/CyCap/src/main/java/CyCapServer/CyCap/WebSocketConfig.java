@@ -23,8 +23,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
         return new MessageHandler();
     }
     
+    @Bean
+    public WebSocketHandler LogginHandler(){
+    	return new LogginHandler();
+    }
+    
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(MessageHandler(), "/my-websocket-endpoint");
+        registry.addHandler(LogginHandler(), "/endpoint-Loggin");
     }
     
 }

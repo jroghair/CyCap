@@ -1,7 +1,8 @@
 package CyCapServer.CyCap;
 
 import java.util.ArrayList;
-import java.time.Clock;
+import java.util.Random;
+
 
 import org.springframework.stereotype.Controller;
 
@@ -12,7 +13,13 @@ public class GameManager {
 	
 	private volatile ArrayList<BasicPlayer> player = new ArrayList<BasicPlayer>();
 	
+	//create player afk list that has the players time out after 30 seconds and get deleted
+	
+	private volatile ArrayList<String> removedPlayer = new ArrayList<String>();
+	
 	private long time = 0;
+	
+	private boolean afkPlayers;
 	
 	//Get a method to check last message.
 	
@@ -28,6 +35,7 @@ public class GameManager {
 			BasicPlayer temp = new BasicPlayer(s[1]);
 			temp.updateX(Double.parseDouble(s[2]));
 			temp.updateY(Double.parseDouble(s[3]));
+			temp.setPassCode(this.createPassCode(10));
 			this.player.add(temp);
 		}
 		else{
@@ -44,6 +52,26 @@ public class GameManager {
 		}
 	}
 	
+	public String createPassCode(int length){
+		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+		String pass = "";
+		Random rand = new Random();
+		for(int i = 0; i < length; i++){
+			pass += s.charAt(rand.nextInt(s.length()));	
+		}
+		return pass;
+	}
+	
+	public boolean playerToRemove(){
+		if(afkPlayers){
+			afkPlayers = false;
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
 	public void removePlayer(String Id){
 		for(int i = 0; i < this.player.size(); i++){
 			if(this.player.get(i).getName().equals(Id)){
@@ -57,7 +85,9 @@ public class GameManager {
 		long time = System.currentTimeMillis();
 		for(int i = 0; i < this.player.size(); i++){
 			if((time - this.player.get(i).getTime()) > 5000){
+				this.removedPlayer.add(this.player.get(i).getName());
 				this.player.remove(i);
+				this.afkPlayers = true;
 			}
 		}
 	}

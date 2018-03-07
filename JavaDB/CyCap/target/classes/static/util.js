@@ -250,7 +250,17 @@ function message_handler(msg){
 		}
 	}
 	if(!found){
-		other_players.push(new OtherPlayer(grid_length, grid_length, player_image, arr[1], arr[2], 1, arr[0]));
+		if(arr[0] == "delete"){
+			for(let i = 0; i < other_player.length; i++){
+				if(arr[1] == other_players[i].user_id){
+					other_player.splice(i,1);
+				}
+			}
+		}
+		else{
+			other_players.push(new OtherPlayer(grid_length, grid_length, player_image, arr[1], arr[2], 1, arr[0]));
+		}
+		//other_players.push(new OtherPlayer(grid_length, grid_length, player_image, arr[1], arr[2], 1, arr[0]));
 	}
 	//TODO do something meaningful with the message
 }
