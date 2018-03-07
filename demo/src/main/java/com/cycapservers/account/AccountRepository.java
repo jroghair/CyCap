@@ -12,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface AccountRepository extends CrudRepository<Account, String> {
 
-	
-    @Query("SELECT DISTINCT account FROM Account account WHERE account.userID LIKE :userID%")
+
+    @Query("SELECT DISTINCT account FROM Account account WHERE account.userID =:userID")
 	@Transactional(readOnly = true)
-	Collection<Account> findByUserID(@Param("userID") String userID);
+    Account findByUserID(@Param("userID") String userID);
+    
+    
+    /*Collection<Account> findByUserID(@Param("userID") String userID);*/
     
     
     //Collection<Account> findAll(Collection<Account> id);
