@@ -38,7 +38,7 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 				//intentional fall-through, spray guns like a shotgun are triggered the same way as single fire guns
 				
 			case "single":
-				if(mouse_hand.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){
+				if(input_handler.mouse.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){
 					if(this.ammo_in_clip - 1 != -1){
 						this.fire(player);
 						this.lastShot = Date.now();
@@ -128,8 +128,8 @@ let sawedOffShotgun = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7);
 
 /////DIFFERENT TYPES OF AMMUNITION/////
 function Bullet(width, height, sprIdx, player, damage, speed, shot_variation) {
-	this.x_diff = mouse_hand.mouseX - player.x;
-	this.y_diff = (mouse_hand.mouseY - player.y) * -1;
+	this.x_diff = input_handler.mouse.mapX - player.x;
+	this.y_diff = (input_handler.mouse.mapY - player.y) * -1;
 	let angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
 
 	if (this.x_diff < 0 && this.y_diff > 0) {

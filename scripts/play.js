@@ -15,9 +15,7 @@ gui_canvas.height = canvas.height;
 gui_canvas.width = canvas.width;
 
 //INPUT INFORMATION
-let keys_down = []; //keys being pressed
-let keys_pnr = []; //keys that have been pushed and released
-let mouse_hand;
+let input_handler;
 
 //MOVEMENT AND COLLISION CONSTANTS
 const UP    = 0b1000;
@@ -132,26 +130,25 @@ function setup() {
 	//setting up two key listeners to improve movement
 	//when a key goes down it is added to a list and when it goes up its taken out
 	document.addEventListener("keydown", function(event) {
-		if (!keys_down.includes(event.keyCode)) {
-			keys_down.push(event.keyCode);
+		if (!input_handler.keys_down.includes(event.keyCode)) {
+			input_handler.keys_down.push(event.keyCode);
 		}
 	});
 	document.addEventListener("keyup", function(event) {
-		keys_down.splice(keys_down.indexOf(event.keyCode), 1);
-		keys_pnr.push(event.keyCode);
+		input_handler.keys_down.splice(input_handler.keys_down.indexOf(event.keyCode), 1);
+		input_handler.keys_pnr.push(event.keyCode);
 	});
 	
 	//mouse click listener
 	document.addEventListener("click", function(event) {
-		mouse_hand.mouse_clicked = true;
+		input_handler.mouse.mouse_clicked = true;
 	});
 	
-	//mouse listener for coordinates
-	mouse_hand = new MouseHandler();
+	input_handler = new InputHandler();
 	window.addEventListener('mousemove', function(event){
 		this.rect = canvas.getBoundingClientRect();
-		mouse_hand.x_pos_rel_canvas = (event.clientX - rect.left);
-		mouse_hand.y_pos_rel_canvas = (event.clientY - rect.top);
+		input_handler.mouse.x_pos_rel_canvas = (event.clientX - rect.left);
+		input_handler.mouse.y_pos_rel_canvas = (event.clientY - rect.top);
 	}, false);
 
 	lastFrameTime = Date.now();
@@ -183,7 +180,7 @@ function run() {
 	
 
 	//update everything
-	mouse_hand.update();
+	input_handler.mouse.update();
 	player.update();
 	canvas_box.x = player.x; //update the canvas_box position
 	canvas_box.y = player.y;
@@ -203,7 +200,7 @@ function run() {
 	flag1.update();
 	flag2.update();
 
-	if(keys_pnr.includes(90)){
+	if(input_handler.keys_pnr.includes(90)){
 		//switch zoom level!
 		ToggleZoom();
 	}
@@ -265,8 +262,8 @@ function run() {
 	ai_player1.drawAIPath();
 	
 	//reset the 1 frame inputs
-	keys_pnr.splice(0, keys_pnr.length);
-	mouse_hand.mouse_clicked = false;
+	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);
+	input_handler.mouse.mouse_clicked = false;
 	
 	if(serverSocket.readyState == serverSocket.OPEN){
 		sendMessageToServer(player.toDataString()); //send data about player to the server
@@ -421,26 +418,26 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		this.currentWeapon.update(this); //checks to see if the current weapon is to be fired
 		
 		//WEAPON AND ITEM RELATED KEYPRESSES
-		if(keys_pnr.includes(49)){
+		if(input_handler.keys_pnr.includes(49)){
 			//this.health -= 1;
 			this.switchWeapon(1);
 		}
-		else if(keys_pnr.includes(50)){
+		else if(input_handler.keys_pnr.includes(50)){
 			//this.health += 1;
 			this.switchWeapon(2);
 		}
-		else if(keys_pnr.includes(51)){
+		else if(input_handler.keys_pnr.includes(51)){
 			//this.health -= 1;
 			this.switchWeapon(3);
 		}
-		else if(keys_pnr.includes(52)){
+		else if(input_handler.keys_pnr.includes(52)){
 			//this.health += 1;
 			this.switchWeapon(4);
 		}
-		if(keys_pnr.includes(82)){
+		if(input_handler.keys_pnr.includes(82)){
 			this.currentWeapon.reload();
 		}
-		if(keys_pnr.includes(70)){
+		if(input_handler.keys_pnr.includes(70)){
 			this.useItem();
 		}
 	}
@@ -503,16 +500,16 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		let movement_code  = 0b0000; //the binary code for which directions the player moving
 
 		//this section will probably end up on the server
-		if (keys_down.includes(87)) {
+		if (input_handler.keys_down.includes(87)) {
 			movement_code |= UP; //trying to move up
 		}
-		if (keys_down.includes(65)) {
+		if (input_handler.keys_down.includes(65)) {
 			movement_code |= LEFT; //trying to move left
 		}
-		if (keys_down.includes(68)) {
+		if (input_handler.keys_down.includes(68)) {
 			movement_code |= RIGHT; //trying to move right
 		}
-		if (keys_down.includes(83)) {
+		if (input_handler.keys_down.includes(83)) {
 			movement_code |= DOWN; //trying to move down
 		}
 

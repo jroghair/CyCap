@@ -216,19 +216,6 @@ function isBetween(num, lower, upper){
 		return false;
 	}
 }
-function MouseHandler(){
-
-	this.x_pos_rel_canvas = 0;
-	this.y_pos_rel_canvas = 0;
-	this.mouseX = 0;
-	this.mouseY = 0;
-	this.mouse_clicked = false;
-
-	this.update = function(){
-		this.mouseX = (this.x_pos_rel_canvas - gt5) / gt1;
-		this.mouseY = (this.y_pos_rel_canvas - gt6) / gt4;
-	}
-}
 
 function toRadians(angle) {
   return (angle * (Math.PI / 180.0));
