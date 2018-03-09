@@ -229,6 +229,7 @@ function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
+		//set a variable to show that the player is connected to the server
 	};
 
 	serverSocket.onmessage = message_handler;

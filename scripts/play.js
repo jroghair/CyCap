@@ -39,6 +39,7 @@ let global_delta_t = 0; //the time that this frame took in SECONDS
 
 let player;
 let client_id; //this will eventually come from the server
+let pw;
 
 let player_speed = 120;//pixels per second
 let current_zoom_lvl = 2;
@@ -54,9 +55,56 @@ let rolling_buffer_length = 30;
 let flag1, flag2;
 let power_handler;
 
+function GameState(){
+	this.player; //the current player on this client
+	this.other_players = []; //the other players
+	this.ai_players = [];
+	this.bullets = []; //all bullets, including artillery shells
+	this.walls = []; //all of the walls in the game
+	this.part_fx = []; //particle effects
+	this.map; //the set of tiles and map data
+	this.masks = []; //the list of ground masks
+	
+	//this takes in the message from the server and builds the game state from that
+	this.updateGameState = function(message){
+		//update every single game object
+		//apply the ClientPrediction
+	}
+	
+	this.drawGameState = function(){
+		this.map.draw();
+		for(let i = 0; i < this.masks.length; i++){
+			this.masks[i].draw();
+		}
+		for(let i = 0; i < this.walls.length; i++){
+			this.walls[i].draw();
+		}
+		
+		//ai_player1.draw();
+		for(let i = 0; i < this.other_players.length; i++){
+			this.other_players[i].draw();
+		}
+		this.player.draw();
+		
+		/*
+		power_handler.drawItems();
+		flag1.draw();
+		flag2.draw();
+		*/
+		
+		for(let i = 0; i < this.bullets.length; i++){
+			this.bullets[i].draw();
+		}
+		for(let i = 0; i < this.part_fx.length; i++){
+			this.part_fx[i].draw();
+		}
+	}
+}
+
 //all functions
 function setup() {
 	client_id = prompt("What is your username?");
+	pw = "password";
 
 	//Draw fog of war images and put the normal zoom one on
 	drawFogOfWarImages();
@@ -144,11 +192,23 @@ function setup() {
 		input_handler.mouse.mouse_clicked = true;
 	});
 	
+	//left mouse button listener
+	document.addEventListener("mousedown", function(event) {
+		if(event.button == 0){
+			input_handler.mouse.lmb_down = true;
+		}
+	});
+	document.addEventListener("mouseup", function(event) {
+		if(event.button == 0){
+			input_handler.mouse.lmb_down = false;
+		}
+	});
+	
 	input_handler = new InputHandler();
 	window.addEventListener('mousemove', function(event){
 		this.rect = canvas.getBoundingClientRect();
-		input_handler.mouse.x_pos_rel_canvas = (event.clientX - rect.left);
-		input_handler.mouse.y_pos_rel_canvas = (event.clientY - rect.top);
+		input_handler.mouse.canvasX = (event.clientX - rect.left);
+		input_handler.mouse.canvasY = (event.clientY - rect.top);
 	}, false);
 
 	lastFrameTime = Date.now();
@@ -172,7 +232,6 @@ function run() {
 		}
 	}
 
-	context.beginPath(); //so styles dont interfere
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
 	gui_context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
@@ -238,7 +297,6 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
-	context.closePath(); //so styles dont interfere
 	
 	/*the following is to test nodes
 	//context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
@@ -377,8 +435,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 
 	//variables for the different power-ups and if they are affecting the player
 	this.is_invincible = false;
-	this.speed_boost = 1.0; //2.0 if boosted
-	this.damage_boost = 1.0; //1.5 if boosted
+	this.speed_boost = 1.0;
+	this.damage_boost = 1.0;
 
 	this.has_flag = false;
 	this.mov_speed = player_speed; //this will eventually be dependent on role
@@ -396,6 +454,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		}
 	}
 
+	//TODO: this needs to take in an inputSnapshot
 	this.update = function() {
 		this.movePlayer(); //move the player first
 		if(this.item_slot == "EMPTY"){

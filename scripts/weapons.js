@@ -38,7 +38,7 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 				//intentional fall-through, spray guns like a shotgun are triggered the same way as single fire guns
 				
 			case "single":
-				if(input_handler.mouse.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){
+				if(input_handler.mouse.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){ //TODO: remove dependency on input_handler
 					if(this.ammo_in_clip - 1 != -1){
 						this.fire(player);
 						this.lastShot = Date.now();
