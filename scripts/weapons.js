@@ -20,10 +20,10 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 	this.extra_ammo = extra_mags * this.mag_size; //total ammo. this include any ammo in magazine
 	
 	//updates important info about the weapon
-	this.update = function(player){
+	this.update = function(player, snapshot){
 		//if not reloading, check to see if it is fired
 		if(!this.is_reloading){
-			this.checkFire(player);
+			this.checkFire(player, snapshot);
 		}
 		else{
 			//play reloading sound or something
@@ -31,16 +31,16 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 	}
 	
 	//checks to see if the gun is to be fired, based off of input type and the amount of bullets in the magazine
-	this.checkFire = function(player){
+	this.checkFire = function(player, snapshot){
 		switch(this.fire_type){
 			
 			case "spray":
 				//intentional fall-through, spray guns like a shotgun are triggered the same way as single fire guns
 				
 			case "single":
-				if(input_handler.mouse.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){ //TODO: remove dependency on input_handler
+				if(snapshot.mouse_clicked && ((Date.now() - this.lastShot) >= this.fire_rate)){ //TODO: remove dependency on input_handler
 					if(this.ammo_in_clip - 1 != -1){
-						this.fire(player);
+						this.fire(player, snapshot);
 						this.lastShot = Date.now();
 					}
 					else{
@@ -71,7 +71,7 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 		}
 	}
 	
-	this.fire = function(player){
+	this.fire = function(player, snapshot){
 		return; //does nothing if it is just a weapon, must replace in subclass
 	}
 	
@@ -95,9 +95,9 @@ function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, s
 	this.base = Weapon;
 	this.base("Pistol", "single", 2, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, pistol_icon); 
 	
-	this.fire = function(player){
+	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player, this.damage, this.bullet_speed, this.shot_variation));
+		bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player, snapshot, this.damage, this.bullet_speed, this.shot_variation));
 		//make bullet sound
 		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
 		sound_test.play();
@@ -108,7 +108,7 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 	this.base = Weapon;
 	this.base("Shotgun", "spray", 3, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, shotgun_icon);
 	
-	this.fire = function(player){
+	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
 		//make bullet sound
 		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
@@ -116,7 +116,7 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 		//get a random number of buckshot pellets between like 5 and 10 or something
 		let num_of_pellets = getRandomInRange(5, 10);
 		for(let i = 0; i < num_of_pellets; i++){
-			bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player, this.damage/num_of_pellets, this.bullet_speed, this.shot_variation));
+			bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player, snapshot, this.damage/num_of_pellets, this.bullet_speed, this.shot_variation));
 		}
 	}
 }
@@ -127,9 +127,9 @@ let remington870 = new Shotgun(30, 500, 500, 5, 4, 6000, 0.35);
 let sawedOffShotgun = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7);
 
 /////DIFFERENT TYPES OF AMMUNITION/////
-function Bullet(width, height, sprIdx, player, damage, speed, shot_variation) {
-	this.x_diff = input_handler.mouse.mapX - player.x;
-	this.y_diff = (input_handler.mouse.mapY - player.y) * -1;
+function Bullet(width, height, sprIdx, player, snapshot, damage, speed, shot_variation) {
+	this.x_diff = snapshot.mapX - player.x;
+	this.y_diff = (snapshot.mapY - player.y) * -1;
 	let angle = toDegrees(Math.atan(this.y_diff / this.x_diff));
 
 	if (this.x_diff < 0 && this.y_diff > 0) {
@@ -156,9 +156,9 @@ function Bullet(width, height, sprIdx, player, damage, speed, shot_variation) {
 	this.y_ratio += ((Math.random() - 0.5) * this.shot_variation);
 	this.x_ratio += ((Math.random() - 0.5) * this.shot_variation);
 
-	this.update = function(){
-		this.x += this.speed * this.x_ratio * global_delta_t;
-		this.y += this.speed * this.y_ratio * global_delta_t;
+	this.update = function(snapshot){
+		this.x += this.speed * this.x_ratio * snapshot.frameTime;
+		this.y += this.speed * this.y_ratio * snapshot.frameTime;
 
 		for(var j = 0; j < walls.length; j++){
 			if(isColliding(this, walls[j]))
@@ -196,10 +196,10 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 	//sprite 1 on the bullet sheet, rotation 0, transparency 1
 	this.base(img, 1, this.start_x, this.start_y, width, height, 0, 1);
 
-	this.update = function(){
+	this.update = function(snapshot){
 		if((Date.now() - this.start_time) < ARTILLERY_TIME){
-			this.x += (this.x_vel * global_delta_t);
-			this.y += (this.y_vel * global_delta_t);
+			this.x += (this.x_vel * snapshot.frameTime);
+			this.y += (this.y_vel * snapshot.frametime);
 
 			let total_time = (Date.now() - this.start_time)/1000; //this is in seconds
 

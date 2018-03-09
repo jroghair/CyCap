@@ -66,9 +66,17 @@ function GameState(){
 	this.masks = []; //the list of ground masks
 	
 	//this takes in the message from the server and builds the game state from that
-	this.updateGameState = function(message){
+	this.receiveGameState = function(message){
 		//update every single game object
+		
 		//apply the ClientPrediction
+		for(let i = 0; i < input_handler.clientPredictiveState.length; i++){
+			this.player.update(input_handler.clientPredictiveState[i]);
+		}
+	}
+	
+	this.updateGameState = function(snapshot) {
+		
 	}
 	
 	this.drawGameState = function(){
@@ -189,26 +197,26 @@ function setup() {
 	
 	//mouse click listener
 	document.addEventListener("click", function(event) {
-		input_handler.mouse.mouse_clicked = true;
+		input_handler.mouse_clicked = true;
 	});
 	
 	//left mouse button listener
 	document.addEventListener("mousedown", function(event) {
 		if(event.button == 0){
-			input_handler.mouse.lmb_down = true;
+			input_handler.lmb_down = true;
 		}
 	});
 	document.addEventListener("mouseup", function(event) {
 		if(event.button == 0){
-			input_handler.mouse.lmb_down = false;
+			input_handler.lmb_down = false;
 		}
 	});
 	
 	input_handler = new InputHandler();
 	window.addEventListener('mousemove', function(event){
 		this.rect = canvas.getBoundingClientRect();
-		input_handler.mouse.canvasX = (event.clientX - rect.left);
-		input_handler.mouse.canvasY = (event.clientY - rect.top);
+		input_handler.canvasX = (event.clientX - rect.left);
+		input_handler.canvasY = (event.clientY - rect.top);
 	}, false);
 
 	lastFrameTime = Date.now();
@@ -239,12 +247,13 @@ function run() {
 	
 
 	//update everything
-	input_handler.mouse.update();
-	player.update();
+	input_handler.update();
+	input_handler.getSnapshot();
+	player.update(input_handler.getMostRecentInput());
 	canvas_box.x = player.x; //update the canvas_box position
 	canvas_box.y = player.y;
 	for(let i = bullets.length - 1; i >= 0; i--){
-		bullets[i].update(); //we go through this backwards so that if one is removed, it still checks the others
+		bullets[i].update(input_handler.getMostRecentInput()); //we go through this backwards so that if one is removed, it still checks the others
 	}
 	for(let i = masks.length - 1; i >= 0; i--){
 		masks[i].update(); //we go through this backwards so that if one is removed, it still checks the others
@@ -321,7 +330,7 @@ function run() {
 	
 	//reset the 1 frame inputs
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);
-	input_handler.mouse.mouse_clicked = false;
+	input_handler.mouse_clicked = false;
 	
 	if(serverSocket.readyState == serverSocket.OPEN){
 		sendMessageToServer(player.toDataString()); //send data about player to the server
@@ -455,8 +464,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	}
 
 	//TODO: this needs to take in an inputSnapshot
-	this.update = function() {
-		this.movePlayer(); //move the player first
+	this.update = function(snapshot) {
+		this.movePlayer(snapshot); //move the player first
 		if(this.item_slot == "EMPTY"){
 			for(let i = 0; i < power_handler.power_ups.length; i++){
 				if(isColliding(this, power_handler.power_ups[i])){
@@ -474,29 +483,25 @@ function Player(width, height, img, x, y, role, team, client_id) {
 					this.item_slot.pickup(this);
 			}
 		}
-		this.currentWeapon.update(this); //checks to see if the current weapon is to be fired
+		this.currentWeapon.update(this, snapshot); //checks to see if the current weapon is to be fired
 		
 		//WEAPON AND ITEM RELATED KEYPRESSES
-		if(input_handler.keys_pnr.includes(49)){
-			//this.health -= 1;
+		if(snapshot.keys_pnr.includes(49)){
 			this.switchWeapon(1);
 		}
-		else if(input_handler.keys_pnr.includes(50)){
-			//this.health += 1;
+		else if(snapshot.keys_pnr.includes(50)){
 			this.switchWeapon(2);
 		}
-		else if(input_handler.keys_pnr.includes(51)){
-			//this.health -= 1;
+		else if(snapshot.keys_pnr.includes(51)){
 			this.switchWeapon(3);
 		}
-		else if(input_handler.keys_pnr.includes(52)){
-			//this.health += 1;
+		else if(snapshot.keys_pnr.includes(52)){
 			this.switchWeapon(4);
 		}
-		if(input_handler.keys_pnr.includes(82)){
+		if(snapshot.keys_pnr.includes(82)){
 			this.currentWeapon.reload();
 		}
-		if(input_handler.keys_pnr.includes(70)){
+		if(snapshot.keys_pnr.includes(70)){
 			this.useItem();
 		}
 	}
@@ -555,20 +560,20 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		}
 	}
 	
-	this.movePlayer = function(){
+	this.movePlayer = function(snapshot){
 		let movement_code  = 0b0000; //the binary code for which directions the player moving
 
 		//this section will probably end up on the server
-		if (input_handler.keys_down.includes(87)) {
+		if (snapshot.keys_down.includes(87)) {
 			movement_code |= UP; //trying to move up
 		}
-		if (input_handler.keys_down.includes(65)) {
+		if (snapshot.keys_down.includes(65)) {
 			movement_code |= LEFT; //trying to move left
 		}
-		if (input_handler.keys_down.includes(68)) {
+		if (snapshot.keys_down.includes(68)) {
 			movement_code |= RIGHT; //trying to move right
 		}
-		if (input_handler.keys_down.includes(83)) {
+		if (snapshot.keys_down.includes(83)) {
 			movement_code |= DOWN; //trying to move down
 		}
 
@@ -582,32 +587,32 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		let delta_x = 0;
 		let delta_y = 0;
 		if(movement_code == 0b1010){
-			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
-			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
 		}
 		else if(movement_code == 0b1001){
-			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
-			delta_x = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_y = -1 * this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
 		}
 		else if(movement_code == 0b0110){
-			delta_y = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
-			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_y = this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
+			delta_x = -1 * this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
 		}
 		else if(movement_code == 0b0101){
-			delta_y = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
-			delta_x = this.mov_speed * this.speed_boost * SIN_45 * global_delta_t;
+			delta_y = this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
+			delta_x = this.mov_speed * this.speed_boost * SIN_45 * snapshot.frameTime;
 		}
 		else if(movement_code == 0b1000){
-			delta_y = -1 * this.mov_speed * this.speed_boost * global_delta_t;
+			delta_y = -1 * this.mov_speed * this.speed_boost * snapshot.frameTime;
 		}
 		else if(movement_code == 0b0100){
-			delta_y = this.mov_speed * this.speed_boost * global_delta_t;
+			delta_y = this.mov_speed * this.speed_boost * snapshot.frameTime;
 		}
 		else if(movement_code == 0b0010){
-			delta_x = -1 * this.mov_speed * this.speed_boost * global_delta_t;
+			delta_x = -1 * this.mov_speed * this.speed_boost * snapshot.frameTime;
 		}
 		else if(movement_code == 0b0001){
-			delta_x = this.mov_speed * this.speed_boost * global_delta_t;
+			delta_x = this.mov_speed * this.speed_boost * snapshot.frameTime;
 		}
 
 		if(delta_x != 0){
