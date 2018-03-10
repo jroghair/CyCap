@@ -22,7 +22,7 @@ function AI_player(width, height, img, x, y, role, team) {
   this.hp = 100;
   this.has_flag = false;
   this.mov_speed = player_speed;
-  this.path = getFinalPath(this, player);
+  this.path = getFinalPath(this, gameState.player);
   this.pathLastUpdated = Date.now();
 
 	this.update = function() {
@@ -30,7 +30,7 @@ function AI_player(width, height, img, x, y, role, team) {
 	}
 
 	this.generateNewPath = function() {
-		this.path = getFinalPath(this, player);
+		this.path = getFinalPath(this, gameState.player);
 	}
   
 	this.drawAIPath = function(){

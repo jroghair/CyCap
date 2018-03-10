@@ -23,32 +23,34 @@ const DOWN  = 0b0100;
 const LEFT  = 0b0010;
 const RIGHT = 0b0001;
 
-//WORLD OBJECTS
+//GAME STATE OBJECTS
+let gameState;
 let other_players = [];
-let bullets = []; //all bullets, including artillery shells
 let walls = [];
 let part_fx = [];
-let guis = [];
 let map;
-let canvas_box;
 let masks = [];
+
+//NON-SERVER-BASED ITEMS
+let canvas_box;
+let guis = [];
 
 //FRAME TIME & DELTA_T
 let lastFrameTime;
 let global_delta_t = 0; //the time that this frame took in SECONDS
 
-let player;
 let client_id; //this will eventually come from the server
 let pw;
 
-let player_speed = 120;//pixels per second
+let player_speed = 150;//pixels per second
 let current_zoom_lvl = 2;
 
-//TESTING
+//////TESTING//////
 //stuff for fps testing
 let is_fps_running = true;
 let fps_frame_times = [];
 let rolling_buffer_length = 30;
+///////////////////
 
 //GAME MANAGERS
 //referee
@@ -56,7 +58,7 @@ let flag1, flag2;
 let power_handler;
 
 function GameState(){
-	this.player; //the current player on this client
+	this.player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1", client_id); //the current player on this client
 	this.other_players = []; //the other players
 	this.ai_players = [];
 	this.bullets = []; //all bullets, including artillery shells
@@ -76,10 +78,14 @@ function GameState(){
 	}
 	
 	this.updateGameState = function(snapshot) {
-		
+		this.player.update(snapshot);
+		for(let i = this.bullets.length - 1; i >= 0; i--){
+			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
+		}
 	}
 	
 	this.drawGameState = function(){
+		/*
 		this.map.draw();
 		for(let i = 0; i < this.masks.length; i++){
 			this.masks[i].draw();
@@ -92,6 +98,7 @@ function GameState(){
 		for(let i = 0; i < this.other_players.length; i++){
 			this.other_players[i].draw();
 		}
+		*/
 		this.player.draw();
 		
 		/*
@@ -103,14 +110,19 @@ function GameState(){
 		for(let i = 0; i < this.bullets.length; i++){
 			this.bullets[i].draw();
 		}
+		/*
 		for(let i = 0; i < this.part_fx.length; i++){
 			this.part_fx[i].draw();
 		}
+		*/
 	}
 }
 
 //all functions
 function setup() {
+	//initialize the game state
+	gameState = new GameState();
+	
 	client_id = prompt("What is your username?");
 	pw = "password";
 
@@ -128,11 +140,10 @@ function setup() {
 	gt5 = 0; //x trans
 	gt6 = 0; //y trans
 
-	player = new Player(grid_length, grid_length, player_image, 64, 64, "recruit", "1", client_id);
-	gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
-	gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+	gt5 = -1 * ((gameState.player.x * gt1) - (canvas.width / 2));
+	gt6 = -1 * ((gameState.player.y * gt4) - (canvas.height / 2));
 
-	canvas_box = new Entity(background_tiles, 0, player.x, player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
+	canvas_box = new Entity(background_tiles, 0, gameState.player.x, gameState.player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
 	map = new TiledBackground(background_tiles);
 	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
 	wallLine(5, 10, 5, 'x');  //done
@@ -176,14 +187,18 @@ function setup() {
 	generateNodes();
 	ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
+	//////GUI ELEMENTS//////
 	guis.push(new HealthGUI(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
+	////////////////////////
+	
 	power_handler = new PowerUpHandler();
 	flag1 = new Flag(320, 64, 0);
 	flag2 = new Flag(64, 320, 4);
 
-	//setting up two key listeners to improve movement
+	//////INPUT HANDLING//////
+	input_handler = new InputHandler();
 	//when a key goes down it is added to a list and when it goes up its taken out
 	document.addEventListener("keydown", function(event) {
 		if (!input_handler.keys_down.includes(event.keyCode)) {
@@ -211,8 +226,6 @@ function setup() {
 			input_handler.lmb_down = false;
 		}
 	});
-	
-	input_handler = new InputHandler();
 	window.addEventListener('mousemove', function(event){
 		this.rect = canvas.getBoundingClientRect();
 		input_handler.canvasX = (event.clientX - rect.left);
@@ -221,7 +234,8 @@ function setup() {
 
 	lastFrameTime = Date.now();
 	connectToServer();
-	console.log(walls.length);
+	//while(serverSocket.readyState != serverSocket.OPEN); //wait until the socket is open
+	//do some initial handshaking, sending back and forth information like the password and starting game state, etc
 }
 
 function run() {
@@ -246,15 +260,13 @@ function run() {
 	gui_context.clearRect(0, 0, gui_canvas.width, gui_canvas.height); //clear the canvas
 	
 
-	//update everything
+	//////UPDATE EVERYTHING///////
 	input_handler.update();
-	input_handler.getSnapshot();
-	player.update(input_handler.getMostRecentInput());
-	canvas_box.x = player.x; //update the canvas_box position
-	canvas_box.y = player.y;
-	for(let i = bullets.length - 1; i >= 0; i--){
-		bullets[i].update(input_handler.getMostRecentInput()); //we go through this backwards so that if one is removed, it still checks the others
-	}
+	/*sendMessageToServer(*/input_handler.getSnapshot();//); //sends the InputSnapshot to the server
+	gameState.updateGameState(input_handler.getMostRecentInput()); //updates player and bullet stuff
+	canvas_box.x = gameState.player.x; //update the canvas_box position
+	canvas_box.y = gameState.player.y;
+
 	for(let i = masks.length - 1; i >= 0; i--){
 		masks[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
@@ -267,12 +279,15 @@ function run() {
 	power_handler.updateItems();
 	flag1.update();
 	flag2.update();
-
+	
+	//TOGGLE THE ZOOM LEVEL V IMPORTANT
 	if(input_handler.keys_pnr.includes(90)){
 		//switch zoom level!
 		ToggleZoom();
 	}
 
+	
+	//////DRAW EVERYTHING///////
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
 		masks[i].draw();
@@ -285,15 +300,12 @@ function run() {
 	for(let i = 0; i < other_players.length; i++){
 		other_players[i].draw();
 	}
-	player.draw();
+	gameState.drawGameState(); //draws the player and the bullets
 	
 	power_handler.drawItems();
 	flag1.draw();
 	flag2.draw();
 	
-	for(let i = 0; i < bullets.length; i++){
-		bullets[i].draw();
-	}
 	for(let i = 0; i < part_fx.length; i++){
 		part_fx[i].draw();
 	}
@@ -332,10 +344,6 @@ function run() {
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);
 	input_handler.mouse_clicked = false;
 	
-	if(serverSocket.readyState == serverSocket.OPEN){
-		sendMessageToServer(player.toDataString()); //send data about player to the server
-	}
-	
 	requestAnimationFrame(run); //run again please
 }
 
@@ -344,24 +352,24 @@ function ToggleZoom(){
 		current_zoom_lvl = 2;
 		gt1 = NORMAL_ZOOM_LEVEL; //setting scaling to normal levels
 		gt4 = NORMAL_ZOOM_LEVEL;
-		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
-		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		gt5 = -1 * ((gameState.player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((gameState.player.y * gt4) - (canvas.height / 2));
 		fog_context.putImageData(fog_norm, 0, 0);
 	}
 	else if(current_zoom_lvl == 2){
 		current_zoom_lvl = 3;
 		gt1 = FAR_ZOOM_LEVEL; //setting scaling to wide levels
 		gt4 = FAR_ZOOM_LEVEL;
-		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
-		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		gt5 = -1 * ((gameState.player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((gameState.player.y * gt4) - (canvas.height / 2));
 		fog_context.putImageData(fog_far, 0, 0);
 	}
 	else if(current_zoom_lvl == 3){
 		current_zoom_lvl = 1;
 		gt1 = CLOSE_ZOOM_LEVEL; //setting scaling to zoomed levels
 		gt4 = CLOSE_ZOOM_LEVEL;
-		gt5 = -1 * ((player.x * gt1) - (canvas.width / 2));
-		gt6 = -1 * ((player.y * gt4) - (canvas.height / 2));
+		gt5 = -1 * ((gameState.player.x * gt1) - (canvas.width / 2));
+		gt6 = -1 * ((gameState.player.y * gt4) - (canvas.height / 2));
 		fog_context.putImageData(fog_close, 0, 0);
 	}
 	canvas_box.dWidth = canvas.width / gt1; //update the height and width of the canvas box
@@ -389,6 +397,19 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.dHeight = dHeight;
 	this.r = toRadians(r);
 	this.a = a;
+	
+	this.resetData = function(imgCode, sprIdx, x, y, dWidth, dHeight, r, a){
+		this.image = findImageFromCode(imgCode);
+		this.sprIdx = sprIdx
+		this.sprite = this.image.sprites[this.sprIdx];
+		this.x = x;
+		this.y = y;
+		this.dWidth = dWidth;
+		this.dHeight = dHeight;
+		this.collision_radius = this.updateCollisionRadius();
+		this.r = r;
+		this.a = a;
+	}
 	
 	this.updateCollisionRadius = function(){
 		this.collision_radius = distanceBetween(this.x, this.y, (this.x + (this.dWidth/2)), (this.y + (this.dHeight/2)));

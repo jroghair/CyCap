@@ -108,3 +108,13 @@ let flags_ss = new Image();
 flags_ss.src = "res/images/flags.png";
 flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
                     {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
+					
+let image_codes = [{code:0, img:player_image}, {code:1, img:enemy_image}, {code:2, img:bullet_image}];
+
+function findImageFromCode(code){
+	for(let i = 0; i < image_codes.length; i++){
+		if(image_codes[i].code == code){
+			return image_codes[i].img;
+		}
+	}
+}

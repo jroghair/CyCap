@@ -228,7 +228,7 @@ function toDegrees(angle) {
 function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
-		serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
+		//serverSocket.send("start," + player.toDataString()); //the start message to send to the server upon connection
 		//set a variable to show that the player is connected to the server
 	};
 
@@ -240,6 +240,7 @@ function sendMessageToServer(msg){
 }
 
 //event listener for when the socket receives a message from the server
+//TODO: fix this based on the new model
 function message_handler(msg){
 	console.log("Message received:" + msg);
 	let arr = msg.split(","); //the split array of the server message
