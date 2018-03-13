@@ -1,7 +1,9 @@
 package com.cycapservers.account;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
@@ -27,10 +31,14 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.cycapservers.account.AccountRepository; 
 
 @Controller
+@SessionAttributes("account")
 public class AccountController {
 
     @Autowired
     private AccountRepository accountsRepository;
+    
+    @Autowired
+    private FriendRepository friendsRepository;
 
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
@@ -74,7 +82,7 @@ public class AccountController {
     }
     
     @RequestMapping(value= "/accounts/registration", method= RequestMethod.POST)
-    public View registration(Model model, @ModelAttribute("account") Account account){
+    public View registration(Model model, @SessionAttribute("account") Account account){
     	logger.info("Entered into post account registration controller Layer");
     	String s1 = account.getEmail();
     	String[] s2 = s1.split("\\@");
@@ -125,12 +133,43 @@ public class AccountController {
     }   
     
     @GetMapping("/accounts/successfullogin")
-    public String successfulLogin() {
+    public String successfulLogin(Model model, @SessionAttribute("account") Account account) {
+    	//System.out.println(account.getUserID());
+    	model.addAttribute("account", account);
         return "/accounts/successfullogin";
     }
     
     @GetMapping("/accounts/unsuccessfullogin")
     public String unsuccessfulLogin() {
         return "/accounts/unsuccessfullogin";
+    }  
+ 
+    @ModelAttribute(value = "friend")
+    public Friends newFriendst(){
+    	return new Friends();
     }
+    
+    @RequestMapping(value = "accounts/friends", method =  RequestMethod.GET)
+    public String friends(Model model, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friends") Friends friends){
+    	logger.info("Entered into get friends controller Layer");
+    	String view = "/accounts/friendsList";
+    	model.addAttribute("account", account);
+    	String s1 = account.getUserID(); 
+    	System.out.println(s1);
+    	Collection<String> coll = this.friendsRepository.findByUserID(s1);
+    	List list;
+    	if (coll instanceof List){
+    		list = (List)coll;
+    		System.out.println("here");
+    		System.out.println(Arrays.toString(list.toArray()));
+    	}
+    	else{
+    	  list = new ArrayList(coll);
+    	  System.out.println("here2");
+    	}
+    	friends.setFriendsList(list);
+    	model.addAttribute("friendsList", friends);
+    	return "/accounts/friendsList"; //new RedirectView("/accounts/friendsList");
+    }
+       
 }

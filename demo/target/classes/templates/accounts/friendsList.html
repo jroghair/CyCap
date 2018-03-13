@@ -1,0 +1,29 @@
+
+<html>
+<body>
+  <h2>Friends</h2>
+	<h5 id="user"></h5>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';	
+		/*]]>*/
+	</script>
+	
+  <table id="friends" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Player Id</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="friend : ${friends.friendList}">
+        <td th:text="${friend}"><span
+          th:if="${friends.friendList == 0}">none</span></td>
+	<td><button class="msgbtn">Message</button></td>
+	<td><button class="rmbtn">Remove</button></td>
+    </tr>
+    </tbody>
+  </table>
+</body>
+</html>

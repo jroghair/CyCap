@@ -1,0 +1,13 @@
+<HTML>
+Successfully Logged in 
+<h5 id="user"></h5>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	
+	document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';
+	
+	/*]]>*/
+</script>
+
+</HTML>
