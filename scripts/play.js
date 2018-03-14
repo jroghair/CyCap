@@ -70,6 +70,10 @@ function GameState(){
 	//this takes in the message from the server and builds the game state from that
 	this.receiveGameState = function(message){
 		//update every single game object
+		//this.player = new Player();
+		this.other_players = [];
+		this.bullets = [];
+		//parse data
 		
 		//apply the ClientPrediction
 		for(let i = 0; i < input_handler.clientPredictiveState.length; i++){

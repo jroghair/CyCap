@@ -11,6 +11,16 @@
 		<!-- <canvas id="menu_canvas"></canvas> -->
 		<h2 id="fps">test</h2>
 		
+		<script>
+		let role = "";
+			while(!((role == "scout") || (role == "recruit") || (role == "infantry"))){
+				role = prompt("Please choose a class. The acceptable options are \"scout\", \"recruit\", or \"infantry\". Please type carefully."); 
+			}
+			
+		console.log(role);
+		</script>
+		
+		
 		<script type="text/javascript" src="scripts/images.js"></script> <!-- this holds all of the image and sprite sheet data -->
 		<script type="text/javascript" src="scripts/sounds.js"></script> <!-- this holds all of the data for sounds -->
 		<script type="text/javascript" src="scripts/items.js"></script> <!-- this holds data and info on different types of items -->

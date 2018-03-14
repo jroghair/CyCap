@@ -243,7 +243,7 @@ function sendMessageToServer(msg){
 //TODO: fix this based on the new model
 function message_handler(msg){
 	console.log("Message received:" + msg);
-	let arr = msg.split(","); //the split array of the server message
+	let arr = msg.data.split(","); //the split array of the server message
 	let found = false;
 	for(let i = 0; i < other_players.length; i++){
 		if(arr[0] == player.client_id){
