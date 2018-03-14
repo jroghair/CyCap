@@ -47,7 +47,11 @@ public class Account {
     public Account() {
     	this.setDateOfCreation();
     }
-    
+ 
+    public Account(String userID) {
+    	this.userID = userID; 
+    	this.setDateOfCreation();
+    }
     
 	public String getUserID() {
 		

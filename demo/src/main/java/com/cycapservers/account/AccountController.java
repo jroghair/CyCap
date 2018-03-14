@@ -144,8 +144,8 @@ public class AccountController {
         return "/accounts/unsuccessfullogin";
     }  
  
-    @ModelAttribute(value = "friend")
-    public Friends newFriendst(){
+    @ModelAttribute(value = "friends")
+    public Friends newFriends(){
     	return new Friends();
     }
     
@@ -155,21 +155,52 @@ public class AccountController {
     	String view = "/accounts/friendsList";
     	model.addAttribute("account", account);
     	String s1 = account.getUserID(); 
-    	System.out.println(s1);
     	Collection<String> coll = this.friendsRepository.findByUserID(s1);
     	List list;
     	if (coll instanceof List){
     		list = (List)coll;
-    		System.out.println("here");
-    		System.out.println(Arrays.toString(list.toArray()));
     	}
     	else{
     	  list = new ArrayList(coll);
-    	  System.out.println("here2");
     	}
     	friends.setFriendsList(list);
     	model.addAttribute("friendsList", friends);
     	return "/accounts/friendsList"; //new RedirectView("/accounts/friendsList");
     }
-       
+    
+    @ModelAttribute(value = "friend")
+    public Friend newFriend(){
+    	return new Friend();
+    }
+    
+    
+    @RequestMapping(value = "accounts/friendAdd", method =  RequestMethod.POST)
+    public View friendAdd(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends ADD controller Layer");
+    	String f1 = friend.getUserID();
+    	
+    	if(accountsRepository.findByUserID(f1)!=null){
+    		friend.setPlayerID(f1);
+        	friend.setUserID(account.getUserID());
+        	this.friendsRepository.save(friend);
+    	}
+    	//friend.setUserID(account.getUserID());
+    	
+    	return new RedirectView("/accounts/friends");
+    }
+    
+    
+    
+    @RequestMapping(value = "accounts/remove", method =  RequestMethod.POST)
+    public String friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends REMOVE controller Layer");
+
+    	System.out.println(friend.getUserID());
+    	System.out.println(friend.getPlayerID());
+    	//friend.setUserID(account.getUserID());
+    	
+    	return "/accounts/friends";
+    }
+    
+
 }

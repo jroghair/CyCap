@@ -1,8 +1,9 @@
 
 <html>
-<body>
-  <h2>Friends</h2>
-	<h5 id="user"></h5>
+
+
+	<h5 id="user"> </h5> 	<h2> Friends </h2>
+
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
@@ -10,6 +11,10 @@
 		/*]]>*/
 	</script>
 	
+	<form th:action="@{/accounts/friendAdd}"  method="post" th:object="${friend}">	
+	<p><input type="text" th:field="*{userID}" /> <input type="submit" value="Add Friend" /></p>
+	</form>
+<body>	
   <table id="friends" class="table table-striped">
     <thead>
       <tr>
@@ -17,13 +22,27 @@
       </tr>
     </thead>
     <tbody>
-      <tr th:each="friend : ${friends.friendList}">
+      <tr th:each="friend : ${friends.friendList}" >
         <td th:text="${friend}"><span
           th:if="${friends.friendList == 0}">none</span></td>
-	<td><button class="msgbtn">Message</button></td>
-	<td><button class="rmbtn">Remove</button></td>
+		<td><button class="msgbtn">Message</button></td>
+		
+
+<form th:action="@{/accounts/remove}"  method="post" th:object="${friend}">
+	<td><input class="btn" value="Remove" onclick="showTdSecond(this)" type="button" id="userID"/> </td>
+		<input type="text" th:field="*{userID}" id="userID"/> 
+		</form>
+		<script>
+		function showTdSecond(_this) {
+			var input = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+			document.getElementById('userID').value = input;​​​​​​​​​​
+			}
+		</script>		
     </tr>
     </tbody>
   </table>
 </body>
 </html>
+
+
+

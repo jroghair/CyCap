@@ -21,8 +21,6 @@ public class Friend {
     @Column(name="UserID")
     private String userID;
     
-    public Friend() {
-    }
     
 	public String getUserID() {
 		return this.userID;
