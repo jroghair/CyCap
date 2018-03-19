@@ -1,0 +1,17 @@
+table{
+	color: #C8102E;
+	margin-top: 50px;
+}
+
+th{
+	padding: 20px;
+}
+
+td{
+	text-align: center;
+}
+
+table, th, td, caption{
+    border: 3px solid #F1BE48;
+	border-collapse: collapse;
+}
