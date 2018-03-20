@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 //import org.springframework.web.bind.annotation.GetMapping;
 
-import com.cycapservers.account.Account;
-
 
 @Controller
 @SessionAttributes("account")
@@ -30,17 +28,17 @@ public class HomepageController {
     @GetMapping("/how_to")
     public String how_to() {
         return "how_to";
+    }
     
+    @GetMapping("about")
+    public String about_the_team() {
+    	return "about";
     }
     
     @GetMapping("/play")
     public String playNow(Model model) {
     	Random rand = new Random();
     	model.addAttribute("user", "guest" + rand.nextInt(1000000));
-    	/*
-    	model.addAttribute("user", account);
-    	//System.out.println(account.getUserID());
-    	 * */
     	return "play";
     }
 }

@@ -9,6 +9,7 @@ public class Player extends Entity {
 	protected String password;
 	protected WebSocketSession session;
 	protected int highestHandledSnapshot;
+	protected String lastUnsentGameState;
 	
 	protected String role;
 	protected Weapon weapon1;
@@ -43,6 +44,7 @@ public class Player extends Entity {
 		this.password = password;
 		this.session = session;
 		this.highestHandledSnapshot = 0;
+		this.lastUnsentGameState = null;
 		
 		this.isDead = false;
 		this.is_invincible = false;
@@ -262,5 +264,13 @@ public class Player extends Entity {
 	
 	public String getPassword() {
 		return password;
+	}
+
+	public String getLastUnsentGameState() {
+		return lastUnsentGameState;
+	}
+
+	public void setLastUnsentGameState(String lastUnsentGameState) {
+		this.lastUnsentGameState = lastUnsentGameState;
 	}
 }

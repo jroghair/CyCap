@@ -1,5 +1,7 @@
 package com.cycapservers.game;
 
+import java.util.List;
+
 public final class Utils{
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
@@ -78,5 +80,28 @@ public final class Utils{
 	//returns a random int between lower and upper, inclusive
 	public static int getRandomInRange(int lower, int upper){
 		return getRandomInt(upper - lower + 1) + lower;
+	}
+	
+	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis) {
+		if(axis == 'x'){
+			for(int i = 0; i < length; i++){
+				walls.add(new Wall(0, startX + i, startY, false));
+			}
+		}
+		else if(axis == 'y'){
+			for(int i = 0; i < length; i++){
+				walls.add(new Wall(0, startX, startY + i, false));
+			}
+		}
+		else{
+			throw new IllegalArgumentException("Error in the function generateWallLine");
+		}
+	}
+	
+	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY){
+		generateWallLine(walls, startX, startY, width, 'x');
+		generateWallLine(walls, startX, height + startY - 1, width, 'x');
+		generateWallLine(walls, startX, startY + 1, height - 2, 'y');
+		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 }

@@ -20,7 +20,11 @@ public class GameState extends TimerTask
 	protected int playersOnTeam2;
 	
 	protected List<Bullet> bullets;
+	
+	//Map Related Stuff
 	protected List<Wall> walls;
+	protected int mapWidth;
+	protected int mapHeight;
 	
 	private long lastGSMessage;
 	protected double currentDeltaTime; //the time since the last game state update in seconds
@@ -35,7 +39,7 @@ public class GameState extends TimerTask
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
 		
-		//TODO: load up the map
+		MapLoader.loadPredefinedMap(0, this.walls);//load up the map
 	}
 
 	public void updateGameState() {
@@ -64,14 +68,7 @@ public class GameState extends TimerTask
 		
 		String message = this.toString();
 		for(Player p : players) {
-			try {
-				if(p.session.isOpen()) {
-					p.session.sendMessage(new TextMessage(message));
-				}
-			} catch (IOException e) {
-				System.out.println("Error when sending game state message");
-				e.printStackTrace();
-			}
+			p.setLastUnsentGameState(message);
 		}
 	}
 	
@@ -90,10 +87,19 @@ public class GameState extends TimerTask
 	}
 	
 	public void addInputSnap(InputSnapshot s) {
-		for(int i = 0; i < players.size(); i++) {
-			if(s.password.equals(players.get(i).getPassword())) {
-				s.setClient(players.get(i));
+		for(Player p : this.players) {
+			if(s.password.equals(p.getPassword())) {
+				s.setClient(p);
 				unhandledInputs.add(s);
+				if(p.getLastUnsentGameState() != null) {
+					try {
+						p.session.sendMessage(new TextMessage(p.getLastUnsentGameState()));
+						p.setLastUnsentGameState(null);
+					} catch (IOException e) {
+						System.out.println("Error when sending game state");
+						e.printStackTrace();
+					}
+				}
 				break;
 			}
 		}

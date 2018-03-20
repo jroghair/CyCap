@@ -21,7 +21,12 @@ function HealthGUI(img, x, y, width, height, elemIndex, num_frames){
 	this.num_frames = num_frames;
 	
 	this.update = function(){
-		this.sprIdx = 8 - Math.round(gameState.player.health/gameState.player.max_hp * this.num_frames);
+		if(gameState.player.health <= 0){
+			this.sprIdx = 7;
+		}
+		else{
+			this.sprIdx = 8 - Math.round(gameState.player.health/gameState.player.max_hp * this.num_frames);
+		}
 	}
 }
 

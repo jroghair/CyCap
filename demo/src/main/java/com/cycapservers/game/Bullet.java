@@ -15,7 +15,7 @@ public class Bullet extends Entity {
 	protected double xRatio;
 	protected double yRatio;
 	
-	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, Player p) {
+	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p) {
 		super(2, sprIdx, startX, startY, w, h, r, a);
 		
 		this.speed = speed;
@@ -32,6 +32,8 @@ public class Bullet extends Entity {
 		double c = Utils.distanceBetween(this.startX, this.startY, this.endX, this.endY);
 		this.xRatio = (this.endX - this.startX) / c; 
 		this.yRatio = (this.endY - this.startY) / c;
+		this.xRatio += (Math.random() - 0.5) * variation;
+		this.yRatio += (Math.random() - 0.5) * variation;
 	}
 	
 	/**

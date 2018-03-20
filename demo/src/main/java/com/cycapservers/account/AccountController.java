@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.cycapservers.account.AccountRepository; 
+import com.cycapservers.account.Account; 
 
 @Controller
 @SessionAttributes("account")
@@ -86,15 +85,14 @@ public class AccountController {
     }
     
     
-    @RequestMapping(value = "/accounts/log", method =  RequestMethod.GET)
+    @RequestMapping(value = "accounts/log", method =  RequestMethod.GET)
     public ModelAndView log(Model model, HttpServletRequest request){
     	logger.info("Entered into get accounts login controller Layer");
     	String view = "/accounts/login";
     	return new ModelAndView(view, "command", model);
     }
     
-    
-    @RequestMapping(value= "/accounts/login", method= RequestMethod.POST)
+    @RequestMapping(value="/accounts/login", method = RequestMethod.POST)
     public View login(Model model, @ModelAttribute("account") Account account){ 
     	String user = account.getUserID();
     	String pswd = account.getPassword();
