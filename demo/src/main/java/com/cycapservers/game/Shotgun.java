@@ -36,7 +36,7 @@ public class Shotgun extends Weapon {
 		//get a random number of buckshot pellets between like 5 and 10 or something
 		int num_of_pellets = 5;
 		for(int i = 0; i < num_of_pellets; i++){
-			g.bullets.add(new Bullet(this.bullet_type, p.x, p.y, s.mapX, s.mapY, Utils.GRID_LENGTH * 0.125, Utils.GRID_LENGTH * 0.125, 0, 1.0, this.bullet_speed, this.damage, this.shot_variation, p));
+			g.bullets.add(new Bullet(this.bullet_type, p.x, p.y, s.mapX, s.mapY, Utils.GRID_LENGTH * 0.125, Utils.GRID_LENGTH * 0.125, 0, 1.0, this.bullet_speed, this.damage/num_of_pellets, this.shot_variation, p));
 		}
 	}
 }

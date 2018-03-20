@@ -104,4 +104,15 @@ public final class Utils{
 		generateWallLine(walls, startX, startY + 1, height - 2, 'y');
 		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
 	}
+	
+	public static void setRole(Player p) {
+		switch(p.role) {
+			case "recruit":
+				//something
+				break;
+				
+			default:
+				throw new IllegalStateException("Player role is unacceptable!");
+		}
+	}
 }
