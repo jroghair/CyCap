@@ -13,6 +13,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
 public class LogginHandler extends TextWebSocketHandler{
+	
+	ChatHandler chat = new ChatHandler();
 
 	@Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -21,13 +23,13 @@ public class LogginHandler extends TextWebSocketHandler{
 	
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-    	System.out.println("Using me");
         session.sendMessage(new TextMessage("You are now connected to the server. This is the first message."));
     }
     
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
-        System.out.println("Message received: " + textMessage.getPayload());
+        chat.parseMessage(textMessage.getPayload(),session);
+        
     }
     
 
