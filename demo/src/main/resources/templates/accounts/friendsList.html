@@ -1,7 +1,8 @@
 
 <html>
-
-
+<head>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+</head>
 	<h5 id="user"> </h5> 	<h2> Friends </h2>
 
 
@@ -25,24 +26,25 @@
       <tr th:each="friend : ${friends.friendList}" >
         <td th:text="${friend}"><span
           th:if="${friends.friendList == 0}">none</span></td>
-		<td><button class="msgbtn">Message</button></td>
-		
-
-<form th:action="@{/accounts/remove}"  method="post" th:object="${friend}">
-	<td><input class="btn" value="Remove" onclick="showTdSecond(this)" type="button" id="userID"/> </td>
-		<input type="text" th:field="*{userID}" id="userID"/> 
+          
+ <form th:action="@{/accounts/chat}"  method="post" >         
+		<td><input class="msgbtn" value="Chat" type="submit"/></td>
 		</form>
-		<script>
-		function showTdSecond(_this) {
-			var input = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
-			document.getElementById('userID').value = input;​​​​​​​​​​
-			}
-		</script>		
+		
+<form th:action="@{/accounts/remove}"  method="post" >
+	<td> <input class="btn" name="Remove" value="Remove" th:value="Remove" onclick="showTdSecond(this);" type="submit" id="remove"/>
+	<script  th:inline="javascript">
+	function showTdSecond(_this) {
+	var friend = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+	document.getElementById('remove').value = friend; 
+ 	alert(_this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
+	}
+	</script>
+	
+	</td> 
+</form>			
     </tr>
     </tbody>
   </table>
 </body>
 </html>
-
-
-

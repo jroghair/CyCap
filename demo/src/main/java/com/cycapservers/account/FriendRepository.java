@@ -19,4 +19,7 @@ public interface FriendRepository extends CrudRepository<Friend, String> {
     
 	
     Friend save(Friend friend);
+    
+    @Transactional
+    String deleteByPlayerID(String PlayerId);
 }

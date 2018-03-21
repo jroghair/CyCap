@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: CyCapServer.DemoApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.664 sec - in CyCapServer.DemoApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.856 sec - in CyCapServer.DemoApplicationTests

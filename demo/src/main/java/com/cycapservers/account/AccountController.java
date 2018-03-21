@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -82,7 +83,7 @@ public class AccountController {
     }
     
     @RequestMapping(value= "/accounts/registration", method= RequestMethod.POST)
-    public View registration(Model model, @SessionAttribute("account") Account account){
+    public View registration(Model model, @ModelAttribute("account") Account account){
     	logger.info("Entered into post account registration controller Layer");
     	String s1 = account.getEmail();
     	String[] s2 = s1.split("\\@");
@@ -149,7 +150,7 @@ public class AccountController {
     	return new Friends();
     }
     
-    @RequestMapping(value = "accounts/friends", method =  RequestMethod.GET)
+    @RequestMapping(value = "/accounts/friends", method =  RequestMethod.GET)
     public String friends(Model model, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friends") Friends friends){
     	logger.info("Entered into get friends controller Layer");
     	String view = "/accounts/friendsList";
@@ -174,7 +175,7 @@ public class AccountController {
     }
     
     
-    @RequestMapping(value = "accounts/friendAdd", method =  RequestMethod.POST)
+    @RequestMapping(value = "/accounts/friendAdd", method =  RequestMethod.POST)
     public View friendAdd(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends ADD controller Layer");
     	String f1 = friend.getUserID();
@@ -190,7 +191,7 @@ public class AccountController {
     }
     
     
-    
+    /*
     @RequestMapping(value = "accounts/remove", method =  RequestMethod.POST)
     public String friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends REMOVE controller Layer");
@@ -201,6 +202,33 @@ public class AccountController {
     	
     	return "/accounts/friends";
     }
+    */
+    @RequestMapping(value = "/accounts/remove", method =  RequestMethod.POST)
+    public View friendRemove(@RequestParam(value="Remove") String playerID, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends REMOVE controller Layer");
+    	System.out.println(playerID);
+    	friend.setPlayerID(playerID);
+    	friend.setUserID(account.getUserID());
+    	friendsRepository.deleteByPlayerID(playerID);
+    	
+    	
+    	
+    	//friend.setUserID(account.getUserID());
+    	
+    	return new RedirectView("/accounts/friends");
+    }
     
-
+    @RequestMapping(value = "/accounts/friendChat", method =  RequestMethod.POST)
+    public View friendChat(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends Chat controller Layer");
+    	
+    	//System.out.println(playerID);
+    	
+    	//friend.setUserID(account.getUserID());
+    	
+    	return new RedirectView("/accounts/chat");
+    }
+    
+    
+    
 }
