@@ -15,6 +15,9 @@ public class Bullet extends Entity {
 	protected double xRatio;
 	protected double yRatio;
 	
+	protected long lifeSpan;
+	protected long birthTime;
+	
 	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p) {
 		super(2, sprIdx, startX, startY, w, h, r, a);
 		
@@ -34,14 +37,21 @@ public class Bullet extends Entity {
 		this.yRatio = (this.endY - this.startY) / c;
 		this.xRatio += (Math.random() - 0.5) * variation;
 		this.yRatio += (Math.random() - 0.5) * variation;
+		
+		this.birthTime = System.currentTimeMillis();
+		this.lifeSpan = 5000;
 	}
 	
 	/**
-	 * Returns true if the bullet is colliding with something
+	 * Returns true if the bullet is to be removed
 	 * @param game - the GameState
 	 * @return boolean
 	 */
 	public boolean update(GameState game) {
+		if((System.currentTimeMillis() - this.birthTime) > this.lifeSpan){
+			return true;
+		}
+		
 		this.x += this.speed * this.xRatio * game.currentDeltaTime;
 		this.y += this.speed * this.yRatio * game.currentDeltaTime;
 

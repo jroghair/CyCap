@@ -22,7 +22,9 @@ public class Player extends Entity {
 	protected int health;
 	protected int max_health;
 	protected boolean isDead;
-	protected double speed; //TODO determine is this needs to be sent
+	protected long lastDeathTime;
+	
+	protected double speed; //TODO determine if this needs to be sent
 	protected int visibility; //TODO: handle visibility!
 	
 	protected boolean is_invincible;
@@ -52,16 +54,7 @@ public class Player extends Entity {
 		this.damage_boost = 1.0;
 		
 		this.item_slot = null;
-		if(this.role.equals("recruit")) {
-			this.speed = 150;
-			this.max_health = 100;
-			this.health = this.max_health;
-			this.weapon1 = new Shotgun("Remington870", 30, 500, 500, 5, 4, 6000, 0.35);
-			this.weapon2 = new Pistol("Pistol", 11, 100, 400, 8, 4, 200, 0.05); //pistol
-			this.weapon3 = null;
-			this.weapon4 = null;
-			this.currentWeapon = this.weapon1;
-		}
+		Utils.setRole(this); //TODO check if this causes a concurrent edit error
 	}
 	
 	public void takeDamage(int amount) {
@@ -77,37 +70,48 @@ public class Player extends Entity {
 		this.x = -256;
 		this.y = -256;
 		this.isDead = true;
+		this.lastDeathTime = System.currentTimeMillis();
 	}
 	
 	public void update(GameState game, InputSnapshot s) {
-		//do stuff here
 		if(s.snapshotNum > this.highestHandledSnapshot) {
 			this.highestHandledSnapshot = s.snapshotNum;
 		}
 		
-		if(!this.isDead) {
+		if(this.isDead){
+			if((System.currentTimeMillis() - this.lastDeathTime) > game.respawnTime) {
+				//respawn player
+				this.x = 64;
+				this.y = 64;
+				//set isDead to false
+				this.isDead = false;
+				//reset ammo and health
+				Utils.setRole(this);
+			}
+		}
+		else {
 			this.movePlayer(game, s); //move the player first
 			this.currentWeapon.update(this, s, game); //checks to see if the current weapon is to be fired
-		}
-		
-		//WEAPON AND ITEM RELATED KEYPRESSES
-		if(s.keys_pnr.contains(49)){
-			this.switchWeapon(1);
-		}
-		else if(s.keys_pnr.contains(50)){
-			this.switchWeapon(2);
-		}
-		else if(s.keys_pnr.contains(51)){
-			this.switchWeapon(3);
-		}
-		else if(s.keys_pnr.contains(52)){
-			this.switchWeapon(4);
-		}
-		if(s.keys_pnr.contains(82)){
-			this.currentWeapon.reload();
-		}
-		if(s.keys_pnr.contains(70)){
-			this.useItem();
+			
+			//WEAPON AND ITEM RELATED KEYPRESSES
+			if(s.keys_pnr.contains(49)){
+				this.switchWeapon(1);
+			}
+			else if(s.keys_pnr.contains(50)){
+				this.switchWeapon(2);
+			}
+			else if(s.keys_pnr.contains(51)){
+				this.switchWeapon(3);
+			}
+			else if(s.keys_pnr.contains(52)){
+				this.switchWeapon(4);
+			}
+			if(s.keys_pnr.contains(82)){
+				this.currentWeapon.reload();
+			}
+			if(s.keys_pnr.contains(70)){
+				this.useItem();
+			}
 		}
 	}
 	

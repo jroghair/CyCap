@@ -36,6 +36,26 @@ public abstract class Weapon{
 		this.extra_ammo = extra_mags * this.mag_size;
 	}
 	
+	/**
+	 * A copy constructor for Weapon
+	 * @param w the weapon to based the new object on
+	 */
+	public Weapon(Weapon w) {
+		this.name = w.name;
+		this.damage = w.damage;
+		this.bullet_type = w.bullet_type;
+		this.fire_rate = w.fire_rate;
+		this.last_shot = w.last_shot;
+		this.bullet_speed = w.bullet_speed;
+		this.shot_variation = w.shot_variation;
+		this.reload_time = w.reload_time;
+		this.is_reloading = w.is_reloading;
+		this.reload_start_time = w.reload_start_time;
+		this.mag_size = w.mag_size;
+		this.ammo_in_clip = w.ammo_in_clip;
+		this.extra_ammo = w.extra_ammo;
+	}
+	
 	public abstract void update(Player p, InputSnapshot s, GameState g);
 	
 	public abstract void checkFire(Player p, InputSnapshot s, GameState g);

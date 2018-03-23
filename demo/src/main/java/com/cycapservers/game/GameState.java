@@ -18,13 +18,17 @@ public class GameState extends TimerTask
 	protected List<Player> players;
 	protected int playersOnTeam1;
 	protected int playersOnTeam2;
+	protected int team1_score;
+	protected int team2_score;
+	protected boolean friendlyFire;
+	protected long respawnTime; //the amount of time to respawn after death in ms
 	
 	protected List<Bullet> bullets;
 	
 	//Map Related Stuff
 	protected List<Wall> walls;
-	protected int mapWidth;
-	protected int mapHeight;
+	protected int mapGridWidth;
+	protected int mapGridHeight;
 	
 	private long lastGSMessage;
 	protected double currentDeltaTime; //the time since the last game state update in seconds
@@ -38,8 +42,12 @@ public class GameState extends TimerTask
 		
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
+		team1_score = 0;
+		team2_score = 0;
+		friendlyFire = false;
+		respawnTime = 10000; //10 seconds respawn time
 		
-		MapLoader.loadPredefinedMap(0, this.walls);//load up the map
+		MapLoader.loadPredefinedMap(0, this);//load up the map
 	}
 
 	public void updateGameState() {
@@ -56,13 +64,14 @@ public class GameState extends TimerTask
 		
 		for(int i = 0; i < this.unhandledInputs.size(); i++) {
 			try {
-				this.unhandledInputs.get(i).client.update(this, this.unhandledInputs.get(i));
+				Player p = this.unhandledInputs.get(i).client;
+				p.update(this, this.unhandledInputs.get(i));
 			}
 			catch(ConcurrentModificationException e) {
 				System.out.println("unhandled input " + i + ": " + e);
 			}
 		}
-		this.unhandledInputs.clear();
+		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		
 		this.lastGSMessage = System.currentTimeMillis();
 		
@@ -139,7 +148,7 @@ public class GameState extends TimerTask
 		    	else {
 		    		this.playersOnTeam2--;
 		    	}
-		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
+		    	iter.remove();
 		    	return;
 		    }
 		}

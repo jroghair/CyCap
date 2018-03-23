@@ -38,7 +38,6 @@ let guis = [];
 let lastFrameTime;
 let global_delta_t = 0; //the time that this frame took in SECONDS
 
-let player_speed = 150;//pixels per second
 let current_zoom_lvl = 2;
 
 //////TESTING//////
@@ -212,7 +211,7 @@ function setup() {
 	//ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
 	//////GUI ELEMENTS//////
-	guis.push(new HealthGUI(health_gui, 50, canvas.height - 50, 100, 100, 0, 8)); //health bar
+	guis.push(new HealthGUI(50, canvas.height - 50, 200, 20)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
 	////////////////////////
@@ -461,18 +460,16 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.team = team;
 
 	//WEAPONS AND ITEMS
-	this.weapon1 = remington870;
-	this.weapon2 = m1911;
+	this.max_hp = 100;
+	this.health = 100;
+	this.mov_speed = 150; //pixels per second
+	this.weapon1 = "EMPTY";
+	this.weapon2 = "EMPTY";
 	this.weapon3 = "EMPTY";
 	this.weapon4 = "EMPTY";
+	//setRole();
 	this.currentWeapon = this.weapon1;
 	this.item_slot = "EMPTY";
-	//setWeapons() based on your class/role
-
-	//decide health based on role
-	this.max_hp = 100;
-	this.health = 37;
-	//^^^^these are temporary!!! TODO: FIX THIS
 
 	//variables for the different power-ups and if they are affecting the player
 	this.is_invincible = false;
@@ -480,7 +477,34 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.damage_boost = 1.0;
 
 	this.has_flag = false;
-	this.mov_speed = player_speed; //this will eventually be dependent on role
+	
+	this.setRoleData = function(){
+		switch(this.role){
+			case "recruit":
+				this.mov_speed = 140;
+				this.max_hp = 100;
+				this.health = this.max_hp;
+				this.weapon1 = new Shotgun(25, 500, 500, 5, 4, 6000, 0.35);
+				this.weapon2 = new Pistol(11, 100, 400, 8, 4, 200, 0.05); //pistol
+				this.weapon3 = "EMPTY";
+				this.weapon4 = "EMPTY";
+				this.currentWeapon = this.weapon1;
+				break;
+				
+			case "artillery":
+				break;
+				
+			case "infantry":
+				this.weapon1 = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
+				break;
+				
+			case "scout":
+				break;
+				
+			default:
+				break;
+		}
+	}
 	
 	this.die = function(){
 		//handle the player dying and respawning

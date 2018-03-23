@@ -5,6 +5,10 @@ public class Pistol extends Weapon {
 	public Pistol(String name, int damage, int rate, int bullet_speed, int mag_size, int extra_mags, int reload_time, double shot_variation) {
 		super(name, damage, 2, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation);
 	}
+	
+	public Pistol(Pistol p) {
+		super(p);
+	}
 
 	@Override
 	public void update(Player p, InputSnapshot s, GameState g) {

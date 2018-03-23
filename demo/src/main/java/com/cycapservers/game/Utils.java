@@ -11,6 +11,14 @@ public final class Utils{
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
 	
+	//////THE WEAPONS//////
+	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 4, 6000, 0.35);
+	public final static Pistol M1911 = new Pistol("Pistol", 10, 175, 400, 8, 4, 200, 0.05);
+	public final static Shotgun SAWED_OFF_SHOTGUN = new Shotgun("Sawed-Off Shotgun", 37, 350, 550, 2, 10, 2500, 0.55);
+	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
+	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
+	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
+	
 	private Utils(){} //prevents the class from being constructed
 	
 	public static boolean isBetween(double num, double lower, double upper){
@@ -98,6 +106,22 @@ public final class Utils{
 		}
 	}
 	
+	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis, boolean invincible) {
+		if(axis == 'x'){
+			for(int i = 0; i < length; i++){
+				walls.add(new Wall(0, startX + i, startY, invincible));
+			}
+		}
+		else if(axis == 'y'){
+			for(int i = 0; i < length; i++){
+				walls.add(new Wall(0, startX, startY + i, invincible));
+			}
+		}
+		else{
+			throw new IllegalArgumentException("Error in the function generateWallLine");
+		}
+	}
+	
 	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY){
 		generateWallLine(walls, startX, startY, width, 'x');
 		generateWallLine(walls, startX, height + startY - 1, width, 'x');
@@ -105,10 +129,37 @@ public final class Utils{
 		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 	
+	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY, boolean invincible){
+		generateWallLine(walls, startX, startY, width, 'x', invincible);
+		generateWallLine(walls, startX, height + startY - 1, width, 'x', invincible);
+		generateWallLine(walls, startX, startY + 1, height - 2, 'y', invincible);
+		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y', invincible);
+	}
+	
+	/**
+	 * Sets the role data of the player based off of their "role" field
+	 * @param p The player which we are setting the role/class data
+	 */
 	public static void setRole(Player p) {
 		switch(p.role) {
 			case "recruit":
-				//something
+				p.speed = 140;
+				p.max_health = 100;
+				p.health = p.max_health;
+				p.weapon1 = new Shotgun(REMINGTON_870);
+				p.weapon2 = new Pistol(M1911); //pistol
+				p.weapon3 = null;
+				p.weapon4 = null;
+				p.currentWeapon = p.weapon1;
+				break;
+				
+			case "artillery":
+				break;
+				
+			case "infantry":
+				break;
+				
+			case "scout":
 				break;
 				
 			default:

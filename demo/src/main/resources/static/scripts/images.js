@@ -39,9 +39,13 @@ shield_potion.src = "res/images/shield_potion.png";
 shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
 let health_gui = new Image();
+health_gui.src = "res/images/new_health.png";
+health_gui.sprites = [{x:0, y:0, h:16, w:16}];
+/*
 health_gui.src = "res/images/health_bar_good.png";
 health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},
 					  {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}, {x:128, y:64, w:64, h:64}, {x:192, y:64, w:64, h:64}];
+					  */
 					  
 let item_frame = new Image();
 item_frame.src = "res/images/item_slot_frame.png";
@@ -55,6 +59,10 @@ weapon_select_frame.sprites = [{x:0, y:0, h:800, w:1600}];
 let weapon_selection_ring = new Image();
 weapon_selection_ring.src = "res/images/gui_selection_ring.png";
 weapon_selection_ring.sprites = [{x:0, y:0, h:128, w:128}];
+
+let ar_icon = new Image();
+
+let smg_icon = new Image();
 
 let shotgun_icon = new Image();
 shotgun_icon.src = "res/images/shotgun_icon.png";
@@ -110,12 +118,25 @@ flags_ss.src = "res/images/flags.png";
 flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
                     {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
 					
+let font_ss = new Image();
+font_ss.src = "res/images/font_ss.png";
+font_ss.sprites = [];
+generateSpriteSheetData(32, 32, 16, 16, font_ss);
+					
 let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}];
 
 function findImageFromCode(code){
 	for(let i = 0; i < image_codes.length; i++){
 		if(image_codes[i].code == code){
 			return image_codes[i].img;
+		}
+	}
+}
+
+function generateSpriteSheetData(pHeight, pWidth, cols, rows, img){
+	for(let i = 0; i < rows; i++){
+		for(let j = 0; j < cols; j++){
+			img.sprites.push({x:(pWidth*j), y:(pHeight*i), w:pWidth, h:pHeight});
 		}
 	}
 }

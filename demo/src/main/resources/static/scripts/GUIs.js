@@ -15,18 +15,32 @@ function GuiElement(img, x, y, width, height, elemIndex){
 	}
 }
 
-function HealthGUI(img, x, y, width, height, elemIndex, num_frames){
-	this.base = GuiElement;
-	this.base(img, x, y, width, height, elemIndex);
-	this.num_frames = num_frames;
+//x & y are the coordinates for the bottom left corner
+function HealthGUI(x, y, width, height){
+	this.x = x;
+	this.y = y;
+	this.health_frame = new GuiElement(item_frame, x + width/2, y - height/2, width, height, 0);
+	this.pixelsPerHP = (width - 4)/gameState.player.max_hp;
+	this.health_bar = new GuiElement(health_gui, x + width/2, y - height/2, width - 4, height - 4, 0);
 	
 	this.update = function(){
-		if(gameState.player.health <= 0){
-			this.sprIdx = 7;
+		//only need to update the health_bar
+		let newWidth;
+		if(gameState.player.health >= 0){
+			newWidth = this.pixelsPerHP * gameState.player.health;
 		}
 		else{
-			this.sprIdx = 8 - Math.round(gameState.player.health/gameState.player.max_hp * this.num_frames);
+			newWidth = 0;
 		}
+		this.health_bar.dWidth = newWidth;
+		//update it's x position, y position does not need to be
+		this.health_bar.x = this.x + newWidth/2 + 2;
+		
+	}
+	
+	this.draw = function(){
+		this.health_frame.draw();
+		this.health_bar.draw();
 	}
 }
 

@@ -5,6 +5,10 @@ public class Shotgun extends Weapon {
 	public Shotgun(String name, int damage, int rate, int bullet_speed, int mag_size, int extra_mags, int reload_time, double shot_variation) {
 		super(name, damage, 3, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation);
 	}
+	
+	public Shotgun(Shotgun shotgun) {
+		super(shotgun);
+	}
 
 	@Override
 	public void update(Player p, InputSnapshot s, GameState g) {
