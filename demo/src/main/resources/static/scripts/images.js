@@ -38,14 +38,10 @@ let shield_potion = new Image();
 shield_potion.src = "res/images/shield_potion.png";
 shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
-let health_gui = new Image();
-health_gui.src = "res/images/new_health.png";
-health_gui.sprites = [{x:0, y:0, h:16, w:16}];
-/*
-health_gui.src = "res/images/health_bar_good.png";
-health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},
-					  {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}, {x:128, y:64, w:64, h:64}, {x:192, y:64, w:64, h:64}];
-					  */
+let color_boxes = new Image();
+color_boxes.src = "res/images/colors.png";
+color_boxes.sprites = [];
+generateSpriteSheetData(2, 2, 4, 2, color_boxes);
 					  
 let item_frame = new Image();
 item_frame.src = "res/images/item_slot_frame.png";
@@ -61,8 +57,16 @@ weapon_selection_ring.src = "res/images/gui_selection_ring.png";
 weapon_selection_ring.sprites = [{x:0, y:0, h:128, w:128}];
 
 let ar_icon = new Image();
+ar_icon.src = "res/images/assault_rifle_icon.png";
+ar_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
 let smg_icon = new Image();
+smg_icon.src = "res/images/smg_icon.png";
+smg_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+let mg_icon = new Image();
+mg_icon.src = "res/images/machine_gun_icon.png";
+mg_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
 let shotgun_icon = new Image();
 shotgun_icon.src = "res/images/shotgun_icon.png";

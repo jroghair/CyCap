@@ -47,9 +47,6 @@ let fps_frame_times = [];
 let rolling_buffer_length = 30;
 ///////////////////
 
-//GAME MANAGERS
-//referee
-
 function GameState(){
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, "recruit", "1", client_id); //the current player on this client
 	this.pw;
@@ -148,6 +145,11 @@ function GameState(){
 
 //all functions
 function setup() {
+	let role = "";
+	while(!((role == "scout") || (role == "recruit") || (role == "infantry"))){
+		role = prompt("Please choose a class. The acceptable options are \"scout\", \"recruit\", or \"infantry\". Please type carefully."); 
+	}
+	
 	//initialize the game state
 	gameState = new GameState();
 
@@ -211,9 +213,10 @@ function setup() {
 	//ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
 	//////GUI ELEMENTS//////
-	guis.push(new HealthGUI(50, canvas.height - 50, 200, 20)); //health bar
+	guis.push(new HealthGUI(20, canvas.height - 20, 200, 20)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
+	guis.push(new AmmoGUI(20, canvas.height - 50, 20, 200, 5));
 	////////////////////////
 
 	//////INPUT HANDLING//////
@@ -253,6 +256,8 @@ function setup() {
 
 	lastFrameTime = Date.now();
 	connectToServer();
+	
+	document.getElementById("loading_screen").remove();
 }
 
 function run() {
@@ -467,8 +472,6 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.weapon2 = "EMPTY";
 	this.weapon3 = "EMPTY";
 	this.weapon4 = "EMPTY";
-	//setRole();
-	this.currentWeapon = this.weapon1;
 	this.item_slot = "EMPTY";
 
 	//variables for the different power-ups and if they are affecting the player
@@ -505,6 +508,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				break;
 		}
 	}
+	this.setRoleData();
+	this.currentWeapon = this.weapon1;
 	
 	this.die = function(){
 		//handle the player dying and respawning
@@ -803,4 +808,11 @@ function BGTile(img, grid_x, grid_y, index){
 //but it needs to be at the end of the file because it references
 //certain functions in other files that require classes that exist in this file
 //to have already been defined
-setup(); //only call setup once
+if(document.getElementById("loading_screen").complete){
+	setup(); //only call setup once
+}
+else{
+	document.getElementById("loading_screen").onload = function(){
+		setup();
+	}
+}
