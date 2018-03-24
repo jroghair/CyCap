@@ -1,4 +1,51 @@
-<HTML>
-hello, lets chat here.
+<!DOCTYPE html>
 
-</HTML>
+<html>
+
+  <body>
+  <button onclick="connect()">Join General Chat</button></br>
+  <input type="text" id="message" />
+  <button onclick="send()">send</button>
+  </body>
+  
+  <script>
+	/*<![CDATA[*/
+		var userId = document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';	
+	/*]]>*/
+  var socket; //= new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
+  var sessionId;
+  function connect(){
+	socket = new WebSocket('ws://' + window.location.host + '/endpoint-Loggin');
+	socket.onopen = function() {
+		//console.log('WebSocket connection opened. Ready to send messages.');
+		// Send a message to the server
+		//socket.send('Hello, from WebSocket client!');
+	};
+	socket.send("add" + userId);
+  }
+  
+  function send(){
+	var message = document.getElementById("message").value;
+	socket.send(sessionId + ":::" + message);
+  }
+	// Add an event listener for when a connection is open
+	/*
+	socket.onopen = function() {
+		console.log('WebSocket connection opened. Ready to send messages.');
+		// Send a message to the server
+		socket.send('Hello, from WebSocket client!');
+	};
+	*/
+		// Add an event listener for when a message is received from the server
+	socket.onmessage = function(message) {
+		var mess = message.split(":::");
+		if(mess[0] = "session"){
+			sessionId = mess[1];
+		}
+		else{
+			//Code to display message;
+		}
+	};
+  </script>
+
+</html>

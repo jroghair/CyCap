@@ -218,15 +218,14 @@ public class AccountController {
     	return new RedirectView("/accounts/friends");
     }
     
-    @RequestMapping(value = "/accounts/friendChat", method =  RequestMethod.POST)
-    public View friendChat(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
+    public String friendChat(HttpServletRequest request, @SessionAttribute("account") Account account){
     	logger.info("Entered into get friends Chat controller Layer");
     	
-    	//System.out.println(playerID);
+
     	
-    	//friend.setUserID(account.getUserID());
     	
-    	return new RedirectView("/accounts/chat");
+    	return "/accounts/chat";
     }
     
     
