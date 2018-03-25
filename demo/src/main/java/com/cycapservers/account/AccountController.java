@@ -66,13 +66,13 @@ public class AccountController {
         model.put("selections", results);
         return "accounts/accountsList";
     }*/
-
+/*
     @GetMapping("/accounts/find")
     public String findAccount(Map<String, Object> model) {
         model.put("account", new Account());
         return "accounts/findAccounts";
     }
- 
+ */
     @ModelAttribute(value = "account")
     public Account newAccount(){
     	return new Account();
@@ -90,6 +90,8 @@ public class AccountController {
     	logger.info("Entered into post account registration controller Layer");
     	String s1 = account.getEmail();
     	String[] s2 = s1.split("\\@");
+   
+    	
     	 //validation checks for email and user name already existing
     	if(s2[0].length()>0 && s2.length==2){
        	 	String[] s3 = s2[1].split("\\.");
@@ -120,14 +122,16 @@ public class AccountController {
     public ModelAndView log(Model model, HttpServletRequest request){
     	logger.info("Entered into get accounts login controller Layer");
     	String view = "/accounts/login";
+    	
     	return new ModelAndView(view, "command", model);
     }
     
     
     @RequestMapping(value= "/accounts/login", method= RequestMethod.POST)
-    public View login(Model model, @ModelAttribute("account") Account account){ 
+    public View login(HttpServletRequest request, Model model, @ModelAttribute("account") Account account){ 
     	String user = account.getUserID();
     	String pswd = account.getPassword();
+
     	Account acnt = this.accountsRepository.findByUserID(user);
     	if(acnt!=null && acnt.getUserID().compareTo(user)==0 && acnt.getPassword().compareTo(pswd)==0){
     		return new RedirectView("/accounts/successfullogin");
@@ -138,7 +142,7 @@ public class AccountController {
     
     @GetMapping("/accounts/successfullogin")
     public String successfulLogin(Model model, @SessionAttribute("account") Account account) {
-    	//System.out.println(account.getUserID());
+    	System.out.println(account.getUserID());
     	model.addAttribute("account", account);
         return "/accounts/successfullogin";
     }
@@ -218,13 +222,13 @@ public class AccountController {
     	
     	return new RedirectView("/accounts/friends");
     }
-    
+    /*
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
     public String friendChat(HttpServletRequest request, @SessionAttribute("account") Account account){
     	logger.info("Entered into get Chat controller Layer");
     	
     	return "/accounts/chat";
-    }
+    }*/
     /*
     @MessageMapping("/chat.onMessageReceived")
     @SendTo("/accounts/chat")
@@ -245,8 +249,12 @@ public class AccountController {
     @RequestMapping(value = "/accounts/index", method =  RequestMethod.GET)
     public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account){
     	logger.info("Entered into get Chat controller Layer");
+    	//System.out.println(account.getUserID());
     	
     	return "/accounts/index";
     }
+    
+    
+  
     
 }
