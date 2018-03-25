@@ -149,6 +149,9 @@ function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, re
 let m1911 = new Pistol(11, 100, 400, 8, 2, 200, 0.05);
 let remington870 = new Shotgun(30, 500, 500, 5, 4, 6000, 0.35);
 let sawedOffShotgun = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7);
+let ar = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08, ar_icon);
+let smg = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
+let mg = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15, mg_icon);
 
 /////DIFFERENT TYPES OF AMMUNITION/////
 function Bullet(width, height, sprIdx, startX, startY, endX, endY, damage, speed, shot_variation) {

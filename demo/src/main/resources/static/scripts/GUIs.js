@@ -25,6 +25,7 @@ function HealthGUI(x, y, width, height){
 	
 	this.update = function(){
 		//only need to update the health_bar
+		this.pixelsPerHP = (width - 4)/gameState.player.max_hp;
 		let newWidth;
 		if(gameState.player.health >= 0){
 			newWidth = this.pixelsPerHP * gameState.player.health;

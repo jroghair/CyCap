@@ -47,8 +47,8 @@ let fps_frame_times = [];
 let rolling_buffer_length = 30;
 ///////////////////
 
-function GameState(){
-	this.player = new Player(grid_length, grid_length, player_images, 64, 64, "recruit", "1", client_id); //the current player on this client
+function GameState(role){
+	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
 	this.pw;
 	
 	this.other_players = []; //the other players
@@ -58,6 +58,9 @@ function GameState(){
 	this.part_fx = []; //particle effects
 	this.map; //the set of tiles and map data
 	this.masks = []; //the list of ground masks
+	
+	this.testSound = new SoundEmitter(gunshot1, true, 400, 64, 1.0);
+	this.testSound.play();
 	
 	//this takes in the message from the server and builds the game state from that
 	this.receiveGameState = function(message){
@@ -76,12 +79,14 @@ function GameState(){
 					this.player.team = +obj[12];
 					this.player.updateCurrentWeapon(obj[13]);
 					this.player.health = +obj[15];
+					console.log(+obj[15]);
 					this.player.is_invincible = obj[16];
 					this.player.speed_boost = +obj[17];
 					this.player.damage_boost = +obj[18];
+					this.player.visibility = +obj[19];
 				}
 				else{
-					this.other_players.push(new OtherPlayer(+obj[4], +obj[7], +obj[8], +obj[5], +obj[6], +obj[12], obj[1]));
+					this.other_players.push(new OtherPlayer(+obj[3], +obj[4], +obj[7], +obj[8], +obj[5], +obj[6], +obj[12], obj[1]));
 				}
 			}
 			else if(obj[0] == "001"){ //bullets
@@ -107,6 +112,7 @@ function GameState(){
 		for(let i = this.bullets.length - 1; i >= 0; i--){
 			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
 		}
+		this.testSound.update();
 	}
 	
 	this.drawGameState = function(){
@@ -151,10 +157,10 @@ function setup() {
 	}
 	
 	//initialize the game state
-	gameState = new GameState();
+	gameState = new GameState(role);
 
 	//Draw fog of war images and put the normal zoom one on
-	drawFogOfWarImages();
+	drawFogOfWarImages(gameState.player.visibility);
 	fog_context.putImageData(fog_norm, 0, 0);
 
 	//set the global transforms
@@ -255,7 +261,7 @@ function setup() {
 	}, false);
 
 	lastFrameTime = Date.now();
-	connectToServer();
+	connectToServer(role);
 	
 	document.getElementById("loading_screen").remove();
 }
@@ -473,6 +479,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	this.weapon3 = "EMPTY";
 	this.weapon4 = "EMPTY";
 	this.item_slot = "EMPTY";
+	this.visibility = 0;
 
 	//variables for the different power-ups and if they are affecting the player
 	this.is_invincible = false;
@@ -487,21 +494,39 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 140;
 				this.max_hp = 100;
 				this.health = this.max_hp;
-				this.weapon1 = new Shotgun(25, 500, 500, 5, 4, 6000, 0.35);
-				this.weapon2 = new Pistol(11, 100, 400, 8, 4, 200, 0.05); //pistol
+				this.weapon1 = ar;
+				this.weapon2 = remington870;
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
+				this.visibility = 6;
 				break;
 				
 			case "artillery":
 				break;
 				
 			case "infantry":
-				this.weapon1 = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
+				this.mov_speed = 140;
+				this.max_hp = 105;
+				this.health = this.max_hp;
+				this.weapon1 = mg;
+				this.weapon2 = "EMPTY";
+				this.weapon3 = m1911;
+				this.weapon4 = "EMPTY";
+				this.currentWeapon = this.weapon1;
+				this.visibility = 5;
 				break;
 				
 			case "scout":
+				this.mov_speed = 180;
+				this.max_hp = 75;
+				this.health = this.max_hp;
+				this.weapon1 = sawedOffShotgun;
+				this.weapon2 = m1911;
+				this.weapon3 = "EMPTY";
+				this.weapon4 = "EMPTY";
+				this.currentWeapon = this.weapon1;
+				this.visibility = 7;
 				break;
 				
 			default:
@@ -712,16 +737,26 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	}
 }
 
-function OtherPlayer(sprIdx, width, height, x, y, team, user_id) {
+function OtherPlayer(imageCode, sprIdx, width, height, x, y, team, user_id) {
 	this.user_id = user_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
 	this.base = Entity;
 	//sprite 0, rotate 0, transparency 1
-	this.base(findImageFromCode(0), sprIdx, x, y, width, height, 0, 1);
-
-	//decide health based on role
-	this.max_hp = 100;
-	this.health = 37;
-	//^^^^these are temporary!!! TODO: FIX THIS
+	this.base(findImageFromCode(imageCode), sprIdx, x, y, width, height, 0, 1);
+	
+	this.team = team;
+	
+	this.draw = function(){
+		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
+			if((this.team == gameState.player.team) || (distanceBetweenEntities(this, gameState.player) <= (gameState.player.visibility * grid_length))){
+				this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+				context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
+				//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
+				context.rotate(this.r); //this is in radians
+				context.globalAlpha = this.a;
+				context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
+			}
+		}
+	}
 }
 
 //Grid_x and grid_y are the positions on the grid, with top left grid coordinates being (0,0)

@@ -141,29 +141,48 @@ public final class Utils{
 	 * @param p The player which we are setting the role/class data
 	 */
 	public static void setRole(Player p) {
-		switch(p.role) {
-			case "recruit":
-				p.speed = 140;
-				p.max_health = 100;
-				p.health = p.max_health;
-				p.weapon1 = new Shotgun(REMINGTON_870);
-				p.weapon2 = new Pistol(M1911); //pistol
-				p.weapon3 = null;
-				p.weapon4 = null;
-				p.currentWeapon = p.weapon1;
-				break;
-				
-			case "artillery":
-				break;
-				
-			case "infantry":
-				break;
-				
-			case "scout":
-				break;
-				
-			default:
-				throw new IllegalStateException("Player role is unacceptable!");
+		String role = p.role;
+		if(role.equals("recruit")) {
+			p.speed = 140;
+			p.max_health = 100;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(ASSAULT_RIFLE);
+			p.weapon2 = new Shotgun(REMINGTON_870);
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 6;
+			return;
+		}
+		else if(role.equals("artillery")) {
+			return;
+		}
+		else if(role.equals("infantry")) {	
+			p.speed = 140;
+			p.max_health = 105;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(MACHINE_GUN);
+			p.weapon2 = null;
+			p.weapon3 = new Pistol(M1911); //pistol
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 5;
+			return;
+		}
+		else if(role.equals("scout")) {	
+			p.speed = 180;
+			p.max_health = 75;
+			p.health = p.max_health;
+			p.weapon1 = new Shotgun(SAWED_OFF_SHOTGUN);
+			p.weapon2 = new Pistol(M1911); //pistol
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 7;
+			return;
+		}
+		else {
+			throw new IllegalStateException("Player role is unacceptable!");
 		}
 	}
 }

@@ -9,31 +9,8 @@ const TIME_BETWEEN_SHOTS = 100; //milliseconds. this will eventually be dependen
 const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
 const FAR_ZOOM_LEVEL = 0.5;
-const VISIBILITY = 5;
 const FOG_DARKNESS = 100;
 const FADE_RING_WIDTH = 40;
-
-/*PLAYER CLASS STATS*/
-//Recruit
-const RECRUIT_MAX_HP = 100;
-const RECRUIT_SPEED = 5;
-const RECRUIT_VIS = 5;
-
-//Artillery
-const ART_MAX_HP = 100;
-const ART_SPEED = 5;
-const ART_VIS = 5;
-
-//Scout
-const SCOUT_MAX_HP = 100;
-const SCOUT_SPEED = 5;
-const SCOUT_VIS = 6;
-
-//Tank
-const TANK_MAX_HP = 150;
-const TANK_SPEED = 3;
-const TANK_VIS = 4;
-/*PLAYER CLASS STATS END*/
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
 let fog_norm, fog_close, fog_far; //Fog of War image data
@@ -106,7 +83,7 @@ function wallLine(start_x, start_y, length, axis){
 }
 
 //Draws three F.O.W. images and stores them in 3 variables for later drawing
-function drawFogOfWarImages(){
+function drawFogOfWarImages(visibility){
 	//create the image data for the three settings
 	fog_norm = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
 	fog_close = fog_context.createImageData(fog_canvas.width, fog_canvas.height);
@@ -118,8 +95,8 @@ function drawFogOfWarImages(){
 		x = (i/4) %  fog_canvas.width;
 		y = Math.floor((i/4) / fog_canvas.width);
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
-		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//inner radius of fade ring
-		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//outer radius of fade ring
+		r_in = (((grid_length * visibility) - (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//inner radius of fade ring
+		r_out = (((grid_length * visibility) + (FADE_RING_WIDTH/2)) * NORMAL_ZOOM_LEVEL);//outer radius of fade ring
 
 		if(dist > r_out){
 			fog_norm.data[i+3] = FOG_DARKNESS;
@@ -137,8 +114,8 @@ function drawFogOfWarImages(){
 		x = (i/4) %  fog_canvas.width;
 		y = Math.floor((i/4) / fog_canvas.width);
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
-		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL); //inner radius of fade ring
-		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL);//outer radius of fade ring
+		r_in = (((grid_length * visibility) - (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL); //inner radius of fade ring
+		r_out = (((grid_length * visibility) + (FADE_RING_WIDTH/2)) * FAR_ZOOM_LEVEL);//outer radius of fade ring
 
 		if(dist > r_out){
 			fog_far.data[i+3] = FOG_DARKNESS;
@@ -157,8 +134,8 @@ function drawFogOfWarImages(){
 		x = (i/4) %  fog_canvas.width;
 		y = Math.floor((i/4) / fog_canvas.width);
 		dist = Math.sqrt(Math.pow(x - (canvas.width/2), 2) + Math.pow(y - (canvas.height/2), 2)); //distance from the middle of the screen to this pixel
-		r_in = (((grid_length * VISIBILITY) - (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//inner radius of fade ring
-		r_out = (((grid_length * VISIBILITY) + (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//outer radius of fade ring
+		r_in = (((grid_length * visibility) - (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//inner radius of fade ring
+		r_out = (((grid_length * visibility) + (FADE_RING_WIDTH/2)) * CLOSE_ZOOM_LEVEL);//outer radius of fade ring
 
 		if(dist > r_out){
 			fog_close.data[i+3] = FOG_DARKNESS;
@@ -225,11 +202,11 @@ function toDegrees(angle) {
   return (angle * (180.0 / Math.PI));
 }
 
-function connectToServer(){
+function connectToServer(role){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		//do some initial handshaking, sending back and forth information like the password and starting game state, etc
-		sendMessageToServer("join:" + gameState.player.client_id + ":recruit");
+		sendMessageToServer("join:" + gameState.player.client_id + ":" + role);
 		requestAnimationFrame(run); //more synchronized method similar to setInterval
 	};
 
