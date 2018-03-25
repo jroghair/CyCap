@@ -12,7 +12,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -211,8 +214,6 @@ public class AccountController {
     	friend.setUserID(account.getUserID());
     	friendsRepository.deleteByPlayerID(playerID);
     	
-    	
-    	
     	//friend.setUserID(account.getUserID());
     	
     	return new RedirectView("/accounts/friends");
@@ -220,14 +221,32 @@ public class AccountController {
     
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
     public String friendChat(HttpServletRequest request, @SessionAttribute("account") Account account){
-    	logger.info("Entered into get friends Chat controller Layer");
-    	
-
-    	
+    	logger.info("Entered into get Chat controller Layer");
     	
     	return "/accounts/chat";
     }
-    
-    
+    /*
+    @MessageMapping("/chat.onMessageReceived")
+    @SendTo("/accounts/chat")
+    public Message sendMessage(@Payload Message chatMessage) {
+    	logger.info("Entered into onMessageReceived controller Layer");
+        return chatMessage;
+    }
+
+    @MessageMapping("accounts/chat.addUser")
+    @SendTo("/accounts/chat")
+    public Message addUser(@Payload Message chatMessage, 
+                               SimpMessageHeaderAccessor headerAccessor) {
+        // Add username in web socket session
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getUser());
+        return chatMessage;
+    }
+    */
+    @RequestMapping(value = "/accounts/index", method =  RequestMethod.GET)
+    public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account){
+    	logger.info("Entered into get Chat controller Layer");
+    	
+    	return "/accounts/index";
+    }
     
 }
