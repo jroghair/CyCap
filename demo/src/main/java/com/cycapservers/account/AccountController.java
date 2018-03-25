@@ -210,10 +210,27 @@ public class AccountController {
     	return "/accounts/friends";
     }
     */
-    @RequestMapping(value = "/accounts/remove", method =  RequestMethod.POST)
-    public View friendRemove(@RequestParam(value="Remove") String playerID, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    
+    @RequestMapping(value = "/accounts/friendRemove", method =  RequestMethod.POST)
+    public View friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends REMOVE controller Layer");
-    	System.out.println(playerID);
+    	
+    
+    	String f1 = friend.getUserID();
+    	
+    	if(accountsRepository.findByUserID(f1)!=null){
+    		friend.setPlayerID(f1);
+        	friend.setUserID(account.getUserID());
+        	this.friendsRepository.deleteByPlayerID(f1);
+    	}
+    	//friend.setUserID(account.getUserID());
+    	
+    	return new RedirectView("/accounts/friends");
+    }
+
+    	
+    	/*
+    	
     	friend.setPlayerID(playerID);
     	friend.setUserID(account.getUserID());
     	friendsRepository.deleteByPlayerID(playerID);
@@ -221,7 +238,10 @@ public class AccountController {
     	//friend.setUserID(account.getUserID());
     	
     	return new RedirectView("/accounts/friends");
-    }
+    }*/
+    	
+    	
+    	
     /*
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
     public String friendChat(HttpServletRequest request, @SessionAttribute("account") Account account){

@@ -3,7 +3,7 @@
 <head>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
 </head>
-	<h5 id="user"> </h5> 	<h2> Friends </h2>
+	<h5 id="user"> </h5> 	<h2> Friends List</h2>
 
 
 	<script th:inline="javascript">
@@ -15,6 +15,11 @@
 	<form th:action="@{/accounts/friendAdd}"  method="post" th:object="${friend}">	
 	<p><input type="text" th:field="*{userID}" /> <input type="submit" value="Add Friend" /></p>
 	</form>
+	
+	<form th:action="@{/accounts/friendRemove}"  method="post" th:object="${friend}">	
+	<p><input type="text" th:field="*{userID}" /> <input type="submit" value="Remove Friend" /></p>
+	</form>
+	
 <body>	
   <table id="friends" class="table table-striped">
     <thead>
@@ -32,14 +37,19 @@
 		</form>
 		
 <form th:action="@{/accounts/remove}"  method="post" >
-	<td> <input class="btn" name="Remove" value="Remove" th:value="Remove" onclick="showTdSecond(this);" type="submit" id="remove"/>
+	<td> <input class="btn" name="Invite" th:value="Invite" onclick="showTdSecond(this);" type="submit" id="remove"/>
+	
+	
+	<!--
 	<script  th:inline="javascript">
 	function showTdSecond(_this) {
-	var friend = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
-	document.getElementById('remove').value = friend; 
- 	alert(_this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
+		var friend = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+		document.getElementById('remove').value = friend; 
+ 		alert(_this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
 	}
 	</script>
+	-->
+	
 	</td> 
 </form>			
     </tr>
