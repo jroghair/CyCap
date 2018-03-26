@@ -54,7 +54,6 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 				break;
 				
 			case "auto":
-				//something
 				break;
 				
 			case "artillery":
@@ -118,6 +117,31 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 		for(let i = 0; i < num_of_pellets; i++){
 			gameState.bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player.x, player.y, snapshot.mapX, snapshot.mapY, this.damage/num_of_pellets, this.bullet_speed, this.shot_variation));
 		}
+	}
+}
+
+function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, selector_icon){
+	this.base = Weapon;
+	this.base(name, "auto", 1, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, selector_icon);
+	
+	this.checkFire = function(player, snapshot){
+		if(snapshot.lmb_down && ((Date.now() - this.lastShot) >= this.fire_rate)){ //TODO: remove dependency on input_handler
+			if(this.ammo_in_clip - 1 != -1){
+				this.fire(player, snapshot);
+				this.lastShot = Date.now();
+			}
+			else{
+				//play click sound
+			}
+		}
+	}
+	
+	this.fire = function(player, snapshot){
+		this.ammo_in_clip--; //lose one bullet from the clip
+		gameState.bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player.x, player.y, snapshot.mapX, snapshot.mapY, this.damage, this.bullet_speed, this.shot_variation));
+		//make bullet sound
+		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
+		sound_test.play();
 	}
 }
 
