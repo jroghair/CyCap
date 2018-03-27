@@ -27,9 +27,7 @@ public class GameState extends TimerTask
 	// stuff for AI
 	//protected ArrayList<ArrayList<mapNode>> map;// map of nodes for AI
 	//protected AI_map_generator map_gen;
-	protected AI_path_generator path_gen;
-	protected AI_utils AI_util;
-	double node_pixel_dist = 16.0;
+	protected ArrayList<ArrayList<mapNode>> map;
 	
 	protected List<Bullet> bullets;
 	
@@ -42,7 +40,7 @@ public class GameState extends TimerTask
 	protected double currentDeltaTime; //the time since the last game state update in seconds
 	
 	public GameState() {
-		this.AI_players = new ArrayList<AI_player>();
+		
 		this.players = new ArrayList<Player>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
@@ -57,6 +55,11 @@ public class GameState extends TimerTask
 		respawnTime = 10000; //10 seconds respawn time
 		
 		MapLoader.loadPredefinedMap(0, this);//load up the map
+		
+		this.AI_players = new ArrayList<AI_player>();
+		// generate the map when player is constructed
+		this.map = Utils.generate_node_array(this);
+		System.out.println("Map size: " + this.map.size());
 	}
 
 	public void updateGameState() {

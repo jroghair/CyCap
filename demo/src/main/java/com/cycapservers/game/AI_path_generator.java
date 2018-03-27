@@ -26,8 +26,8 @@ public class AI_path_generator {
 	 * @throws Exception
 	 */
 	public ArrayList<mapNode> get_a_star_path(Entity start, Entity end) {
-		Point moving_point = ai.AI_util.get_nearest_node(start);
-		Point ending_point = ai.AI_util.get_nearest_node(end);
+		Point moving_point = Utils.get_nearest_map_node(start, this.g);
+		Point ending_point = Utils.get_nearest_map_node(end, this.g);
 		return A_Star_Path(moving_point, ending_point);
 	}
 
@@ -43,8 +43,8 @@ public class AI_path_generator {
 	private ArrayList<mapNode> A_Star_Path(Point a, Point b) {
 		closed_list.clear();
 		open_list.clear();
-		mapNode start_node = ai.map.get(a.x).get(a.y);
-		mapNode goal_node = ai.map.get(b.x).get(b.y);
+		mapNode start_node = g.map.get(a.x).get(a.y);
+		mapNode goal_node = g.map.get(b.x).get(b.y);
 		mapNode current_node;
 
 		start_node.g = 0;
@@ -56,7 +56,7 @@ public class AI_path_generator {
 			}
 			open_list.remove(get_node_index(open_list, current_node));
 			closed_list.add(current_node);
-			ArrayList<mapNode> neighbors = ai.AI_util.get_neighbors(current_node, closed_list, open_list);
+			ArrayList<mapNode> neighbors = Utils.get_neighbors(g, current_node, closed_list, open_list);
 			for (int i = 0; i < neighbors.size(); i++) {
 				mapNode neighbor = neighbors.get(i);
 				if (closed_list.contains(neighbor)) {
@@ -64,16 +64,16 @@ public class AI_path_generator {
 				}
 				double temp_g_score = 0.0;
 				if (neighbor.corner == true) {
-					temp_g_score = current_node.g + (1.414 * g.node_pixel_dist);
+					temp_g_score = current_node.g + (1.414 * Utils.node_pixel_distance);
 				} else {
-					temp_g_score = current_node.g + (1.0 * g.node_pixel_dist);
+					temp_g_score = current_node.g + (1.0 * Utils.node_pixel_distance);
 				}
 				if (open_list.contains(neighbor) == false) {
 					open_list.add(neighbor);
 				} else if (temp_g_score >= neighbor.g) {
 					continue;
 				}
-				neighbor.previous = current_node;
+				neighbor.set_prev(ai.id, current_node);
 				neighbor.g = temp_g_score;
 				neighbor.f = neighbor.g + heuristic(neighbor, goal_node);
 			}
@@ -131,11 +131,11 @@ public class AI_path_generator {
 		ArrayList<mapNode> path = new ArrayList<mapNode>();
 		mapNode temp = cur;
 		path.add(temp);
-		while (temp.previous != null) {
+		while (temp.get_prev(ai.id) != null) {
 
-			path.add(temp.previous);
+			path.add(temp.get_prev(ai.id));
 			// reseting the reference for the next path
-			temp.previous = null;
+			temp.set_prev(ai.id, null);
 			// get next node in path
 			temp = path.get(path.size() - 1);
 		}

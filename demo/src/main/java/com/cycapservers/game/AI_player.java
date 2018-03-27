@@ -6,6 +6,7 @@ import java.util.Random;
 public class AI_player extends Entity {
 
 	protected int team;
+	protected String id;
 
 	protected String role;
 	protected Weapon weapon1;
@@ -33,22 +34,13 @@ public class AI_player extends Entity {
 	protected long last_path_update_time = 0;
 	protected long temp_move_time = 0;
 
-	protected ArrayList<ArrayList<mapNode>> map;
 	protected AI_path_generator path_gen;
-	protected AI_map_generator map_gen;
-	protected AI_utils AI_util;
 	// private long lastDeathTime;
 
 	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, GameState g) {
 		super(0, 0, x, y, w, h, r, a);
-		// creates a new map generator
-		this.map_gen = new AI_map_generator(g);
-		// generate the map when player is constructed
-		this.map = map_gen.generate_node_array(g);
 
-		AI_util = new AI_utils(this, g);
-
-		mapNode randomNode = getRandomNode();
+		mapNode randomNode = getRandomNode(g);
 		// set new location
 		this.x = randomNode.x;
 		this.y = randomNode.y;
@@ -179,7 +171,7 @@ public class AI_player extends Entity {
 	public String toString() {
 		String output = "";
 		output += "000,";// 003
-		output += "ai" + ",";
+		output += this.id + ",";
 		output += "0" + ",";
 		output += this.imageId + ",";
 		output += this.spriteIndex + ",";
@@ -220,19 +212,19 @@ public class AI_player extends Entity {
 		}
 	}
 
-	public mapNode getRandomNode() {
+	public mapNode getRandomNode(GameState g) {
 		boolean trav = false;
 		Random rangen = new Random();
-		int randi = rangen.nextInt(map.size());
-		int randj = rangen.nextInt(map.get(0).size());
+		int randi = rangen.nextInt(g.map.size());
+		int randj = rangen.nextInt(g.map.get(0).size());
 		while (!trav) {
-			randi = rangen.nextInt(map.size());
-			randj = rangen.nextInt(map.get(0).size());
-			if (map.get(randi).get(randj).node_trav == true) {
+			randi = rangen.nextInt(g.map.size());
+			randj = rangen.nextInt(g.map.get(0).size());
+			if (g.map.get(randi).get(randj).node_trav == true) {
 				trav = true;
 			}
 		}
-		return this.map.get(randi).get(randj);
+		return g.map.get(randi).get(randj);
 	}
 
 }
