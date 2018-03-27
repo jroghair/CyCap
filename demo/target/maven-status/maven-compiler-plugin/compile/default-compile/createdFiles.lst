@@ -14,6 +14,7 @@ com\cycapservers\game\PlayerInfo.class
 com\cycapservers\game\Entity.class
 com\cycapservers\account\Account.class
 com\cycapservers\game\Utils.class
+com\cycapservers\account\ChatWebsocketConfig.class
 com\cycapservers\account\AccountController.class
 com\cycapservers\account\ChatController.class
 com\cycapservers\game\Wall.class

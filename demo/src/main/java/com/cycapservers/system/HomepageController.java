@@ -22,9 +22,9 @@ public class HomepageController {
         return "main_page";
     }
     
-    @GetMapping("/main_page")
-    public String homepage2() {
-        return "main_page";
+    @GetMapping("game_list")
+    public String gameListPage() {
+    	return "game_list";
     }
     
     @GetMapping("/how_to")

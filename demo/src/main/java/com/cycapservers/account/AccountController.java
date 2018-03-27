@@ -133,7 +133,7 @@ public class AccountController {
     	}
     	friends.setFriendsList(list);
     	model.addAttribute("friendsList", friends);
-    	return "/accounts/friendsList"; //new RedirectView("/accounts/friendsList");
+    	return "accounts/friendsList";
     }
     
     @ModelAttribute(value = "friend")
@@ -143,7 +143,7 @@ public class AccountController {
     
     
     @RequestMapping(value = "/accounts/friendAdd", method =  RequestMethod.POST)
-    public String friendAdd(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    public View friendAdd(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends ADD controller Layer");
     	String f1 = friend.getUserID();
     	
@@ -152,12 +152,11 @@ public class AccountController {
         	friend.setUserID(account.getUserID());
         	this.friendsRepository.save(friend);
     	}
-    	
-    	return "/accounts/friends";
+    	return new RedirectView("/accounts/friends");
     }
     
     @RequestMapping(value = "/accounts/friendRemove", method =  RequestMethod.POST)
-    public String friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    public View friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends REMOVE controller Layer");
     
     	String f1 = friend.getUserID();
@@ -168,7 +167,7 @@ public class AccountController {
         	this.friendsRepository.deleteByPlayerID(f1);
     	}
     	
-    	return "/accounts/friends";
+    	return new RedirectView("/accounts/friends");
     }
 
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
@@ -176,6 +175,12 @@ public class AccountController {
     	logger.info("Entered into get Chat controller Layer");
     	//System.out.println(account.getUserID());
     	
-    	return "/accounts/chat";
+    	return "accounts/chat";
+    }
+    
+    @GetMapping("/accounts/profile")
+    public String profilePage(@SessionAttribute("account") Account account) {
+    	//model.addAttribute("account", account);
+    	return "accounts/profile";
     }
 }

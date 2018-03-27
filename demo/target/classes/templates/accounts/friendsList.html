@@ -32,12 +32,12 @@
         <td th:text="${friend}"><span
           th:if="${friends.friendList == 0}">none</span></td>
           
- <form th:action="@{/accounts/chat}"  method="post" >         
+ <form>         
 		<td><input class="msgbtn" value="Chat" type="submit"/></td>
 		</form>
 		
-<form th:action="@{/accounts/remove}"  method="post" >
-	<td> <input class="btn" name="Invite" th:value="Invite" onclick="showTdSecond(this);" type="submit" id="remove"/>
+<form>
+	<td> <input class="btn" name="Invite" value="Invite" type="submit" id="remove"/>
 	
 	
 	<!--
