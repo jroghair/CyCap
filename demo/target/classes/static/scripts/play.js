@@ -494,8 +494,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 140;
 				this.max_hp = 100;
 				this.health = this.max_hp;
-				this.weapon1 = ar;
-				this.weapon2 = remington870;
+				this.weapon1 = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08, ar_icon); //ar
+				this.weapon2 = new Shotgun(30, 500, 500, 5, 4, 6000, 0.35); //remington
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
@@ -509,9 +509,9 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 140;
 				this.max_hp = 105;
 				this.health = this.max_hp;
-				this.weapon1 = mg;
+				this.weapon1 = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15, mg_icon); //mg
 				this.weapon2 = "EMPTY";
-				this.weapon3 = m1911;
+				this.weapon3 = new Pistol(11, 100, 400, 8, 2, 200, 0.05); //m1911
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
 				this.visibility = 5;
@@ -521,8 +521,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 180;
 				this.max_hp = 75;
 				this.health = this.max_hp;
-				this.weapon1 = sawedOffShotgun;
-				this.weapon2 = m1911;
+				this.weapon1 = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7); //sawed off
+				this.weapon2 = new Pistol(11, 100, 400, 8, 2, 200, 0.05); //m1911
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;

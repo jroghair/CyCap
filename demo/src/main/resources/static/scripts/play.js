@@ -59,9 +59,6 @@ function GameState(role){
 	this.map; //the set of tiles and map data
 	this.masks = []; //the list of ground masks
 	
-	this.testSound = new SoundEmitter(gunshot1, true, 400, 64, 1.0);
-	this.testSound.play();
-	
 	//this takes in the message from the server and builds the game state from that
 	this.receiveGameState = function(message){
 		//update every single game object
@@ -79,7 +76,6 @@ function GameState(role){
 					this.player.team = +obj[12];
 					this.player.updateCurrentWeapon(obj[13]);
 					this.player.health = +obj[15];
-					console.log(+obj[15]);
 					this.player.is_invincible = obj[16];
 					this.player.speed_boost = +obj[17];
 					this.player.damage_boost = +obj[18];
@@ -112,7 +108,6 @@ function GameState(role){
 		for(let i = this.bullets.length - 1; i >= 0; i--){
 			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
 		}
-		this.testSound.update();
 	}
 	
 	this.drawGameState = function(){
@@ -262,12 +257,12 @@ function setup() {
 
 	lastFrameTime = Date.now();
 	connectToServer(role);
-	
+	//loadMapFrom server
 	document.getElementById("loading_screen").remove();
 }
 
 function run() {
-	//debugger; keeps people from messing with code
+	//debugger; //keeps people from messing with code
 	
 	global_delta_t = (Date.now() - lastFrameTime) / 1000; //set the time of the most recent frame (in seconds)
 	lastFrameTime = Date.now();
@@ -494,8 +489,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 140;
 				this.max_hp = 100;
 				this.health = this.max_hp;
-				this.weapon1 = ar;
-				this.weapon2 = remington870;
+				this.weapon1 = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08, ar_icon); //ar
+				this.weapon2 = new Shotgun(30, 500, 500, 5, 4, 6000, 0.35); //remington
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
@@ -509,9 +504,9 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 140;
 				this.max_hp = 105;
 				this.health = this.max_hp;
-				this.weapon1 = mg;
+				this.weapon1 = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15, mg_icon); //mg
 				this.weapon2 = "EMPTY";
-				this.weapon3 = m1911;
+				this.weapon3 = new Pistol(11, 100, 400, 8, 2, 200, 0.05); //m1911
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
 				this.visibility = 5;
@@ -521,8 +516,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.mov_speed = 180;
 				this.max_hp = 75;
 				this.health = this.max_hp;
-				this.weapon1 = sawedOffShotgun;
-				this.weapon2 = m1911;
+				this.weapon1 = new Shotgun(45, 300, 500, 2, 10, 2000, 0.7); //sawed off
+				this.weapon2 = new Pistol(11, 100, 400, 8, 2, 200, 0.05); //m1911
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
