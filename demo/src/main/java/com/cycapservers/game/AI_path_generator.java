@@ -7,12 +7,14 @@ public class AI_path_generator {
 
 	private AI_player ai;
 	private GameState g;
-	protected ArrayList<mapNode> closed_list = new ArrayList<mapNode>();
-	protected ArrayList<mapNode> open_list = new ArrayList<mapNode>();
+	protected ArrayList<mapNode> closed_list;
+	protected ArrayList<mapNode> open_list;
 
 	public AI_path_generator(AI_player ai, GameState g) {
 		this.ai = ai;
 		this.g = g;
+		this.open_list = new ArrayList<mapNode>();
+		this.closed_list = new ArrayList<mapNode>();
 	}
 
 	/**
@@ -26,8 +28,12 @@ public class AI_path_generator {
 	 * @throws Exception
 	 */
 	public ArrayList<mapNode> get_a_star_path(Entity start, Entity end) {
+		long timer = System.currentTimeMillis();
 		Point moving_point = ai.AI_util.get_nearest_node(start);
+		System.out.println("Amount to find start node: " + (System.currentTimeMillis() - timer));
+		timer = System.currentTimeMillis();
 		Point ending_point = ai.AI_util.get_nearest_node(end);
+		System.out.println("Amount to find end node: " + (System.currentTimeMillis() - timer));
 		return A_Star_Path(moving_point, ending_point);
 	}
 
@@ -41,6 +47,7 @@ public class AI_path_generator {
 	 * @throws Exception
 	 */
 	private ArrayList<mapNode> A_Star_Path(Point a, Point b) {
+		long timer  = System.currentTimeMillis();
 		closed_list.clear();
 		open_list.clear();
 		mapNode start_node = ai.map.get(a.x).get(a.y);
@@ -52,6 +59,7 @@ public class AI_path_generator {
 		while (open_list.size() != 0) {
 			current_node = get_lowest_f(open_list);
 			if (current_node == goal_node) {
+				System.out.println("time to find path: " + (System.currentTimeMillis() - timer));
 				return construct_path(current_node);
 			}
 			open_list.remove(get_node_index(open_list, current_node));
@@ -128,17 +136,18 @@ public class AI_path_generator {
 	}
 
 	private ArrayList<mapNode> construct_path(mapNode cur) {
+		long timer  = System.currentTimeMillis();
 		ArrayList<mapNode> path = new ArrayList<mapNode>();
 		mapNode temp = cur;
 		path.add(temp);
 		while (temp.previous != null) {
-
 			path.add(temp.previous);
 			// reseting the reference for the next path
 			temp.previous = null;
 			// get next node in path
 			temp = path.get(path.size() - 1);
 		}
+		System.out.println("time to construct path: " + (System.currentTimeMillis() - timer));
 		return path;
 	}
 

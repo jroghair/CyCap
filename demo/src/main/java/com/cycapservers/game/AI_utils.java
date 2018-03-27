@@ -76,17 +76,13 @@ public class AI_utils {
 	public ArrayList<mapNode> get_neighbors(mapNode node, ArrayList<mapNode> closed_list,
 			ArrayList<mapNode> open_list) {
 		ArrayList<mapNode> neighbors = new ArrayList<mapNode>();
-		try {
-			if (g.map.get(node.i - 1).get(node.j - 1).node_trav == true) {
-				neighbors.add(g.map.get(node.i - 1).get(node.j - 1));
-				if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
-						&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
-					neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * a.node_pixel_dist);
-				}
-				neighbors.get(neighbors.size() - 1).corner = true;
+		if (g.map.get(node.i - 1).get(node.j - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.i - 1).get(node.j - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * a.node_pixel_dist);
 			}
-		} catch (Exception e) {
-			System.out.println(node.i + " " + node.j);
+			neighbors.get(neighbors.size() - 1).corner = true;
 		}
 		if (g.map.get(node.i - 1).get(node.j).node_trav == true) {
 			neighbors.add(g.map.get(node.i - 1).get(node.j));

@@ -6,7 +6,6 @@ import java.util.Random;
 public class AI_player extends Entity {
 
 	protected int team;
-
 	protected String role;
 	protected Weapon weapon1;
 	protected Weapon weapon2;
@@ -14,13 +13,11 @@ public class AI_player extends Entity {
 	protected Weapon weapon4;
 	protected Weapon currentWeapon;
 	protected Item item_slot;
-
 	protected int health;
 	protected int max_health;
 	protected boolean isDead;
 	protected double speed;
 	protected int visibility;
-
 	protected boolean is_invincible;
 	protected double speed_boost;
 	protected double damage_boost;
@@ -29,15 +26,13 @@ public class AI_player extends Entity {
 	protected boolean moving;
 	protected int cur_p_node;
 	protected boolean new_path;
-
 	protected long last_path_update_time = 0;
 	protected long temp_move_time = 0;
-
 	protected ArrayList<ArrayList<mapNode>> map;
 	protected AI_path_generator path_gen;
 	protected AI_map_generator map_gen;
 	protected AI_utils AI_util;
-	// private long lastDeathTime;
+	private boolean map_finished = false;
 
 	public AI_player(int x, int y, int w, int h, int r, double a, int team, String role, GameState g) {
 		super(0, 0, x, y, w, h, r, a);
@@ -45,9 +40,10 @@ public class AI_player extends Entity {
 		this.map_gen = new AI_map_generator(g);
 		// generate the map when player is constructed
 		this.map = map_gen.generate_node_array(g);
+		this.map_finished = true;
 
 		AI_util = new AI_utils(this, g);
-
+		
 		mapNode randomNode = getRandomNode();
 		// set new location
 		this.x = randomNode.x;
@@ -79,7 +75,6 @@ public class AI_player extends Entity {
 			this.weapon4 = null;
 			this.currentWeapon = this.weapon1;
 		}
-
 	}
 
 	public void get_path(GameState g) {
@@ -116,19 +111,16 @@ public class AI_player extends Entity {
 		// }
 		// }
 
-		// get initial path
-		if (this.last_path_update_time == 0) {
+		// get initial path if the map is done being generated
+		if (this.last_path_update_time == 0 && this.map_finished) {
 			// running the path planning on a separate thread
-			Thread t1 = new Thread(new Runnable() {
-				public void run() {
+//			Thread t1 = new Thread(new Runnable() {
+//				public void run() {
 					get_path(g);
-				}
-			});
-			t1.start();
-			//
-			// this.new_path = true;
-			// this.last_path_update_time = System.currentTimeMillis();
-			// System.out.println("getting initial path...");
+//				}
+//			});
+//			t1.start();
+
 		}
 
 		// if its been 2.5 seconds or the path is almost done update the path.
@@ -136,21 +128,15 @@ public class AI_player extends Entity {
 				|| (this.get_distance_to_target() < 10
 						&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
 			// running the path planning on a separate thread
-			Thread t2 = new Thread(new Runnable() {
-				public void run() {
+//			Thread t2 = new Thread(new Runnable() {
+//				public void run() {
 					get_path(g);
-				}
-			});
-			t2.start();
-			// while(t2.isAlive()){}
-			// get_path(g);
-			// this.new_path = true;
-			// this.last_path_update_time = System.currentTimeMillis();
-			System.out.println("updating path...");
-			// System.out.println(path.size() + " nodes long");
+//				}
+//			});
+//			t2.start();
 		}
 
-		if (this.moving && path != null) {
+		if (path != null && this.moving) {
 			if (this.new_path && (System.currentTimeMillis() - temp_move_time) > 150) {
 				this.cur_p_node = path.size() - 1;
 				this.x = path.get(cur_p_node).x;
@@ -161,8 +147,8 @@ public class AI_player extends Entity {
 																	// movement
 			}
 			if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-				 System.out.println("waited " + (System.currentTimeMillis() -
-				 temp_move_time) + " ms to move");
+				// System.out.println("waited " + (System.currentTimeMillis()
+				// -temp_move_time) + " ms to move");
 				while (this.cur_p_node >= path.size()) {
 					this.cur_p_node--;// just for safety
 				}

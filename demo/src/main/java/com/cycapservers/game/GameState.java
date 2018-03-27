@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.TimerTask;
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -26,8 +24,6 @@ public class GameState extends TimerTask {
 								// ms
 
 	// stuff for AI
-	//protected ArrayList<ArrayList<mapNode>> map;// map of nodes for AI
-	//protected AI_map_generator map_gen;
 	protected AI_path_generator path_gen;
 	protected AI_utils AI_util;
 	protected int bg_width_grids = 41;
@@ -43,7 +39,6 @@ public class GameState extends TimerTask {
 
 	private long lastGSMessage;
 	protected double currentDeltaTime; // the time since the last game state
-										// update in seconds
 
 	public GameState() {
 		this.players = new ArrayList<Player>();
@@ -61,12 +56,6 @@ public class GameState extends TimerTask {
 		respawnTime = 10000; // 10 seconds respawn time
 
 		MapLoader.loadPredefinedMap(0, this);// load up the map
-
-		//map_gen = new AI_map_generator(this);
-		//path_gen = new AI_path_generator(this);// may need game state
-		//AI_util = new AI_utils(this);
-
-		//map = map_gen.generate_node_array(this);
 	}
 
 	public void updateGameState() {
@@ -79,7 +68,6 @@ public class GameState extends TimerTask {
 		while (iter.hasNext()) {
 			if (iter.next().update(this)) {
 				iter.remove(); // remove the bullet from the list if it is done
-								// (animation done/hit a wall/etc)
 			}
 		}
 
@@ -92,14 +80,15 @@ public class GameState extends TimerTask {
 			}
 		}
 
-		// updating AI players
+		// updating AI players, if there are any
 		if (AI_players.size() > 0) {
 			for (int i = 0; i < AI_players.size(); i++) {
 				AI_players.get(i).update(this);
 			}
 		}
 
-		this.unhandledInputs.clear(); // empty the queue of unhandled inputs
+		this.unhandledInputs.clear(); // empty the queue of inputs that have not
+										// been handled
 
 		this.lastGSMessage = System.currentTimeMillis();
 
@@ -161,11 +150,13 @@ public class GameState extends TimerTask {
 		}
 		this.players.add(
 				new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
-		System.out.println("player's team: " + this.players.get(this.players.size()-1).team);
-		this.add_AI_player(1, role);
-		this.add_AI_player(1, role);
-		this.add_AI_player(2, role);
-		this.add_AI_player(2, role);
+		System.out.println("player's team: " + this.players.get(this.players.size() - 1).team);
+		for (int i = 0; i < 10; i++) {
+			this.add_AI_player(1, role);
+		}
+		for (int i = 0; i < 10; i++) {
+			this.add_AI_player(2, role);
+		}
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
 		} catch (IOException e) {
@@ -176,28 +167,12 @@ public class GameState extends TimerTask {
 
 	public void add_AI_player(int team, String role) {
 		// make AI player and send map reference
-		//mapNode randomNode = getRandomNode();
+		// mapNode randomNode = getRandomNode();
 		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, this));
-		AI_players.get(AI_players.size() - 1).get_path(this);
-		System.out.println("team: " + this.AI_players.get(this.AI_players.size()-1).team);
+		//AI_players.get(AI_players.size() - 1).get_path(this);
+		System.out.println("Added AI player.");
 	}
-	
-	//moved to ai player class
-//	public mapNode getRandomNode(){
-//		boolean trav = false;
-//		Random rangen = new Random();
-//		int randi = rangen.nextInt(map.size());
-//		int randj = rangen.nextInt(map.get(0).size());
-//		while(!trav){
-//			randi = rangen.nextInt(map.size());
-//			randj = rangen.nextInt(map.get(0).size());
-//			if(map.get(randi).get(randj).node_trav == true){
-//				trav = true;
-//			}
-//		}
-//		return this.map.get(randi).get(randj);
-//	}
-	
+
 	public void removePlayer(WebSocketSession session) {
 		ListIterator<Player> iter = this.players.listIterator();
 		while (iter.hasNext()) {

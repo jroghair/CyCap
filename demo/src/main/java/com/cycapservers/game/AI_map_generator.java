@@ -12,14 +12,14 @@ public class AI_map_generator {
 	 */
 	public AI_map_generator(GameState g){
 		this.g = g;
-	}//constructor
+	}
 	
 	/**
 	 * Creates a map of nodes for the AI player to use in path calculations
 	 * @param g is a reference to the current game state
 	 * @return map a 2d array list of nodes
 	 */
-	public  ArrayList<ArrayList<mapNode>> generate_node_array(GameState g){ //passing GameState so it doesn't have to be static
+	public ArrayList<ArrayList<mapNode>> generate_node_array(GameState g){ //passing GameState so it doesn't have to be static
 		short index_i = 0;
 		short index_j = 0;
 		for(int i = 0;i < (Utils.GRID_LENGTH * g.bg_width_grids);i += g.node_pixel_dist){
