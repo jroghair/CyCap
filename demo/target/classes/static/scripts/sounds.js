@@ -1,6 +1,3 @@
-let innerRad = 1; //in grids
-let outerRad = 15; //in grids
-
 function SoundEmitter(src, is_looping, x, y, start_vol){
 	this.x = x;
 	this.y = y;

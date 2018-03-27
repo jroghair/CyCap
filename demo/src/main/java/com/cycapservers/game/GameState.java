@@ -15,6 +15,7 @@ public class GameState extends TimerTask
 {
 	private List<InputSnapshot> unhandledInputs;
 	
+	protected List<AI_player> AI_players;
 	protected List<Player> players;
 	protected int playersOnTeam1;
 	protected int playersOnTeam2;
@@ -22,6 +23,13 @@ public class GameState extends TimerTask
 	protected int team2_score;
 	protected boolean friendlyFire;
 	protected long respawnTime; //the amount of time to respawn after death in ms
+	
+	// stuff for AI
+	//protected ArrayList<ArrayList<mapNode>> map;// map of nodes for AI
+	//protected AI_map_generator map_gen;
+	protected AI_path_generator path_gen;
+	protected AI_utils AI_util;
+	double node_pixel_dist = 16.0;
 	
 	protected List<Bullet> bullets;
 	
@@ -34,6 +42,7 @@ public class GameState extends TimerTask
 	protected double currentDeltaTime; //the time since the last game state update in seconds
 	
 	public GameState() {
+		this.AI_players = new ArrayList<AI_player>();
 		this.players = new ArrayList<Player>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
@@ -71,6 +80,10 @@ public class GameState extends TimerTask
 				System.out.println("unhandled input " + i + ": " + e);
 			}
 		}
+		// updating AI players
+		for (AI_player ai : AI_players) {
+				ai.update(this);
+		}
 		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		
 		this.lastGSMessage = System.currentTimeMillis();
@@ -86,6 +99,9 @@ public class GameState extends TimerTask
 		//fill the output
 		for(int i = 0; i < players.size(); i++) {
 			output += players.get(i).toString() + ":";
+		}
+		for (int i = 0; i < AI_players.size(); i++) {
+			output += AI_players.get(i).toString() + ":";
 		}
 		for(int i = 0; i < bullets.size(); i++) {
 			output += bullets.get(i).toString();
@@ -129,12 +145,22 @@ public class GameState extends TimerTask
 			pass = createPassword(10);
 		}
 		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		this.add_AI_player(1, role);
+		this.add_AI_player(2, role);
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
 		} catch (IOException e) {
 			System.out.println("could not send password for " + client_id + "! error!");
 			e.printStackTrace();
 		}
+	}
+	
+	public void add_AI_player(int team, String role) {
+		// make AI player and send map reference
+		//mapNode randomNode = getRandomNode();
+		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, this));
+		AI_players.get(AI_players.size() - 1).get_path(this);
+		System.out.println("team: " + this.AI_players.get(this.AI_players.size()-1).team);
 	}
 	
 	public void removePlayer(WebSocketSession session) {
