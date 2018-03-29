@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.cycapservers.account.Account;
 //import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -20,9 +22,9 @@ public class HomepageController {
         return "main_page";
     }
     
-    @GetMapping("/main_page")
-    public String homepage2() {
-        return "main_page";
+    @GetMapping("game_list")
+    public String gameListPage() {
+    	return "game_list";
     }
     
     @GetMapping("/how_to")

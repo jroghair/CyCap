@@ -262,7 +262,8 @@ public class Player extends Entity {
 		output += this.health + ",";
 		output += this.is_invincible + ",";
 		output += this.speed_boost + ",";
-		output += this.damage_boost;
+		output += this.damage_boost + ",";
+		output += this.visibility;
 		return output;
 	}
 	

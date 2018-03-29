@@ -1,7 +1,9 @@
 package com.cycapservers.account;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,18 +35,15 @@ public class AccountController {
 
     @Autowired
     private AccountRepository accountsRepository;
+    
+    @Autowired
+    private FriendRepository friendsRepository;
 
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
     
     @ModelAttribute("account")
     public Account newAccount(){
     	return new Account();
-    }
-
-    @GetMapping("/accounts/find")
-    public String findAccount(Map<String, Object> model) {
-        model.put("account", new Account());
-        return "accounts/findAccounts";
     }
     
     @RequestMapping(value = "/accounts/register", method = RequestMethod.GET)
@@ -68,7 +67,7 @@ public class AccountController {
        	 		if(acnt==null){
 	       	    	account.setDateOfCreation();
 	       	    	this.accountsRepository.save(account);
-	       	    	return "accounts/successfulregistration";
+	       	    	return "accounts/login";
        	 		}
        	 	}
     	}
@@ -112,5 +111,76 @@ public class AccountController {
     @GetMapping("/accounts/unsuccessfullogin")
     public String unsuccessfulLogin() {
         return "accounts/unsuccessfullogin";
+    }
+    
+    @ModelAttribute(value = "friends")
+    public Friends newFriends(){
+    	return new Friends();
+    }
+    
+    @RequestMapping(value = "/accounts/friends", method =  RequestMethod.GET)
+    public String friends(Model model, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friends") Friends friends){
+    	logger.info("Entered into get friends controller Layer");
+    	model.addAttribute("account", account);
+    	String s1 = account.getUserID(); 
+    	Collection<String> coll = this.friendsRepository.findByUserID(s1);
+    	List<String> list;
+    	if (coll instanceof List){
+    		list = (List<String>)coll;
+    	}
+    	else{
+    	  list = new ArrayList<String>(coll);
+    	}
+    	friends.setFriendsList(list);
+    	model.addAttribute("friendsList", friends);
+    	return "accounts/friendsList";
+    }
+    
+    @ModelAttribute(value = "friend")
+    public Friend newFriend(){
+    	return new Friend();
+    }
+    
+    
+    @RequestMapping(value = "/accounts/friendAdd", method =  RequestMethod.POST)
+    public View friendAdd(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends ADD controller Layer");
+    	String f1 = friend.getUserID();
+    	
+    	if(accountsRepository.findByUserID(f1)!=null){
+    		friend.setPlayerID(f1);
+        	friend.setUserID(account.getUserID());
+        	this.friendsRepository.save(friend);
+    	}
+    	return new RedirectView("/accounts/friends");
+    }
+    
+    @RequestMapping(value = "/accounts/friendRemove", method =  RequestMethod.POST)
+    public View friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
+    	logger.info("Entered into get friends REMOVE controller Layer");
+    
+    	String f1 = friend.getUserID();
+    	
+    	if(accountsRepository.findByUserID(f1)!=null){
+    		friend.setPlayerID(f1);
+        	friend.setUserID(account.getUserID());
+        	this.friendsRepository.deleteByPlayerID(f1);
+    	}
+    	
+    	return new RedirectView("/accounts/friends");
+    }
+
+    @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
+    public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account){
+    	logger.info("Entered into get Chat controller Layer");
+    	//System.out.println(account.getUserID());
+    	
+    	return "accounts/chat";
+    }
+    
+    @GetMapping("/accounts/profile")
+    public String profilePage(@SessionAttribute("account") Account account) {
+    	//model.addAttribute("account", account);
+    	return "accounts/profile";
     }
 }

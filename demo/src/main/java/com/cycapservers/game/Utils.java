@@ -1,5 +1,7 @@
 package com.cycapservers.game;
 
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class Utils{
@@ -10,6 +12,7 @@ public final class Utils{
 	public final static int LEFT  = 0b0010;
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
+	public final static int node_pixel_distance = 8;
 	
 	//////THE WEAPONS//////
 	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 4, 6000, 0.35);
@@ -141,29 +144,203 @@ public final class Utils{
 	 * @param p The player which we are setting the role/class data
 	 */
 	public static void setRole(Player p) {
-		switch(p.role) {
-			case "recruit":
-				p.speed = 140;
-				p.max_health = 100;
-				p.health = p.max_health;
-				p.weapon1 = new Shotgun(REMINGTON_870);
-				p.weapon2 = new Pistol(M1911); //pistol
-				p.weapon3 = null;
-				p.weapon4 = null;
-				p.currentWeapon = p.weapon1;
-				break;
-				
-			case "artillery":
-				break;
-				
-			case "infantry":
-				break;
-				
-			case "scout":
-				break;
-				
-			default:
-				throw new IllegalStateException("Player role is unacceptable!");
+		String role = p.role;
+		if(role.equals("recruit")) {
+			p.speed = 140;
+			p.max_health = 100;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(ASSAULT_RIFLE);
+			p.weapon2 = new Shotgun(REMINGTON_870);
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 6;
+			return;
 		}
+		else if(role.equals("artillery")) {
+			return;
+		}
+		else if(role.equals("infantry")) {	
+			p.speed = 140;
+			p.max_health = 105;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(MACHINE_GUN);
+			p.weapon2 = null;
+			p.weapon3 = new Pistol(M1911); //pistol
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 5;
+			return;
+		}
+		else if(role.equals("scout")) {	
+			p.speed = 180;
+			p.max_health = 75;
+			p.health = p.max_health;
+			p.weapon1 = new Shotgun(SAWED_OFF_SHOTGUN);
+			p.weapon2 = new Pistol(M1911); //pistol
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 7;
+			return;
+		}
+		else {
+			throw new IllegalStateException("Player role is unacceptable!");
+		}
+	}
+	
+	public static Point get_nearest_map_node(Entity e, GameState g) {
+		int x = (int) (Math.ceil(e.x / node_pixel_distance) * node_pixel_distance);
+		int y = (int) (Math.ceil(e.y / node_pixel_distance) * node_pixel_distance);
+		short i = 0, j = 0;
+		while (g.map.get(i).get(j).y != y) {
+			j++;
+		}
+		while (g.map.get(i).get(j).x != x) {
+			i++;
+		}
+		if (g.map.get(i).get(j).node_trav != false) {
+			return new Point(i, j);
+		} else {
+			x = (int) (Math.floor(e.x / node_pixel_distance) * node_pixel_distance);
+			y = (int) (Math.floor(e.y / node_pixel_distance) * node_pixel_distance);
+			i = 0;
+			j = 0;
+			while (g.map.get(i).get(j).y != y) {
+				j++;
+			}
+			while (g.map.get(i).get(j).x != x) {
+				i++;
+			}
+			if (g.map.get(i).get(j).node_trav != false) {
+				return new Point(i, j);
+			} else {
+				x = (int) (Math.floor(e.x / node_pixel_distance) * node_pixel_distance);
+				y = (int) (Math.ceil(e.y / node_pixel_distance) * node_pixel_distance);
+				i = 0;
+				j = 0;
+				while (g.map.get(i).get(j).y != y) {
+					j++;
+				}
+				while (g.map.get(i).get(j).x != x) {
+					i++;
+				}
+				if (g.map.get(i).get(j).node_trav != false) {
+					return new Point(i, j);
+				} else {
+					x = (int) (Math.ceil(e.x / node_pixel_distance) * node_pixel_distance);
+					y = (int) (Math.floor(e.y / node_pixel_distance) * node_pixel_distance);
+					i = 0;
+					j = 0;
+					while (g.map.get(i).get(j).y != y) {
+						j++;
+					}
+					while (g.map.get(i).get(j).x != x) {
+						i++;
+					}
+					if (g.map.get(i).get(j).node_trav != false) {
+						return new Point(i, j);
+					} else {
+						System.out.println("Couldn't find a traversable node near entity");
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static ArrayList<ArrayList<mapNode>> generate_node_array(GameState g){ //passing GameState so it doesn't have to be static
+		short index_i = 0;
+		short index_j = 0;
+		ArrayList<ArrayList<mapNode>> map = new ArrayList<ArrayList<mapNode>>(); //2d map of nodes
+		for(int i = 0; i < (GRID_LENGTH * g.mapGridWidth); i += Utils.node_pixel_distance){
+			ArrayList<mapNode> node_col = new ArrayList<mapNode>();
+			for(int j = 0;j < (GRID_LENGTH * g.mapGridHeight );j += Utils.node_pixel_distance){
+				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1);//used for traversing
+				boolean traversable = true;
+				for(int t = 0; t < g.walls.size(); t++){
+					if(isColliding(test_player_ent, g.walls.get(t))){
+						traversable = false;
+						break; //colliding with one wall is enough to know this isn't a possible space
+					}
+				}
+				node_col.add(new mapNode(i, j, traversable, index_i, index_j));
+				index_j++;
+			}
+			map.add(node_col);
+			index_i++;
+			index_j = 0;
+		}
+		return map;
+	}
+	
+	public static ArrayList<mapNode> get_neighbors(GameState g, mapNode node, ArrayList<mapNode> closed_list, ArrayList<mapNode> open_list) {
+		ArrayList<mapNode> neighbors = new ArrayList<mapNode>();
+		if (g.map.get(node.gridX - 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+						&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX - 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		if (g.map.get(node.gridX - 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		// neighbor number 5
+		if (g.map.get(node.gridX + 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX + 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		if (g.map.get(node.gridX + 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * node_pixel_distance);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		return neighbors;
 	}
 }
