@@ -3,8 +3,10 @@ package com.cycapservers.game;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public final class Utils{
+	public final static boolean DEBUG = true;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -13,6 +15,7 @@ public final class Utils{
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
 	public final static int node_pixel_distance = 8;
+	public final static Random RANDOM = new Random();
 	
 	//////THE WEAPONS//////
 	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 4, 6000, 0.35);

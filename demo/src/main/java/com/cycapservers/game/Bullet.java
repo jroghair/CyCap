@@ -51,25 +51,38 @@ public class Bullet extends Entity {
 		if((System.currentTimeMillis() - this.birthTime) > this.lifeSpan){
 			return true;
 		}
+		int subUpdateResolution = 4; //we want to move the bullet smaller amounts so it can't jump walls
+		double deltaX = this.speed * this.xRatio * game.currentDeltaTime / subUpdateResolution;
+		double deltaY = this.speed * this.yRatio * game.currentDeltaTime / subUpdateResolution;
 		
-		this.x += this.speed * this.xRatio * game.currentDeltaTime;
-		this.y += this.speed * this.yRatio * game.currentDeltaTime;
-
-		for(Wall w : game.walls){
-			if(Utils.isColliding(this, w))
-			{
-				return true;
-			}
-		}
-		for(Player p : game.players) {
-			if(Utils.isColliding(this, p)) {
-				if(p.team != this.team) {
-					p.takeDamage(this.damage);
+		for(short i = 0; i < subUpdateResolution; i++) {
+			this.x += deltaX;
+			this.y += deltaY;
+	
+			for(Wall w : game.walls){
+				if(Utils.isColliding(this, w))
+				{
+					return true;
 				}
-				return true;
+			}
+			for(AI_player ai : game.AI_players) {
+				if(Utils.isColliding(this, ai)) {
+					/* TODO: reinstate damage to AI after it is ready
+					if(ai.team != this.team) {
+						ai.takeDamage(this.damage);
+					}*/
+					return true;
+				}
+			}
+			for(Player p : game.players) {
+				if(Utils.isColliding(this, p)) {
+					if(game.friendlyFire || (p.team != this.team)) {
+						p.takeDamage(this.damage);
+					}
+					return true;
+				}
 			}
 		}
-		
 		return false;
 	}
 	

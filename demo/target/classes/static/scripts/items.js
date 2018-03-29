@@ -1,3 +1,4 @@
+
 //response_time is the amount of time in milliseconds you have to collide with it before it triggers
 function Item(img, sprIdx, x, y, dWidth, dHeight, response_time){
 	this.base = Entity;

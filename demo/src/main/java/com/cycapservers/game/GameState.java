@@ -24,9 +24,11 @@ public class GameState extends TimerTask
 	protected boolean friendlyFire;
 	protected long respawnTime; //the amount of time to respawn after death in ms
 	
+	protected PowerUpHandler pu_handler;
+	
+	protected List<String> new_sounds;
+	
 	// stuff for AI
-	//protected ArrayList<ArrayList<mapNode>> map;// map of nodes for AI
-	//protected AI_map_generator map_gen;
 	protected ArrayList<ArrayList<mapNode>> map;
 	
 	protected List<Bullet> bullets;
@@ -44,6 +46,7 @@ public class GameState extends TimerTask
 		this.players = new ArrayList<Player>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
+		this.new_sounds = new ArrayList<String>();
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
 		
@@ -51,8 +54,10 @@ public class GameState extends TimerTask
 		this.playersOnTeam2 = 0;
 		team1_score = 0;
 		team2_score = 0;
+		
 		friendlyFire = false;
 		respawnTime = 10000; //10 seconds respawn time
+		pu_handler = new PowerUpHandler((short) 30000,(short) 2500);
 		
 		MapLoader.loadPredefinedMap(0, this);//load up the map
 		
@@ -64,7 +69,20 @@ public class GameState extends TimerTask
 
 	public void updateGameState() {
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
-		//System.out.println("Time error in Gamestate sending: " + (this.currentDeltaTime*1000 - 100));
+		
+		//DEV STUFF
+		if(Utils.DEBUG) {
+			int error = (int) (this.currentDeltaTime*1000 - 100);
+			if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
+				System.out.println("Time error in Gamestate sending: " + error);
+			}
+			if(this.bullets.size() >= GameManager.ADVANCED_BULLET_WARNING_LEVEL) {
+				System.out.println("ADVANCED WARNING!! TOO MANY BULLETS");
+			}
+			else if(this.bullets.size() >= GameManager.BULLET_WARNING_LEVEL) {
+				System.out.println("Warning! High number of bullets");
+			}
+		}
 		
 		//move all of the bullets first
 		ListIterator<Bullet> iter = this.bullets.listIterator();
@@ -87,6 +105,9 @@ public class GameState extends TimerTask
 		for (AI_player ai : AI_players) {
 				ai.update(this);
 		}
+		
+		pu_handler.update();
+		
 		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		
 		this.lastGSMessage = System.currentTimeMillis();
@@ -95,6 +116,8 @@ public class GameState extends TimerTask
 		for(Player p : players) {
 			p.setLastUnsentGameState(message);
 		}
+		
+		this.new_sounds.clear();
 	}
 	
 	public String toString() {

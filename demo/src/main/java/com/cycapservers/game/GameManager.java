@@ -21,6 +21,10 @@ public class GameManager {
 	
 	private boolean afkPlayers;
 	
+	static final int TOLERABLE_UPDATE_ERROR = 10; //IN MS
+	static final int BULLET_WARNING_LEVEL = 250;
+	static final int ADVANCED_BULLET_WARNING_LEVEL = 500;
+	
 	//Get a method to check last message.
 	
 	public GameManager(){
