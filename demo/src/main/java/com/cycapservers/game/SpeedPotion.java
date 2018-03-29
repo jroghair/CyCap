@@ -7,6 +7,10 @@ public class SpeedPotion extends PowerUp {
 	public SpeedPotion(double x, double y, double w, double h, double r, double a) {
 		super(3, 0, x, y, w, h, r, a, "Speed Potion", 10000);
 	}
+	
+	public SpeedPotion(SpeedPotion sp, double x, double y) {
+		super(sp, x, y);
+	}
 
 	@Override
 	public boolean update() {
@@ -19,7 +23,7 @@ public class SpeedPotion extends PowerUp {
 	}
 
 	@Override
-	public void use() {
+	public boolean use() {
 		if(this.grabber == null) {
 			throw new IllegalStateException("Error, this powerup has no grabber and cannot be used");
 		}
@@ -27,7 +31,9 @@ public class SpeedPotion extends PowerUp {
 			this.grabber.speed_boost *= this.BOOST_AMOUNT;
 			this.startTime = System.currentTimeMillis();
 			this.started = true;
+			return true;
 		}
+		return false;
 	}
 
 	@Override

@@ -56,6 +56,9 @@ public final class MapLoader {
 		Utils.placeBorder(g.walls, 41, 30, 0, 0, true);
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
+		//make a list of nodes
+		//List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
+		//g.pu_handler.setNodeList(pu_nodes);
 	}
 
 }

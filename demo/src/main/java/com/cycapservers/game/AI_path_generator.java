@@ -64,9 +64,9 @@ public class AI_path_generator {
 				}
 				double temp_g_score = 0.0;
 				if (neighbor.corner == true) {
-					temp_g_score = current_node.g + (1.414 * Utils.node_pixel_distance);
+					temp_g_score = current_node.g + (1.414 * Utils.AI_NODE_PIXEL_DISTANCE);
 				} else {
-					temp_g_score = current_node.g + (1.0 * Utils.node_pixel_distance);
+					temp_g_score = current_node.g + (1.0 * Utils.AI_NODE_PIXEL_DISTANCE);
 				}
 				if (open_list.contains(neighbor) == false) {
 					open_list.add(neighbor);

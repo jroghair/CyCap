@@ -24,6 +24,8 @@ public class GameState extends TimerTask
 	protected boolean friendlyFire;
 	protected long respawnTime; //the amount of time to respawn after death in ms
 	
+	//////ITEMS//////
+	protected List<Item> current_item_list;
 	protected PowerUpHandler pu_handler;
 	
 	protected List<String> new_sounds;
@@ -57,14 +59,13 @@ public class GameState extends TimerTask
 		
 		friendlyFire = false;
 		respawnTime = 10000; //10 seconds respawn time
-		pu_handler = new PowerUpHandler((short) 30000,(short) 2500);
+		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
 		
 		MapLoader.loadPredefinedMap(0, this);//load up the map
 		
 		this.AI_players = new ArrayList<AI_player>();
 		// generate the map when player is constructed
 		this.map = Utils.generate_node_array(this);
-		System.out.println("Map size: " + this.map.size());
 	}
 
 	public void updateGameState() {
@@ -117,7 +118,15 @@ public class GameState extends TimerTask
 			p.setLastUnsentGameState(message);
 		}
 		
+		this.current_item_list = getItemList();
+		
 		this.new_sounds.clear();
+	}
+	
+	public List<Item> getItemList(){
+		List<Item> list = new ArrayList<Item>();
+		list.addAll(this.pu_handler.getPowerUpsList());
+		return list;
 	}
 	
 	public String toString() {

@@ -6,8 +6,7 @@ import java.util.ListIterator;
 
 public class PowerUpHandler {
 	
-	protected List<PowerUp> power_ups;
-	//protected List<PowerUpNode> nodes;
+	protected List<PowerUpNode> nodes;
 	/**
 	 * the average time in between power up spawns, if feasible
 	 */
@@ -30,7 +29,7 @@ public class PowerUpHandler {
 	 * @param r randomness added to the spawn time 
 	 */
 	public PowerUpHandler(short s, short r) {
-		power_ups = new ArrayList<PowerUp>();
+		nodes = new ArrayList<PowerUpNode>();
 		if(r > s) {
 			throw new IllegalArgumentException("Error: randomness of PowerUpHandler is greater than it's rate");
 		}
@@ -40,21 +39,40 @@ public class PowerUpHandler {
 	}
 	
 	public void update() {
-		ListIterator<PowerUp> iter = this.power_ups.listIterator();
-		while(iter.hasNext()){
-		    if(iter.next().update()) {
-		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
-		    }
+		for(PowerUpNode n : nodes) {
+			n.update();
 		}
 		
 		if(System.currentTimeMillis() >= this.nextSpawnTime) {
-			//spawn new power up
-			//inform game state that new powerup has been spawned
+			List<PowerUpNode> freeNodes = new ArrayList<PowerUpNode>();
+			for(PowerUpNode n : nodes) {
+				if(!n.isInUse()) {
+					freeNodes.add(n);
+				}
+			}
+			if(!freeNodes.isEmpty()) {
+				freeNodes.get(Utils.RANDOM.nextInt(freeNodes.size())).spawnPowerUp();
+				//inform game state that new powerup has been spawned
+			}
 			setNextSpawnTime();
 		}
 	}
 	
 	private void setNextSpawnTime() {
 		this.nextSpawnTime = System.currentTimeMillis() + (this.rate + (Utils.RANDOM.nextInt(this.randomness * 2) - this.randomness));
+	}
+	
+	public List<PowerUp> getPowerUpsList(){
+		List<PowerUp> list = new ArrayList<PowerUp>();
+		for(PowerUpNode n : nodes) {
+			if(n.isInUse()) {
+				list.add(n.getPowerUp());
+			}
+		}
+		return list;
+	}
+	
+	public void setNodeList(List<PowerUpNode> nodes) {
+		this.nodes = nodes;
 	}
 }

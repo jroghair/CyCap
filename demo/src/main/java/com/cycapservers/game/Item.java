@@ -18,7 +18,11 @@ public abstract class Item extends Entity {
 		}
 	}
 	
-	public abstract void use();
+	/**
+	 * Use the item. Throws an IllegalStateException if grabber is null.
+	 * @return boolean: returns true if the item is all used up and is to be removed from the grabber's inventory
+	 */
+	public abstract boolean use();
 	
 	@Override
 	public abstract String toString();

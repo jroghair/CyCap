@@ -93,6 +93,14 @@ public class Player extends Entity {
 			this.movePlayer(game, s); //move the player first
 			this.currentWeapon.update(this, s, game); //checks to see if the current weapon is to be fired
 			
+			if(this.item_slot == null) {
+				for(Item i : game.current_item_list) {
+					if(Utils.isColliding(this, i)) {
+						i.pickUp(this);
+					}
+				}
+			}
+			
 			//WEAPON AND ITEM RELATED KEYPRESSES
 			if(s.keys_pnr.contains(49)){
 				this.switchWeapon(1);
@@ -196,12 +204,12 @@ public class Player extends Entity {
 	
 	private void useItem() {
 		if(this.item_slot == null){
-			//play bad sound
 			return;
 		}
 		else{
-			this.item_slot.use();
-			this.item_slot = null;
+			if(this.item_slot.use()) {
+				this.item_slot = null;
+			}
 		}
 	}
 	
