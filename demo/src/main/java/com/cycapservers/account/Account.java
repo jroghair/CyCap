@@ -4,18 +4,8 @@ package com.cycapservers.account;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PropertyComparator;
-
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -41,17 +31,12 @@ public class Account {
     @Column(name="Creation_Date")
     //private DateTimeFormatter dateOfCreation;
     @JsonFormat(pattern="yyyy-MM-dd")
-    private Date dateOfCreation;  
-    
+    private Date dateOfCreation;
     
     public Account() {
     	this.setDateOfCreation();
     }
- 
-    public Account(String userID) {
-    	this.userID = userID; 
-    	this.setDateOfCreation();
-    }
+    
     
 	public String getUserID() {
 		
@@ -91,7 +76,5 @@ public class Account {
 		java.sql.Date dat = java.sql.Date.valueOf(localDate);
 		this.dateOfCreation = dat;
 	}
-	
-
 
 }

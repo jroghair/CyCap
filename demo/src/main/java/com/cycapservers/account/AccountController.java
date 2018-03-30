@@ -12,10 +12,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,14 +22,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.cycapservers.account.AccountRepository; 
+import com.cycapservers.account.Account; 
 
 @Controller
 @SessionAttributes("account")
@@ -45,53 +40,24 @@ public class AccountController {
     private FriendRepository friendsRepository;
 
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-
-/*
-    @GetMapping("/accounts")
-    public String getAllAccounts(Map<String, Object> model) {
-    	
-        logger.info("Entered into Controller /accounts Layer");
-        Collection<Account> results = accountsRepository.findAll();
-        logger.info("Number of Records Fetched:" + results.size());
-        model.put("selections", results);
-        return "accounts/accountsList";
-    }*/
-/*
-    @GetMapping("/accounts/{userID}")
-    public String findAccountByUserID(@PathVariable("userID") String userID, Map<String, Object> model) {
-    	System.out.println(userID);
-        logger.info("Entered into Controller /accounts/{userID} Layer");
-        Collection<Account> results = accountsRepository.findByUserID(userID);
-        logger.info("Number of Records Fetched:" + results.size());
-        model.put("selections", results);
-        return "accounts/accountsList";
-    }*/
-/*
-    @GetMapping("/accounts/find")
-    public String findAccount(Map<String, Object> model) {
-        model.put("account", new Account());
-        return "accounts/findAccounts";
-    }
- */
-    @ModelAttribute(value = "account")
+    
+    @ModelAttribute("account")
     public Account newAccount(){
     	return new Account();
     }
     
-    @RequestMapping(value = "/accounts/register", method =  RequestMethod.GET)
+    @RequestMapping(value = "/accounts/register", method = RequestMethod.GET)
     public ModelAndView register(Model model, HttpServletRequest request){
     	logger.info("Entered into get accounts registration controller Layer");
-    	String view = "/accounts/registration";
+    	String view = "accounts/registration";
     	return new ModelAndView(view, "command", model);
     }
     
-    @RequestMapping(value= "/accounts/registration", method= RequestMethod.POST)
-    public View registration(Model model, @ModelAttribute("account") Account account){
+    @RequestMapping(value = "/accounts/registration", method = RequestMethod.POST)
+    public String registration(Model model, @ModelAttribute("account") Account account){
     	logger.info("Entered into post account registration controller Layer");
     	String s1 = account.getEmail();
     	String[] s2 = s1.split("\\@");
-   
-    	
     	 //validation checks for email and user name already existing
     	if(s2[0].length()>0 && s2.length==2){
        	 	String[] s3 = s2[1].split("\\.");
@@ -101,57 +67,52 @@ public class AccountController {
        	 		if(acnt==null){
 	       	    	account.setDateOfCreation();
 	       	    	this.accountsRepository.save(account);
-	       	    	return new RedirectView("/accounts/successfulregistration");
+	       	    	return "accounts/login";
        	 		}
        	 	}
     	}
-    	return new RedirectView("/accounts/unsuccessfulregistration");
+    	return "accounts/unsuccessfulregistration";
     }
     
     @GetMapping("/accounts/successfulregistration")
     public String successfulAccountRegistration() {
-        return "/accounts/successfulregistration";
+        return "accounts/successfulregistration";
     }
     @GetMapping("/accounts/unsuccessfulregistration")
     public String unsuccessfulAccountRegistration() {
-        return "/accounts/unsuccessfulregistration";
+        return "accounts/unsuccessfulregistration";
     }
     
     
     @RequestMapping(value = "/accounts/log", method =  RequestMethod.GET)
     public ModelAndView log(Model model, HttpServletRequest request){
     	logger.info("Entered into get accounts login controller Layer");
-    	String view = "/accounts/login";
-    	
+    	String view = "accounts/login";
     	return new ModelAndView(view, "command", model);
     }
     
-    
-    @RequestMapping(value= "/accounts/login", method= RequestMethod.POST)
-    public View login(HttpServletRequest request, Model model, @ModelAttribute("account") Account account){ 
+    @RequestMapping(value="/accounts/login", method = RequestMethod.POST)
+    public String login(Model model, @ModelAttribute("account") Account account){ 
     	String user = account.getUserID();
     	String pswd = account.getPassword();
-
     	Account acnt = this.accountsRepository.findByUserID(user);
     	if(acnt!=null && acnt.getUserID().compareTo(user)==0 && acnt.getPassword().compareTo(pswd)==0){
-    		return new RedirectView("/accounts/successfullogin");
+    		return "accounts/successfullogin";
     	}
     	
-    	return new RedirectView("/accounts/unsuccessfullogin");
+    	return "accounts/unsuccessfullogin";
     }   
     
     @GetMapping("/accounts/successfullogin")
-    public String successfulLogin(Model model, @SessionAttribute("account") Account account) {
-    	System.out.println(account.getUserID());
-    	model.addAttribute("account", account);
-        return "/accounts/successfullogin";
+    public String successfulLogin() {
+        return "accounts/successfullogin";
     }
     
     @GetMapping("/accounts/unsuccessfullogin")
     public String unsuccessfulLogin() {
-        return "/accounts/unsuccessfullogin";
-    }  
- 
+        return "accounts/unsuccessfullogin";
+    }
+    
     @ModelAttribute(value = "friends")
     public Friends newFriends(){
     	return new Friends();
@@ -160,20 +121,19 @@ public class AccountController {
     @RequestMapping(value = "/accounts/friends", method =  RequestMethod.GET)
     public String friends(Model model, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friends") Friends friends){
     	logger.info("Entered into get friends controller Layer");
-    	String view = "/accounts/friendsList";
     	model.addAttribute("account", account);
     	String s1 = account.getUserID(); 
     	Collection<String> coll = this.friendsRepository.findByUserID(s1);
-    	List list;
+    	List<String> list;
     	if (coll instanceof List){
-    		list = (List)coll;
+    		list = (List<String>)coll;
     	}
     	else{
-    	  list = new ArrayList(coll);
+    	  list = new ArrayList<String>(coll);
     	}
     	friends.setFriendsList(list);
     	model.addAttribute("friendsList", friends);
-    	return "/accounts/friendsList"; //new RedirectView("/accounts/friendsList");
+    	return "accounts/friendsList";
     }
     
     @ModelAttribute(value = "friend")
@@ -192,29 +152,12 @@ public class AccountController {
         	friend.setUserID(account.getUserID());
         	this.friendsRepository.save(friend);
     	}
-    	//friend.setUserID(account.getUserID());
-    	
     	return new RedirectView("/accounts/friends");
     }
-    
-    
-    /*
-    @RequestMapping(value = "accounts/remove", method =  RequestMethod.POST)
-    public String friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
-    	logger.info("Entered into get friends REMOVE controller Layer");
-
-    	System.out.println(friend.getUserID());
-    	System.out.println(friend.getPlayerID());
-    	//friend.setUserID(account.getUserID());
-    	
-    	return "/accounts/friends";
-    }
-    */
     
     @RequestMapping(value = "/accounts/friendRemove", method =  RequestMethod.POST)
     public View friendRemove(HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friend") Friend friend){
     	logger.info("Entered into get friends REMOVE controller Layer");
-    	
     
     	String f1 = friend.getUserID();
     	
@@ -223,58 +166,21 @@ public class AccountController {
         	friend.setUserID(account.getUserID());
         	this.friendsRepository.deleteByPlayerID(f1);
     	}
-    	//friend.setUserID(account.getUserID());
     	
     	return new RedirectView("/accounts/friends");
     }
 
-    	
-    	/*
-    	
-    	friend.setPlayerID(playerID);
-    	friend.setUserID(account.getUserID());
-    	friendsRepository.deleteByPlayerID(playerID);
-    	
-    	//friend.setUserID(account.getUserID());
-    	
-    	return new RedirectView("/accounts/friends");
-    }*/
-    	
-    	
-    	
-    /*
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
-    public String friendChat(HttpServletRequest request, @SessionAttribute("account") Account account){
-    	logger.info("Entered into get Chat controller Layer");
-    	
-    	return "/accounts/chat";
-    }*/
-    /*
-    @MessageMapping("/chat.onMessageReceived")
-    @SendTo("/accounts/chat")
-    public Message sendMessage(@Payload Message chatMessage) {
-    	logger.info("Entered into onMessageReceived controller Layer");
-        return chatMessage;
-    }
-
-    @MessageMapping("accounts/chat.addUser")
-    @SendTo("/accounts/chat")
-    public Message addUser(@Payload Message chatMessage, 
-                               SimpMessageHeaderAccessor headerAccessor) {
-        // Add username in web socket session
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getUser());
-        return chatMessage;
-    }
-    */
-    @RequestMapping(value = "/accounts/index", method =  RequestMethod.GET)
     public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account){
     	logger.info("Entered into get Chat controller Layer");
     	//System.out.println(account.getUserID());
     	
-    	return "/accounts/index";
+    	return "accounts/chat";
     }
     
-    
-  
-    
+    @GetMapping("/accounts/profile")
+    public String profilePage(@SessionAttribute("account") Account account) {
+    	//model.addAttribute("account", account);
+    	return "accounts/profile";
+    }
 }
