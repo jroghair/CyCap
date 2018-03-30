@@ -124,9 +124,7 @@ public class AI_player extends Entity {
 		}
 
 		// if its been 2.5 seconds or the path is almost done update the path.
-		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
-				|| (this.get_distance_to_target() < 10
-						&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
+		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000 || (this.get_distance_to_target() < 10 && (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
 			// running the path planning on a separate thread
 			Thread t2 = new Thread(new Runnable() {
 				public void run() {
@@ -138,7 +136,7 @@ public class AI_player extends Entity {
 			// get_path(g);
 			// this.new_path = true;
 			// this.last_path_update_time = System.currentTimeMillis();
-			System.out.println("updating path...");
+			//System.out.println("updating path...");
 			// System.out.println(path.size() + " nodes long");
 		}
 
@@ -153,8 +151,7 @@ public class AI_player extends Entity {
 																	// movement
 			}
 			if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-				 System.out.println("waited " + (System.currentTimeMillis() -
-				 temp_move_time) + " ms to move");
+				 //System.out.println("waited " + (System.currentTimeMillis() -temp_move_time) + " ms to move");
 				while (this.cur_p_node >= path.size()) {
 					this.cur_p_node--;// just for safety
 				}
@@ -168,31 +165,10 @@ public class AI_player extends Entity {
 	}
 
 	@Override
-	public String toString() {
+	public String toDataString(String client_id) {
 		String output = "";
 		output += "000,";// 003
-		output += this.id + ",";
-		output += "0" + ",";
-		output += this.imageId + ",";
-		output += this.spriteIndex + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.drawWidth + ",";
-		output += this.drawHeight + ",";
-		output += this.rotation + ",";
-		output += this.alpha + ",";
-		output += this.role + ",";
-		output += this.team + ",";
-		output += this.currentWeapon.toString() + ",";
-		if (this.item_slot == null) {
-			output += "empty" + ",";
-		} else {
-			output += this.item_slot.toString() + ",";
-		}
-		output += this.health + ",";
-		output += this.is_invincible + ",";
-		output += this.speed_boost + ",";
-		output += this.damage_boost;
+		output += super.toDataString(client_id);
 		return output;
 	}
 

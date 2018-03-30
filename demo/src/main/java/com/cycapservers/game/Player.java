@@ -245,34 +245,35 @@ public class Player extends Entity {
 	}
 	
 	@Override
-	public String toString(){
-		String output = "";
-		output += "000,";
-		output += this.client_id + ",";
-		output += this.highestHandledSnapshot + ",";
-		output += this.imageId + ",";
-		output += this.spriteIndex + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.drawWidth + ",";
-		output += this.drawHeight + ",";
-		output += this.rotation + ",";
-		output += this.alpha + ",";
-		output += this.role + ",";
-		output += this.team + ",";
-		output += this.currentWeapon.toString() + ",";
-		if(this.item_slot == null) {
-			output += "empty" + ",";
+	public String toDataString(String client_id){
+		if(this.client_id.equals(client_id)) {
+			String output = "";
+			output += "000,";
+			output += this.client_id + ",";
+			output += this.highestHandledSnapshot + ",";
+			output += super.toDataString(client_id) + ",";
+			output += this.role + ",";
+			output += this.team + ",";
+			output += this.currentWeapon.toString() + ",";
+			if(this.item_slot == null) {
+				output += "empty" + ",";
+			}
+			else {
+				output += this.item_slot.imageId + ",";
+			}
+			output += this.health + ",";
+			output += this.is_invincible + ",";
+			output += this.speed_boost + ",";
+			output += this.damage_boost + ",";
+			output += this.visibility;
+			return output;
 		}
 		else {
-			output += this.item_slot.toString() + ",";
+			String output = "";
+			output += "000,";
+			output += super.toDataString(client_id);
+			return output;
 		}
-		output += this.health + ",";
-		output += this.is_invincible + ",";
-		output += this.speed_boost + ",";
-		output += this.damage_boost + ",";
-		output += this.visibility;
-		return output;
 	}
 	
 	public String getPassword() {

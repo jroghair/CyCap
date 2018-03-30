@@ -24,7 +24,4 @@ public abstract class PowerUp extends Item {
 
 	@Override
 	public abstract boolean use();
-
-	@Override
-	public abstract String toString();
 }

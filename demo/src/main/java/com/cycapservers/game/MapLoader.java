@@ -1,5 +1,6 @@
 package com.cycapservers.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MapLoader {
@@ -57,8 +58,13 @@ public final class MapLoader {
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
 		//make a list of nodes
-		//List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
-		//g.pu_handler.setNodeList(pu_nodes);
+		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
+		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
+		pu_nodes.add(new PowerUpNode((short) 13, (short) 20));
+		pu_nodes.add(new PowerUpNode((short) 27, (short) 25));
+		pu_nodes.add(new PowerUpNode((short) 33, (short) 6));
+		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
+		g.pu_handler.setNodeList(pu_nodes);
 	}
 
 }

@@ -79,7 +79,7 @@ public class AI_path_generator {
 			}
 		}
 		//it couldn't find a path
-		System.out.println("couldn't find path");
+		//System.out.println("couldn't find path");
 		return null;
 	}
 
@@ -110,7 +110,7 @@ public class AI_path_generator {
 				return i;
 			}
 		}
-		System.out.println("get node index issue");
+		//System.out.println("get node index issue");
 		return 0;
 	}
 

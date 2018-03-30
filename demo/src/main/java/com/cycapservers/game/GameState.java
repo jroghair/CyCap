@@ -49,6 +49,8 @@ public class GameState extends TimerTask
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
 		this.new_sounds = new ArrayList<String>();
+		this.current_item_list = new ArrayList<Item>();
+		
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
 		
@@ -107,15 +109,14 @@ public class GameState extends TimerTask
 				ai.update(this);
 		}
 		
-		pu_handler.update();
+		pu_handler.update(); //update the powerups
 		
 		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		
 		this.lastGSMessage = System.currentTimeMillis();
 		
-		String message = this.toString();
 		for(Player p : players) {
-			p.setLastUnsentGameState(message);
+			p.setLastUnsentGameState(this.toDataString(p));
 		}
 		
 		this.current_item_list = getItemList();
@@ -129,17 +130,24 @@ public class GameState extends TimerTask
 		return list;
 	}
 	
-	public String toString() {
+	public String toDataString(Player p) {
 		String output = "";
 		//fill the output
 		for(int i = 0; i < players.size(); i++) {
-			output += players.get(i).toString() + ":";
+			if((players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += players.get(i).toDataString(p.client_id) + ":";
+			}
 		}
 		for (int i = 0; i < AI_players.size(); i++) {
-			output += AI_players.get(i).toString() + ":";
+			if((AI_players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += AI_players.get(i).toDataString(p.client_id) + ":";
+			}
+		}
+		for (Item i : this.current_item_list) {
+			output += i.toDataString(p.client_id) + ":";
 		}
 		for(int i = 0; i < bullets.size(); i++) {
-			output += bullets.get(i).toString();
+			output += bullets.get(i).toDataString(p.client_id);
 			if(i != bullets.size() - 1) output += ":";
 		}
 		

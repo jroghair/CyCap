@@ -62,10 +62,14 @@ public class PowerUpHandler {
 		this.nextSpawnTime = System.currentTimeMillis() + (this.rate + (Utils.RANDOM.nextInt(this.randomness * 2) - this.randomness));
 	}
 	
+	/**
+	 * Returns a list of the ungrabbed powerups for sending to players and calculating collisions
+	 * @return
+	 */
 	public List<PowerUp> getPowerUpsList(){
 		List<PowerUp> list = new ArrayList<PowerUp>();
 		for(PowerUpNode n : nodes) {
-			if(n.isInUse()) {
+			if(n.isInUse() && !n.getPowerUp().grabbed) {
 				list.add(n.getPowerUp());
 			}
 		}

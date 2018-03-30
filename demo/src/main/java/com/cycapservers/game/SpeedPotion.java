@@ -35,11 +35,4 @@ public class SpeedPotion extends PowerUp {
 		}
 		return false;
 	}
-
-	@Override
-	public String toString() {
-		String output = "010,";
-		return output;
-	}
-
 }

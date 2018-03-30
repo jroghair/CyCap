@@ -143,8 +143,7 @@ function ItemSlotGUI(x, y){
 		}
 		else{
 			this.item_image.a = 1.0; //make visible
-			this.item_image.image = gameState.player.item_slot.image;
-			this.item_image.sprIdx = gameState.player.item_slot.sprIdx;
+			this.item_image.image = findImageFromCode(gameState.player.item_slot);
 		}
 	}
 	

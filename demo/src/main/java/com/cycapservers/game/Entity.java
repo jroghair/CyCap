@@ -32,8 +32,17 @@ public class Entity {
 		updateCollision_radius();
 	}
 	
-	public String toString(){
-		return imageId + "," + spriteIndex + "," + x + "," + y + "," + drawWidth + "," + drawHeight + "," + rotation + "," + alpha;
+	public String toDataString(String client_id){
+		String output = "";
+		output += imageId + ",";
+		output += spriteIndex + ",";
+		output += x + ",";
+		output += y + ",";
+		output += drawWidth + ",";
+		output += drawHeight + ",";
+		output += rotation + ",";
+		output += alpha;
+		return output;
 	}
 
 	public int getImageId() {

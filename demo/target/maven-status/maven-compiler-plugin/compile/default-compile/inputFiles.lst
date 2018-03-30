@@ -1,5 +1,6 @@
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\mapNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Shotgun.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUpHandler.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_player.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\InputSnapshot.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Weapon.java
@@ -10,9 +11,9 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatCon
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\AccountRepository.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatWebsocketConfig.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Friends.java
-C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Game.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MapLoader.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Wall.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUpNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatMessage.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Item.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Entity.java
@@ -24,12 +25,14 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Utils.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Player.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Node.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\WebSocketConfig.java
-C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PlayerInfo.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Bullet.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\SpeedPotion.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GridLockedNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Pistol.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Friend.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\WebSocketEventListener.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_path_generator.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AutomaticGun.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUp.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\system\HomepageController.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MessageHandler.java

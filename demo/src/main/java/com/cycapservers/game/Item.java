@@ -15,6 +15,7 @@ public abstract class Item extends Entity {
 		if(!this.grabbed) {
 			this.grabber = grabber;
 			this.grabbed = true;
+			this.grabber.item_slot = this;
 		}
 	}
 	
@@ -25,5 +26,9 @@ public abstract class Item extends Entity {
 	public abstract boolean use();
 	
 	@Override
-	public abstract String toString();
+	public String toDataString(String client_id) {
+		String output = "010,";
+		output += super.toDataString(client_id);
+		return output;
+	}
 }

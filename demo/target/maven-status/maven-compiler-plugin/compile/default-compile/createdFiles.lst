@@ -10,7 +10,6 @@ com\cycapservers\CyCapApplication.class
 com\cycapservers\game\Item.class
 com\cycapservers\system\HomepageController.class
 com\cycapservers\account\ChatMessage.class
-com\cycapservers\game\PlayerInfo.class
 com\cycapservers\game\Entity.class
 com\cycapservers\account\Account.class
 com\cycapservers\game\Utils.class
@@ -29,4 +28,3 @@ com\cycapservers\game\MessageHandler.class
 com\cycapservers\game\GameState.class
 com\cycapservers\account\Friend.class
 com\cycapservers\account\AccountRepository.class
-com\cycapservers\game\Game.class

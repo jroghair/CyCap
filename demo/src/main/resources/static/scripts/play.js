@@ -51,6 +51,7 @@ function GameState(role){
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
 	this.pw;
 	
+	this.entities = [];
 	this.other_players = []; //the other players
 	this.ai_players = [];
 	this.bullets = []; //all bullets, including artillery shells
@@ -63,8 +64,10 @@ function GameState(role){
 	this.receiveGameState = function(message){
 		//update every single game object
 		let objects = message.split(":");
+		console.log(objects);
 		this.other_players = []; //remove old other_players
 		this.bullets = []; //remove old bullets
+		this.entities = [];
 		for(let i = 0; i < objects.length; i++){
 			let obj = objects[i].split(",");
 			
@@ -75,6 +78,12 @@ function GameState(role){
 					this.player.resetData(+obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9], +obj[10]);
 					this.player.team = +obj[12];
 					this.player.updateCurrentWeapon(obj[13]);
+					if(obj[14] != "empty"){
+						this.player.item_slot = +obj[14];
+					}
+					else{
+						this.player.item_slot = "EMPTY";
+					}
 					this.player.health = +obj[15];
 					this.player.is_invincible = obj[16];
 					this.player.speed_boost = +obj[17];
@@ -82,7 +91,7 @@ function GameState(role){
 					this.player.visibility = +obj[19];
 				}
 				else{
-					this.other_players.push(new OtherPlayer(+obj[3], +obj[4], +obj[7], +obj[8], +obj[5], +obj[6], +obj[12], obj[1]));
+					this.other_players.push(new OtherPlayer(+obj[1], +obj[2], +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], obj[8]));
 				}
 			}
 			else if(obj[0] == "001"){ //bullets
@@ -95,6 +104,9 @@ function GameState(role){
 				//new sound
 			}
 			*/
+			else if(obj[0] == "010"){
+				this.entities.push(new Entity(findImageFromCode(+obj[1]), +obj[2], +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], obj[8]));
+			}
 		}
 		
 		//apply the ClientPrediction
@@ -122,16 +134,15 @@ function GameState(role){
 		
 		//ai_player1.draw();
 		*/
+		
 		for(let i = 0; i < this.other_players.length; i++){
 			this.other_players[i].draw();
 		}
 		this.player.draw();
 		
-		/*
-		power_handler.drawItems();
-		flag1.draw();
-		flag2.draw();
-		*/
+		for(let i = 0; i < this.entities.length; i++){
+			this.entities[i].draw();
+		}
 		
 		for(let i = 0; i < this.bullets.length; i++){
 			this.bullets[i].draw();
@@ -319,7 +330,6 @@ function run() {
 		walls[i].draw();
 	}
 	
-	//ai_player1.draw();
 	gameState.drawGameState(); //draws the player and the bullets
 	
 	for(let i = 0; i < part_fx.length; i++){
@@ -334,27 +344,6 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
-	
-	/*the following is to test nodes
-	//context.setTransform(gt1, gt2, gt3, gt4, gt5, gt6);
-	//context.lineWidth = "1";
-	//keep the following code
-	//it is for showing traversable vs. non traversable nodes
-	for (var i = 0; i < nodes.length; i++) {
-		for (var j = 0; j < nodes[i].length; j++) {
-			context.beginPath();
-			if (nodes[i][j].trav == false) {
-				context.strokeStyle = "red";
-			} else {
-				context.strokeStyle = "green";
-			}
-			context.rect(nodes[i][j].x, nodes[i][j].y, 2, 2);
-			context.stroke();
-			context.closePath(); //so styles dont interfere
-		}
-	}
-	*/
-	//ai_player1.drawAIPath();
 	
 	//reset the 1 frame inputs
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);
@@ -577,7 +566,6 @@ function Player(width, height, img, x, y, role, team, client_id) {
 			return;
 		}
 		else{
-			this.item_slot.use();
 			this.item_slot = "EMPTY";
 		}
 	}
@@ -732,26 +720,9 @@ function Player(width, height, img, x, y, role, team, client_id) {
 	}
 }
 
-function OtherPlayer(imageCode, sprIdx, width, height, x, y, team, user_id) {
-	this.user_id = user_id; //this is the player's specific id. no one else in any match is allowed to have this at the same time
+function OtherPlayer(imageCode, sprIdx, x, y, width, height, rotation, alpha) {
 	this.base = Entity;
-	//sprite 0, rotate 0, transparency 1
-	this.base(findImageFromCode(imageCode), sprIdx, x, y, width, height, 0, 1);
-	
-	this.team = team;
-	
-	this.draw = function(){
-		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
-			if((this.team == gameState.player.team) || (distanceBetweenEntities(this, gameState.player) <= (gameState.player.visibility * grid_length))){
-				this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
-				context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
-				//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
-				context.rotate(this.r); //this is in radians
-				context.globalAlpha = this.a;
-				context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
-			}
-		}
-	}
+	this.base(findImageFromCode(imageCode), sprIdx, x, y, width, height, rotation, alpha);
 }
 
 //Grid_x and grid_y are the positions on the grid, with top left grid coordinates being (0,0)

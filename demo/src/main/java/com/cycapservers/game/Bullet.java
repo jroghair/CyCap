@@ -51,7 +51,7 @@ public class Bullet extends Entity {
 		if((System.currentTimeMillis() - this.birthTime) > this.lifeSpan){
 			return true;
 		}
-		int subUpdateResolution = 4; //we want to move the bullet smaller amounts so it can't jump walls
+		int subUpdateResolution = 2; //we want to move the bullet smaller amounts so it can't jump walls
 		double deltaX = this.speed * this.xRatio * game.currentDeltaTime / subUpdateResolution;
 		double deltaY = this.speed * this.yRatio * game.currentDeltaTime / subUpdateResolution;
 		
@@ -86,7 +86,8 @@ public class Bullet extends Entity {
 		return false;
 	}
 	
-	public String toString() {
+	@Override
+	public String toDataString(String client_id) {
 		String output = "";
 		output += "001,";
 		output += this.imageId + ",";
