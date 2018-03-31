@@ -3,28 +3,7 @@ package com.cycapservers.game;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class AI_player extends Entity {
-
-	protected int team;
-	protected String id;
-
-	protected String role;
-	protected Weapon weapon1;
-	protected Weapon weapon2;
-	protected Weapon weapon3;
-	protected Weapon weapon4;
-	protected Weapon currentWeapon;
-	protected Item item_slot;
-
-	protected int health;
-	protected int max_health;
-	protected boolean isDead;
-	protected double speed;
-	protected int visibility;
-
-	protected boolean is_invincible;
-	protected double speed_boost;
-	protected double damage_boost;
+public class AI_player extends GameCharacter {
 
 	//Pathing Related Stuff
 	protected ArrayList<mapNode> path;
@@ -37,8 +16,8 @@ public class AI_player extends Entity {
 	protected AI_path_generator path_gen;
 	// private long lastDeathTime;
 
-	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, GameState g) {
-		super(0, 0, x, y, w, h, r, a);
+	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id, GameState g) {
+		super(0, 0, x, y, w, h, r, a, ai_id, team, role);
 
 		mapNode randomNode = getRandomNode(g);
 		// set new location
@@ -46,32 +25,6 @@ public class AI_player extends Entity {
 		this.y = randomNode.y;
 
 		this.moving = true;
-
-		if (team == 1) {
-			this.spriteIndex = 4;
-		} else {
-			this.spriteIndex = 0;
-		}
-		this.team = team;
-		this.role = role;
-
-		this.isDead = false;
-		this.is_invincible = false;
-		this.speed_boost = 1.0;
-		this.damage_boost = 1.0;
-
-		this.item_slot = null;
-		if (this.role.equals("recruit")) {
-			this.speed = 150;
-			this.max_health = 100;
-			this.health = this.max_health;
-			this.weapon1 = new Shotgun("Remington870", 30, 500, 500, 5, 4, 6000, 0.35);
-			this.weapon2 = new Pistol("Pistol", 11, 100, 400, 8, 4, 200, 0.05); // pistol
-			this.weapon3 = null;
-			this.weapon4 = null;
-			this.currentWeapon = this.weapon1;
-		}
-
 	}
 
 	public void get_path(GameState g) {
@@ -93,7 +46,7 @@ public class AI_player extends Entity {
 		}
 	}
 
-	public void update(GameState g) {
+	public void update(GameState g, InputSnapshot s) {
 
 		// if(this.isDead){
 		// if((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime)

@@ -13,6 +13,11 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class GameState extends TimerTask
 {
+	
+	protected List<String> usedEntityIds;
+	protected int entity_id_len;
+	protected List<String> userPasswords;
+	
 	private List<InputSnapshot> unhandledInputs;
 	
 	protected List<AI_player> AI_players;
@@ -44,6 +49,9 @@ public class GameState extends TimerTask
 	protected double currentDeltaTime; //the time since the last game state update in seconds
 	
 	public GameState() {
+		this.usedEntityIds = new ArrayList<String>();
+		entity_id_len = 6;
+		this.userPasswords = new ArrayList<String>();
 		
 		this.players = new ArrayList<Player>();
 		this.bullets = new ArrayList<Bullet>();
@@ -90,7 +98,9 @@ public class GameState extends TimerTask
 		//move all of the bullets first
 		ListIterator<Bullet> iter = this.bullets.listIterator();
 		while(iter.hasNext()){
-		    if(iter.next().update(this)) {
+			Bullet temp = iter.next();
+		    if(temp.update(this)) {
+		    	this.usedEntityIds.remove(temp.entity_id);
 		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
 		    }
 		}
@@ -105,11 +115,12 @@ public class GameState extends TimerTask
 			}
 		}
 		// updating AI players
+		/*
 		for (AI_player ai : AI_players) {
 				ai.update(this);
-		}
+		}*/
 		
-		pu_handler.update(); //update the powerups
+		pu_handler.update(this); //update the powerups
 		
 		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		
@@ -135,19 +146,20 @@ public class GameState extends TimerTask
 		//fill the output
 		for(int i = 0; i < players.size(); i++) {
 			if((players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
-				output += players.get(i).toDataString(p.client_id) + ":";
+				output += players.get(i).toDataString(p.entity_id) + ":";
 			}
 		}
+		/*
 		for (int i = 0; i < AI_players.size(); i++) {
 			if((AI_players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
 				output += AI_players.get(i).toDataString(p.client_id) + ":";
 			}
-		}
+		}*/
 		for (Item i : this.current_item_list) {
-			output += i.toDataString(p.client_id) + ":";
+			output += i.toDataString(p.entity_id) + ":";
 		}
 		for(int i = 0; i < bullets.size(); i++) {
-			output += bullets.get(i).toDataString(p.client_id);
+			output += bullets.get(i).toDataString(p.entity_id);
 			if(i != bullets.size() - 1) output += ":";
 		}
 		
@@ -183,11 +195,9 @@ public class GameState extends TimerTask
 			team = 1;
 			this.playersOnTeam1++;
 		}
-		String pass = createPassword(10);
-		while(!isPasswordGood(pass)) {
-			pass = createPassword(10);
-		}
+		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		this.userPasswords.add(pass);
 		this.add_AI_player(1, role);
 		this.add_AI_player(2, role);
 		try {
@@ -201,9 +211,10 @@ public class GameState extends TimerTask
 	public void add_AI_player(int team, String role) {
 		// make AI player and send map reference
 		//mapNode randomNode = getRandomNode();
-		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, this));
+		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
+		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
-		System.out.println("team: " + this.AI_players.get(this.AI_players.size()-1).team);
 	}
 	
 	public void removePlayer(WebSocketSession session) {
@@ -217,29 +228,12 @@ public class GameState extends TimerTask
 		    	else {
 		    		this.playersOnTeam2--;
 		    	}
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	this.userPasswords.remove(temp.password);
 		    	iter.remove();
 		    	return;
 		    }
 		}
-	}
-	
-	public boolean isPasswordGood(String pw) {
-		for(int i = 0; i < players.size(); i++) {
-			if(pw == players.get(i).getPassword()) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public String createPassword(int length){
-		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-		Random rand = new Random();
-		String pass = "";
-		for(int i = 0; i < length; i++){
-			pass += s.charAt(rand.nextInt(s.length()));	
-		}
-		return pass;
 	}
 
 	@Override

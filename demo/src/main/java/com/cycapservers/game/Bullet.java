@@ -18,8 +18,11 @@ public class Bullet extends Entity {
 	protected long lifeSpan;
 	protected long birthTime;
 	
-	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p) {
-		super(2, sprIdx, startX, startY, w, h, r, a);
+	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p, String entity_id) {
+		super(2, sprIdx, startX, startY, w, h, r, a, entity_id);
+		
+		this.birthTime = System.currentTimeMillis();
+		this.lifeSpan = 5000;
 		
 		this.speed = speed;
 		this.damage = damage;
@@ -37,9 +40,6 @@ public class Bullet extends Entity {
 		this.yRatio = (this.endY - this.startY) / c;
 		this.xRatio += (Math.random() - 0.5) * variation;
 		this.yRatio += (Math.random() - 0.5) * variation;
-		
-		this.birthTime = System.currentTimeMillis();
-		this.lifeSpan = 5000;
 	}
 	
 	/**
@@ -90,14 +90,7 @@ public class Bullet extends Entity {
 	public String toDataString(String client_id) {
 		String output = "";
 		output += "001,";
-		output += this.imageId + ",";
-		output += this.spriteIndex + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.drawWidth + ",";
-		output += this.drawHeight + ",";
-		output += this.rotation + ",";
-		output += this.alpha + ",";
+		output += super.toDataString(client_id) + ",";
 		output += this.speed + ",";
 		output += this.damage + ",";
 		output += this.team + ",";

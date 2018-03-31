@@ -18,9 +18,11 @@ public class PowerUpNode extends GridLockedNode {
 		}
 	}
 	
-	public void spawnPowerUp() {
+	public void spawnPowerUp(GameState g) {
 		this.inUse = true;
-		this.powerup = new SpeedPotion(Utils.SPEED_POTION, this.getX(), this.getY());
+		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		this.powerup = new SpeedPotion(Utils.SPEED_POTION, this.getX(), this.getY(), id);
+		g.usedEntityIds.add(id);
 	}
 	
 	private void clearPowerUp() {

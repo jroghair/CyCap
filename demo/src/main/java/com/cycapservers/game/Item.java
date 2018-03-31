@@ -6,8 +6,8 @@ public abstract class Item extends Entity {
 	protected Player grabber = null;
 	protected boolean grabbed = false;
 	
-	public Item(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String name) {
-		super(id, sprIdx, x, y, w, h, r, a);
+	public Item(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String name, String entity_id) {
+		super(id, sprIdx, x, y, w, h, r, a, entity_id);
 		this.name = name;
 	}
 	

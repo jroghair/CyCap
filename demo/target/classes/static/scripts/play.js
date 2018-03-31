@@ -51,21 +51,29 @@ function GameState(role){
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
 	this.pw;
 	
+	this.intp_entities = [];
 	this.entities = [];
-	this.other_players = []; //the other players
-	this.ai_players = [];
 	this.bullets = []; //all bullets, including artillery shells
 	this.walls = []; //all of the walls in the game
 	this.part_fx = []; //particle effects
 	this.map; //the set of tiles and map data
 	this.masks = []; //the list of ground masks
 	
+	this.lastTime = 0;
+	this.currentServerTimeStep = 0;
+	
 	//this takes in the message from the server and builds the game state from that
 	this.receiveGameState = function(message){
+		
+		this.currentServerTimeStep = Date.now() - this.lastTime;
+		this.lastTime = Date.now();
+		
 		//update every single game object
 		let objects = message.split(":");
-		console.log(objects);
-		this.other_players = []; //remove old other_players
+		
+		for(let i = 0; i < this.intp_entities.length; i++){
+			this.intp_entities[i].updated = false;
+		}
 		this.bullets = []; //remove old bullets
 		this.entities = [];
 		for(let i = 0; i < objects.length; i++){
@@ -73,8 +81,8 @@ function GameState(role){
 			
 			//player
 			if(obj[0] == "000"){
-				if(obj[1] == this.player.client_id){ //is the current player
-					input_handler.removeHandledSnapshots(+obj[2]);
+				if(obj[2] == this.player.client_id){ //is the current player
+					input_handler.removeHandledSnapshots(+obj[1]);
 					this.player.resetData(+obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9], +obj[10]);
 					this.player.team = +obj[12];
 					this.player.updateCurrentWeapon(obj[13]);
@@ -91,13 +99,13 @@ function GameState(role){
 					this.player.visibility = +obj[19];
 				}
 				else{
-					this.other_players.push(new OtherPlayer(+obj[1], +obj[2], +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], obj[8]));
+					this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
 				}
 			}
 			else if(obj[0] == "001"){ //bullets
-				this.bullets.push(new Bullet(+obj[5], +obj[6], +obj[2], +obj[3], +obj[4], 0, 0, +obj[10], +obj[9], 0));
-				this.bullets[this.bullets.length - 1].x_ratio = +obj[12];
-				this.bullets[this.bullets.length - 1].y_ratio = +obj[13];
+				this.bullets.push(new Bullet(+obj[6], +obj[7], +obj[3], +obj[4], +obj[5], 0, 0, +obj[11], +obj[10], 0));
+				this.bullets[this.bullets.length - 1].x_ratio = +obj[13];
+				this.bullets[this.bullets.length - 1].y_ratio = +obj[14];
 			}
 			/*
 			else if(obj[0] == "002"){
@@ -105,7 +113,28 @@ function GameState(role){
 			}
 			*/
 			else if(obj[0] == "010"){
-				this.entities.push(new Entity(findImageFromCode(+obj[1]), +obj[2], +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], obj[8]));
+				this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
+			}
+			else if(obj[0] == "020"){
+				let found = false;
+				for(let i = 0; i < this.intp_entities.length; i++){
+					if(this.intp_entities[i].entity_id == obj[1]){
+						found = true;
+						this.intp_entities[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]), this.currentServerTimeStep);
+						this.intp_entities[i].updated = true;
+						break;
+					}
+				}
+				if(!found){
+					this.intp_entities.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9])));
+				}
+			}
+		}
+		
+		//delete the interpolating entities that weren't updated
+		for(let i = this.intp_entities.length - 1; i >= 0; i--){
+			if(this.intp_entities[i].updated == false){
+				this.intp_entities.splice(i, 1);
 			}
 		}
 		
@@ -117,6 +146,9 @@ function GameState(role){
 	
 	this.updateGameState = function(snapshot) {
 		this.player.update(snapshot);
+		for(let i = 0; i < this.intp_entities.length; i++){
+			this.intp_entities[i].update();
+		}
 		for(let i = this.bullets.length - 1; i >= 0; i--){
 			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
 		}
@@ -132,11 +164,10 @@ function GameState(role){
 			this.walls[i].draw();
 		}
 		
-		//ai_player1.draw();
 		*/
 		
-		for(let i = 0; i < this.other_players.length; i++){
-			this.other_players[i].draw();
+		for(let i = 0; i < this.intp_entities.length; i++){
+			this.intp_entities[i].draw();
 		}
 		this.player.draw();
 		
@@ -219,10 +250,6 @@ function setup() {
 	wallLine(3, 26, 3, 'x');  //done
 	wallLine(11, 26, 5, 'x'); //done
 	wallLine(18, 26, 2, 'x'); //done
-
-	//AI NODE BUILDING MUST BE AFTER WALLS ARE BUILT
-	generateNodes();
-	//ai_player1 = new AI_player(grid_length, grid_length, enemy_image, 100, 430, "recruit", "1");
 	
 	//////GUI ELEMENTS//////
 	guis.push(new HealthGUI(20, canvas.height - 20, 200, 20)); //health bar
@@ -430,17 +457,55 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 			context.drawImage(this.image, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.dWidth/2, -this.dHeight/2, this.dWidth, this.dHeight);
 		}
 	}
+}
 
-	this.toDataString = function(){
-		let output = "000" + ","; //the temporary image code
-		output += this.sprIdx + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.dWidth + ",";
-		output += this.dHeight + ",";
-		output += this.r + ","; //in radians!
-		output += this.a;
-		return output;
+function InterpolatingEntity(entity_id, ent){
+	this.entity_id = entity_id;
+	this.last_ent = null;
+	this.new_ent = ent;
+	
+	this.d_sprIdx = 0;
+	this.d_x = 0;
+	this.d_y = 0;
+	this.delta_width = 0;
+	this.delta_height = 0;
+	this.d_r = 0;
+	this.d_a = 0;
+	
+	this.updated = true;
+	
+	this.update = function(){
+		if(this.last_ent != null){
+			this.last_ent.sprIdx += (this.d_sprIdx * global_delta_t);
+			this.last_ent.sprite = this.last_ent.image.sprites[Math.floor(this.last_ent.sprIdx)];
+			this.last_ent.x += (this.d_x * global_delta_t);
+			this.last_ent.y += (this.d_y * global_delta_t);
+			this.last_ent.dWidth += (this.delta_width * global_delta_t);
+			this.last_ent.dHeight += (this.delta_height * global_delta_t);
+			this.last_ent.updateCollisionRadius();
+			this.last_ent.r += (this.d_r * global_delta_t);
+			this.last_ent.a += (this.d_a * global_delta_t);
+		}
+	}
+	
+	this.updateNewEntity = function(ent2, time){
+		this.last_ent = this.new_ent;
+		this.new_ent = ent2;
+		
+		this.last_ent.image = this.new_ent.image;
+		this.d_sprIdx = (this.new_ent.sprIdx - this.last_ent.sprIdx) / (time/1000);
+		this.d_x = (this.new_ent.x - this.last_ent.x) / (time/1000);
+		this.d_y = (this.new_ent.y - this.last_ent.y) / (time/1000);
+		this.delta_width = (this.new_ent.dWidth - this.last_ent.dWidth) / (time/1000);
+		this.delta_height = (this.new_ent.dHeight - this.last_ent.dHeight) / (time/1000);
+		this.d_r = (this.new_ent.r - this.last_ent.r) / (time/1000);
+		this.d_a = (this.new_ent.a - this.last_ent.a) / (time/1000);
+	}
+	
+	this.draw = function(){
+		if(this.last_ent != null){
+			this.last_ent.draw();
+		}
 	}
 }
 
@@ -699,30 +764,6 @@ function Player(width, height, img, x, y, role, team, client_id) {
 			}
 		}
 	}
-
-	this.toDataString = function(){
-		/*
-		let output = "000" + ","; //the temporary image code
-		output += this.sprIdx + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.dWidth + ",";
-		output += this.dHeight + ",";
-		output += this.r + ","; //in radians!
-		output += this.a + ",";
-		output += this.team;
-		return output;
-		*/
-		let output = this.client_id + ",";
-		output += this.x + ",";
-		output += this.y;
-		return output;
-	}
-}
-
-function OtherPlayer(imageCode, sprIdx, x, y, width, height, rotation, alpha) {
-	this.base = Entity;
-	this.base(findImageFromCode(imageCode), sprIdx, x, y, width, height, rotation, alpha);
 }
 
 //Grid_x and grid_y are the positions on the grid, with top left grid coordinates being (0,0)

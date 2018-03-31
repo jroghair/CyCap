@@ -1,3 +1,4 @@
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameCharacter.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\mapNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Shotgun.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUpHandler.java
@@ -5,7 +6,6 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_player.
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\InputSnapshot.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Weapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\FriendRepository.java
-C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\BasicPlayer.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Account.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatController.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\AccountRepository.java
@@ -22,6 +22,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameState.
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameManager.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\AccountController.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Utils.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\HealthPack.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Player.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Node.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\WebSocketConfig.java

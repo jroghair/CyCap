@@ -4,7 +4,6 @@ com\cycapservers\game\Bullet.class
 com\cycapservers\game\Weapon.class
 com\cycapservers\game\WebSocketConfig.class
 com\cycapservers\game\AutomaticGun.class
-com\cycapservers\game\BasicPlayer.class
 com\cycapservers\game\Pistol.class
 com\cycapservers\CyCapApplication.class
 com\cycapservers\game\Item.class

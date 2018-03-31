@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public final class Utils{
-	public final static boolean DEBUG = true;
+	public final static boolean DEBUG = false;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -26,7 +26,8 @@ public final class Utils{
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
 	
 	//////THE POWERUPS//////
-	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0);
+	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
+	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
 	
 	private Utils(){} //prevents the class from being constructed
 	
@@ -56,7 +57,6 @@ public final class Utils{
 	}
 	
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
-		//TODO: fix the entity variable references
 		//QUICK COLLISION DETECTION
 		if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
 			return false;
@@ -99,15 +99,19 @@ public final class Utils{
 		return getRandomInt(upper - lower + 1) + lower;
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -115,15 +119,19 @@ public final class Utils{
 		}
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis, boolean invincible) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis, boolean invincible) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -131,25 +139,25 @@ public final class Utils{
 		}
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY){
-		generateWallLine(walls, startX, startY, width, 'x');
-		generateWallLine(walls, startX, height + startY - 1, width, 'x');
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y');
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY){
+		generateWallLine(g, startX, startY, width, 'x');
+		generateWallLine(g, startX, height + startY - 1, width, 'x');
+		generateWallLine(g, startX, startY + 1, height - 2, 'y');
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY, boolean invincible){
-		generateWallLine(walls, startX, startY, width, 'x', invincible);
-		generateWallLine(walls, startX, height + startY - 1, width, 'x', invincible);
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y', invincible);
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y', invincible);
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY, boolean invincible){
+		generateWallLine(g, startX, startY, width, 'x', invincible);
+		generateWallLine(g, startX, height + startY - 1, width, 'x', invincible);
+		generateWallLine(g, startX, startY + 1, height - 2, 'y', invincible);
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y', invincible);
 	}
 	
 	/**
 	 * Sets the role data of the player based off of their "role" field
 	 * @param p The player which we are setting the role/class data
 	 */
-	public static void setRole(Player p) {
+	public static void setRole(GameCharacter p) {
 		String role = p.role;
 		if(role.equals("recruit")) {
 			p.speed = 140;
@@ -262,7 +270,7 @@ public final class Utils{
 		for(int i = 0; i < (GRID_LENGTH * g.mapGridWidth); i += Utils.AI_NODE_PIXEL_DISTANCE){
 			ArrayList<mapNode> node_col = new ArrayList<mapNode>();
 			for(int j = 0;j < (GRID_LENGTH * g.mapGridHeight );j += Utils.AI_NODE_PIXEL_DISTANCE){
-				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1);//used for traversing
+				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1, "temp");//used for traversing
 				boolean traversable = true;
 				for(int t = 0; t < g.walls.size(); t++){
 					if(isColliding(test_player_ent, g.walls.get(t))){
@@ -348,5 +356,32 @@ public final class Utils{
 			neighbors.get(neighbors.size() - 1).corner = false;
 		}
 		return neighbors;
+	}
+	
+	public static String getGoodRandomString(List<String> currentList, int length) {
+		String output = createString(length);
+		while(!isStringGood(currentList, output)) {
+			output = createString(length);
+		}
+		return output;
+	}
+	
+	private static boolean isStringGood(List<String> currentList, String pw) {
+		for(String s : currentList) {
+			if(pw.equals(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static String createString(int length){
+		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+		Random rand = new Random();
+		String pass = "";
+		for(int i = 0; i < length; i++){
+			pass += s.charAt(rand.nextInt(s.length()));	
+		}
+		return pass;
 	}
 }
