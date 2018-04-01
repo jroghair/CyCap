@@ -127,7 +127,8 @@ font_ss.src = "res/images/font_ss.png";
 font_ss.sprites = [];
 generateSpriteSheetData(32, 32, 16, 16, font_ss);
 					
-let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code: 3, img:speed_potion_ss}];
+let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code:3, img:speed_potion_ss},
+				   {code:4, img:flags_ss}];
 
 function findImageFromCode(code){
 	for(let i = 0; i < image_codes.length; i++){

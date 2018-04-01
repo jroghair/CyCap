@@ -384,4 +384,17 @@ public final class Utils{
 		}
 		return pass;
 	}
+	
+	public static int getSpriteIndexFromTeam(int team) {
+		switch(team) {
+			case 1:
+				return 4;
+				
+			case 2:
+				return 0;
+				
+			default:
+				throw new IllegalArgumentException("illegal team number, no sprite index associated!");
+		}
+	}
 }

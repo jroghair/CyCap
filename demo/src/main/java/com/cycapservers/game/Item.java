@@ -3,7 +3,7 @@ package com.cycapservers.game;
 public abstract class Item extends Entity {
 	
 	protected String name;
-	protected Player grabber = null;
+	protected GameCharacter grabber = null;
 	protected boolean grabbed = false;
 	
 	public Item(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String name, String entity_id) {
@@ -11,7 +11,7 @@ public abstract class Item extends Entity {
 		this.name = name;
 	}
 	
-	public void pickUp(Player grabber) {
+	public void pickUp(GameCharacter grabber) {
 		if(!this.grabbed) {
 			this.grabber = grabber;
 			this.grabbed = true;
