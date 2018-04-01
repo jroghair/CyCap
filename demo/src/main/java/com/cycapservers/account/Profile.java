@@ -47,6 +47,9 @@ public class Profile {
     @Column(name="gamesplayed")
     private int gamesplayed;
     
+    //experience int
+    //flag grabs, flag returns, flag captures
+    
     
     public Profile() {
     	

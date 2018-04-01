@@ -18,6 +18,6 @@ public interface ProfileRepository extends CrudRepository<Profile, String> {
     Collection<String> findByUserID(@Param("userID") String userID);   
     
 	
-    Friend save(Profile profile);
+    //Friend save(Profile profile);
     
 }

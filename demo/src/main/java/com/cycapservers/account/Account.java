@@ -33,6 +33,11 @@ public class Account {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfCreation;
     
+    //add account level boolean values for account levels
+    //admin true/false, moderator true/false, member true/false
+    //moderator deals with player reports, banning players etc
+    //developer 
+    
     public Account() {
     	this.setDateOfCreation();
     }
