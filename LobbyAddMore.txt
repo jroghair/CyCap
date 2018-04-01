@@ -1,0 +1,8 @@
+function myFunction() {
+    var para = document.createElement("Button");
+    var p = document.createElement("P");
+    var t = document.createTextNode("gameName");
+    para.appendChild(t);
+    document.body.appendChild(p);
+    document.body.appendChild(para);
+}
