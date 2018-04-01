@@ -7,121 +7,171 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.TimerTask;
+
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-public class GameState extends TimerTask {
+public class GameState extends TimerTask
+{
+	
+	protected List<String> usedEntityIds;
+	protected int entity_id_len;
+	protected List<String> userPasswords;
+	
 	private List<InputSnapshot> unhandledInputs;
-
-	protected List<Player> players;
+	
 	protected List<AI_player> AI_players;
+	protected List<Player> players;
 	protected int playersOnTeam1;
 	protected int playersOnTeam2;
 	protected int team1_score;
 	protected int team2_score;
 	protected boolean friendlyFire;
-	protected long respawnTime; // the amount of time to respawn after death in
-								// ms
-
+	protected long respawnTime; //the amount of time to respawn after death in ms
+	
+	//////ITEMS//////
+	protected List<Item> current_item_list;
+	protected PowerUpHandler pu_handler;
+	
+	protected List<String> new_sounds;
+	
 	// stuff for AI
-	protected AI_path_generator path_gen;
-	protected AI_utils AI_util;
-	protected int bg_width_grids = 41;
-	protected int bg_height_grids = 30;
-	double node_pixel_dist = 16.0;
-
+	protected ArrayList<ArrayList<mapNode>> map;
+	
 	protected List<Bullet> bullets;
-
-	// Map Related Stuff
+	
+	//Map Related Stuff
 	protected List<Wall> walls;
 	protected int mapGridWidth;
 	protected int mapGridHeight;
-
+	
 	private long lastGSMessage;
-	protected double currentDeltaTime; // the time since the last game state
-
+	protected double currentDeltaTime; //the time since the last game state update in seconds
+	
 	public GameState() {
+		this.usedEntityIds = new ArrayList<String>();
+		entity_id_len = 6;
+		this.userPasswords = new ArrayList<String>();
+		
 		this.players = new ArrayList<Player>();
-		this.AI_players = new ArrayList<AI_player>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
+		this.new_sounds = new ArrayList<String>();
+		this.current_item_list = new ArrayList<Item>();
+		
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
-
+		
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
 		team1_score = 0;
 		team2_score = 0;
+		
 		friendlyFire = false;
-		respawnTime = 10000; // 10 seconds respawn time
-
-		MapLoader.loadPredefinedMap(0, this);// load up the map
+		respawnTime = 10000; //10 seconds respawn time
+		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
+		
+		MapLoader.loadPredefinedMap(0, this);//load up the map
+		
+		this.AI_players = new ArrayList<AI_player>();
+		// generate the map when player is constructed
+		this.map = Utils.generate_node_array(this);
 	}
 
 	public void updateGameState() {
-		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage) / 1000.0;
-		// System.out.println("Time error in Gamestate sending: " +
-		// (this.currentDeltaTime*1000 - 100));
-
-		// move all of the bullets first
-		ListIterator<Bullet> iter = this.bullets.listIterator();
-		while (iter.hasNext()) {
-			if (iter.next().update(this)) {
-				iter.remove(); // remove the bullet from the list if it is done
+		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
+		
+		//DEV STUFF
+		if(Utils.DEBUG) {
+			int error = (int) (this.currentDeltaTime*1000 - 100);
+			if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
+				System.out.println("Time error in Gamestate sending: " + error);
+			}
+			if(this.bullets.size() >= GameManager.ADVANCED_BULLET_WARNING_LEVEL) {
+				System.out.println("ADVANCED WARNING!! TOO MANY BULLETS");
+			}
+			else if(this.bullets.size() >= GameManager.BULLET_WARNING_LEVEL) {
+				System.out.println("Warning! High number of bullets");
 			}
 		}
-
-		for (int i = 0; i < this.unhandledInputs.size(); i++) {
+		
+		//move all of the bullets first
+		ListIterator<Bullet> iter = this.bullets.listIterator();
+		while(iter.hasNext()){
+			Bullet temp = iter.next();
+		    if(temp.update(this)) {
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
+		    }
+		}
+		
+		for(int i = 0; i < this.unhandledInputs.size(); i++) {
 			try {
 				Player p = this.unhandledInputs.get(i).client;
 				p.update(this, this.unhandledInputs.get(i));
-			} catch (ConcurrentModificationException e) {
+			}
+			catch(ConcurrentModificationException e) {
 				System.out.println("unhandled input " + i + ": " + e);
 			}
 		}
-
-		// updating AI players, if there are any
-		if (AI_players.size() > 0) {
-			for (int i = 0; i < AI_players.size(); i++) {
-				AI_players.get(i).update(this);
+		// updating AI players
+		
+		for (AI_player ai : AI_players) {
+				ai.update(this, null);
+		}
+		
+		pu_handler.update(this); //update the powerups
+		
+		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
+		
+		this.lastGSMessage = System.currentTimeMillis();
+		
+		for(Player p : players) {
+			p.setLastUnsentGameState(this.toDataString(p));
+		}
+		
+		this.current_item_list = getItemList();
+		
+		this.new_sounds.clear();
+	}
+	
+	public List<Item> getItemList(){
+		List<Item> list = new ArrayList<Item>();
+		list.addAll(this.pu_handler.getPowerUpsList());
+		return list;
+	}
+	
+	public String toDataString(Player p) {
+		String output = "";
+		//fill the output
+		for(int i = 0; i < players.size(); i++) {
+			if((players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += players.get(i).toDataString(p.entity_id) + ":";
 			}
 		}
-
-		this.unhandledInputs.clear(); // empty the queue of inputs that have not
-										// been handled
-
-		this.lastGSMessage = System.currentTimeMillis();
-
-		String message = this.toString();
-		for (Player p : players) {
-			p.setLastUnsentGameState(message);
-		}
-	}
-
-	public String toString() {
-		String output = "";
-		// fill the output
-		for (int i = 0; i < players.size(); i++) {
-			output += players.get(i).toString() + ":";
-		}
+		
 		for (int i = 0; i < AI_players.size(); i++) {
-			output += AI_players.get(i).toString() + ":";
+			if((AI_players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += AI_players.get(i).toDataString(p.entity_id) + ":";
+			}
 		}
-		for (int i = 0; i < bullets.size(); i++) {
-			output += bullets.get(i).toString();
-			if (i != bullets.size() - 1)
-				output += ":";
+		for (Item i : this.current_item_list) {
+			output += i.toDataString(p.entity_id) + ":";
 		}
-
+		for(int i = 0; i < bullets.size(); i++) {
+			output += bullets.get(i).toDataString(p.entity_id);
+			if(i != bullets.size() - 1) output += ":";
+		}
+		
 		return output;
 	}
-
+	
 	public void addInputSnap(InputSnapshot s) {
-		for (Player p : this.players) {
-			if (s.password.equals(p.getPassword())) {
+		for(Player p : this.players) {
+			if(s.password.equals(p.getPassword())) {
 				s.setClient(p);
 				unhandledInputs.add(s);
-				if (p.getLastUnsentGameState() != null) {
+				if(p.getLastUnsentGameState() != null) {
 					try {
 						p.session.sendMessage(new TextMessage(p.getLastUnsentGameState()));
 						p.setLastUnsentGameState(null);
@@ -134,29 +184,22 @@ public class GameState extends TimerTask {
 			}
 		}
 	}
-
+	
 	public void playerJoin(String client_id, WebSocketSession session, String role) {
 		int team;
-		if (this.playersOnTeam1 > this.playersOnTeam2) {
+		if(this.playersOnTeam1 > this.playersOnTeam2) {
 			team = 2;
 			this.playersOnTeam2++;
-		} else {
+		}
+		else {
 			team = 1;
 			this.playersOnTeam1++;
 		}
-		String pass = createPassword(10);
-		while (!isPasswordGood(pass)) {
-			pass = createPassword(10);
-		}
-		this.players.add(
-				new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
-		System.out.println("player's team: " + this.players.get(this.players.size() - 1).team);
-		for (int i = 0; i < 10; i++) {
-			this.add_AI_player(1, role);
-		}
-		for (int i = 0; i < 10; i++) {
-			this.add_AI_player(2, role);
-		}
+		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
+		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		this.userPasswords.add(pass);
+		this.add_AI_player(1, role);
+		this.add_AI_player(2, role);
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
 		} catch (IOException e) {
@@ -164,48 +207,33 @@ public class GameState extends TimerTask {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void add_AI_player(int team, String role) {
 		// make AI player and send map reference
-		// mapNode randomNode = getRandomNode();
-		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, this));
-		//AI_players.get(AI_players.size() - 1).get_path(this);
-		System.out.println("Added AI player.");
+		//mapNode randomNode = getRandomNode();
+		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
+		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		this.usedEntityIds.add(s);
+		AI_players.get(AI_players.size() - 1).get_path(this);
 	}
-
+	
 	public void removePlayer(WebSocketSession session) {
 		ListIterator<Player> iter = this.players.listIterator();
-		while (iter.hasNext()) {
+		while(iter.hasNext()){
 			Player temp = iter.next();
-			if (temp.session.equals(session)) {
-				if (temp.team == 1) {
-					this.playersOnTeam1--;
-				} else {
-					this.playersOnTeam2--;
-				}
-				iter.remove();
-				return;
-			}
+		    if(temp.session.equals(session)) {
+		    	if(temp.team == 1) {
+		    		this.playersOnTeam1--;
+		    	}
+		    	else {
+		    		this.playersOnTeam2--;
+		    	}
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	this.userPasswords.remove(temp.password);
+		    	iter.remove();
+		    	return;
+		    }
 		}
-	}
-
-	public boolean isPasswordGood(String pw) {
-		for (int i = 0; i < players.size(); i++) {
-			if (pw == players.get(i).getPassword()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public String createPassword(int length) {
-		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-		Random rand = new Random();
-		String pass = "";
-		for (int i = 0; i < length; i++) {
-			pass += s.charAt(rand.nextInt(s.length()));
-		}
-		return pass;
 	}
 
 	@Override

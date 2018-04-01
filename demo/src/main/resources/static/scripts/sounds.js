@@ -16,6 +16,19 @@ function SoundEmitter(src, is_looping, x, y, start_vol){
     this.stop = function(){
         this.sound.pause();
     }
+	
+	this.update = function(){
+		this.sound.volume = this.getVolume();
+	}
+	this.getVolume = function(){
+		let distance = distanceBetween(gameState.player.x, gameState.player.y, this.x, this.y) / grid_length;
+		if(distance > 16){
+			return 0.0;
+		}
+		else{
+			return Math.min(0.946*Math.exp(-0.48*distance), 1.0);
+		}
+	}
 }
 
 let gunshot1 = document.createElement("audio");

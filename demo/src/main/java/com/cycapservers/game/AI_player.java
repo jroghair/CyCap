@@ -3,78 +3,28 @@ package com.cycapservers.game;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class AI_player extends Entity {
+public class AI_player extends GameCharacter {
 
-	protected int team;
-	protected String role;
-	protected Weapon weapon1;
-	protected Weapon weapon2;
-	protected Weapon weapon3;
-	protected Weapon weapon4;
-	protected Weapon currentWeapon;
-	protected Item item_slot;
-	protected int health;
-	protected int max_health;
-	protected boolean isDead;
-	protected double speed;
-	protected int visibility;
-	protected boolean is_invincible;
-	protected double speed_boost;
-	protected double damage_boost;
-
+	//Pathing Related Stuff
 	protected ArrayList<mapNode> path;
 	protected boolean moving;
 	protected int cur_p_node;
 	protected boolean new_path;
 	protected long last_path_update_time = 0;
 	protected long temp_move_time = 0;
-	protected ArrayList<ArrayList<mapNode>> map;
+
 	protected AI_path_generator path_gen;
-	protected AI_map_generator map_gen;
-	protected AI_utils AI_util;
-	private boolean map_finished = false;
+	// private long lastDeathTime;
 
-	public AI_player(int x, int y, int w, int h, int r, double a, int team, String role, GameState g) {
-		super(0, 0, x, y, w, h, r, a);
-		// creates a new map generator
-		this.map_gen = new AI_map_generator(g);
-		// generate the map when player is constructed
-		this.map = map_gen.generate_node_array(g);
-		this.map_finished = true;
+	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id, GameState g) {
+		super(0, 0, x, y, w, h, r, a, ai_id, team, role);
 
-		AI_util = new AI_utils(this, g);
-		
-		mapNode randomNode = getRandomNode();
+		mapNode randomNode = getRandomNode(g);
 		// set new location
 		this.x = randomNode.x;
 		this.y = randomNode.y;
 
 		this.moving = true;
-
-		if (team == 1) {
-			this.spriteIndex = 4;
-		} else {
-			this.spriteIndex = 0;
-		}
-		this.team = team;
-		this.role = role;
-
-		this.isDead = false;
-		this.is_invincible = false;
-		this.speed_boost = 1.0;
-		this.damage_boost = 1.0;
-
-		this.item_slot = null;
-		if (this.role.equals("recruit")) {
-			this.speed = 150;
-			this.max_health = 100;
-			this.health = this.max_health;
-			this.weapon1 = new Shotgun("Remington870", 30, 500, 500, 5, 4, 6000, 0.35);
-			this.weapon2 = new Pistol("Pistol", 11, 100, 400, 8, 4, 200, 0.05); // pistol
-			this.weapon3 = null;
-			this.weapon4 = null;
-			this.currentWeapon = this.weapon1;
-		}
 	}
 
 	public void get_path(GameState g) {
@@ -96,7 +46,7 @@ public class AI_player extends Entity {
 		}
 	}
 
-	public void update(GameState g) {
+	public void update(GameState g, InputSnapshot s) {
 
 		// if(this.isDead){
 		// if((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime)
@@ -111,32 +61,39 @@ public class AI_player extends Entity {
 		// }
 		// }
 
-		// get initial path if the map is done being generated
-		if (this.last_path_update_time == 0 && this.map_finished) {
+		// get initial path
+		if (this.last_path_update_time == 0) {
 			// running the path planning on a separate thread
-//			Thread t1 = new Thread(new Runnable() {
-//				public void run() {
+			Thread t1 = new Thread(new Runnable() {
+				public void run() {
 					get_path(g);
-//				}
-//			});
-//			t1.start();
-
+				}
+			});
+			t1.start();
+			//
+			// this.new_path = true;
+			// this.last_path_update_time = System.currentTimeMillis();
+			// System.out.println("getting initial path...");
 		}
 
 		// if its been 2.5 seconds or the path is almost done update the path.
-		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
-				|| (this.get_distance_to_target() < 10
-						&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
+		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000 || (this.get_distance_to_target() < 10 && (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
 			// running the path planning on a separate thread
-//			Thread t2 = new Thread(new Runnable() {
-//				public void run() {
+			Thread t2 = new Thread(new Runnable() {
+				public void run() {
 					get_path(g);
-//				}
-//			});
-//			t2.start();
+				}
+			});
+			t2.start();
+			// while(t2.isAlive()){}
+			// get_path(g);
+			// this.new_path = true;
+			// this.last_path_update_time = System.currentTimeMillis();
+			//System.out.println("updating path...");
+			// System.out.println(path.size() + " nodes long");
 		}
 
-		if (path != null && this.moving) {
+		if (this.moving && path != null) {
 			if (this.new_path && (System.currentTimeMillis() - temp_move_time) > 150) {
 				this.cur_p_node = path.size() - 1;
 				this.x = path.get(cur_p_node).x;
@@ -147,8 +104,7 @@ public class AI_player extends Entity {
 																	// movement
 			}
 			if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-				// System.out.println("waited " + (System.currentTimeMillis()
-				// -temp_move_time) + " ms to move");
+				 //System.out.println("waited " + (System.currentTimeMillis() -temp_move_time) + " ms to move");
 				while (this.cur_p_node >= path.size()) {
 					this.cur_p_node--;// just for safety
 				}
@@ -162,31 +118,10 @@ public class AI_player extends Entity {
 	}
 
 	@Override
-	public String toString() {
+	public String toDataString(String client_id) {
 		String output = "";
 		output += "000,";// 003
-		output += ",";
-		output += ",";
-		output += 1 + ",";
-		output += 1 + ",";
-		output += this.x + ",";
-		output += this.y + ",";
-		output += this.drawWidth + ",";
-		output += this.drawHeight + ",";
-		output += this.rotation + ",";
-		output += this.alpha + ",";
-		output += this.role + ",";
-		output += this.team + ",";
-		output += this.currentWeapon.toString() + ",";
-		if (this.item_slot == null) {
-			output += "empty" + ",";
-		} else {
-			output += this.item_slot.toString() + ",";
-		}
-		output += this.health + ",";
-		output += this.is_invincible + ",";
-		output += this.speed_boost + ",";
-		output += this.damage_boost;
+		output += super.toDataString(client_id);
 		return output;
 	}
 
@@ -206,19 +141,19 @@ public class AI_player extends Entity {
 		}
 	}
 
-	public mapNode getRandomNode() {
+	public mapNode getRandomNode(GameState g) {
 		boolean trav = false;
 		Random rangen = new Random();
-		int randi = rangen.nextInt(map.size());
-		int randj = rangen.nextInt(map.get(0).size());
+		int randi = rangen.nextInt(g.map.size());
+		int randj = rangen.nextInt(g.map.get(0).size());
 		while (!trav) {
-			randi = rangen.nextInt(map.size());
-			randj = rangen.nextInt(map.get(0).size());
-			if (map.get(randi).get(randj).node_trav == true) {
+			randi = rangen.nextInt(g.map.size());
+			randj = rangen.nextInt(g.map.get(0).size());
+			if (g.map.get(randi).get(randj).node_trav == true) {
 				trav = true;
 			}
 		}
-		return this.map.get(randi).get(randj);
+		return g.map.get(randi).get(randj);
 	}
 
 }

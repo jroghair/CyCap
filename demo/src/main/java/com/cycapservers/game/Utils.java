@@ -1,8 +1,12 @@
 package com.cycapservers.game;
 
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public final class Utils{
+	public final static boolean DEBUG = false;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -10,6 +14,8 @@ public final class Utils{
 	public final static int LEFT  = 0b0010;
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
+	public final static int AI_NODE_PIXEL_DISTANCE = 8;
+	public final static Random RANDOM = new Random();
 	
 	//////THE WEAPONS//////
 	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 4, 6000, 0.35);
@@ -18,6 +24,10 @@ public final class Utils{
 	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
 	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
+	
+	//////THE POWERUPS//////
+	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
+	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
 	
 	private Utils(){} //prevents the class from being constructed
 	
@@ -47,7 +57,6 @@ public final class Utils{
 	}
 	
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
-		//TODO: fix the entity variable references
 		//QUICK COLLISION DETECTION
 		if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
 			return false;
@@ -90,15 +99,19 @@ public final class Utils{
 		return getRandomInt(upper - lower + 1) + lower;
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -106,15 +119,19 @@ public final class Utils{
 		}
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis, boolean invincible) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis, boolean invincible) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -122,76 +139,249 @@ public final class Utils{
 		}
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY){
-		generateWallLine(walls, startX, startY, width, 'x');
-		generateWallLine(walls, startX, height + startY - 1, width, 'x');
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y');
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY){
+		generateWallLine(g, startX, startY, width, 'x');
+		generateWallLine(g, startX, height + startY - 1, width, 'x');
+		generateWallLine(g, startX, startY + 1, height - 2, 'y');
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY, boolean invincible){
-		generateWallLine(walls, startX, startY, width, 'x', invincible);
-		generateWallLine(walls, startX, height + startY - 1, width, 'x', invincible);
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y', invincible);
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y', invincible);
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY, boolean invincible){
+		generateWallLine(g, startX, startY, width, 'x', invincible);
+		generateWallLine(g, startX, height + startY - 1, width, 'x', invincible);
+		generateWallLine(g, startX, startY + 1, height - 2, 'y', invincible);
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y', invincible);
 	}
 	
 	/**
 	 * Sets the role data of the player based off of their "role" field
 	 * @param p The player which we are setting the role/class data
 	 */
-	public static void setRole(Player p) {
-		switch(p.role) {
-			case "recruit":
-				p.speed = 140;
-				p.max_health = 100;
-				p.health = p.max_health;
-				p.weapon1 = new Shotgun(REMINGTON_870);
-				p.weapon2 = new Pistol(M1911); //pistol
-				p.weapon3 = null;
-				p.weapon4 = null;
-				p.currentWeapon = p.weapon1;
-				break;
-				
-			case "artillery":
-				break;
-				
-			case "infantry":
-				break;
-				
-			case "scout":
-				break;
-				
-			default:
-				throw new IllegalStateException("Player role is unacceptable!");
-		}
-	}
-
-	public static void setRole(AI_player p) {
-		// TODO Auto-generated method stub
-		switch(p.role) {
-		case "recruit":
+	public static void setRole(GameCharacter p) {
+		String role = p.role;
+		if(role.equals("recruit")) {
 			p.speed = 140;
 			p.max_health = 100;
 			p.health = p.max_health;
-			p.weapon1 = new Shotgun(REMINGTON_870);
+			p.weapon1 = new AutomaticGun(ASSAULT_RIFLE);
+			p.weapon2 = new Shotgun(REMINGTON_870);
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 6;
+			return;
+		}
+		else if(role.equals("artillery")) {
+			return;
+		}
+		else if(role.equals("infantry")) {	
+			p.speed = 140;
+			p.max_health = 105;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(MACHINE_GUN);
+			p.weapon2 = null;
+			p.weapon3 = new Pistol(M1911); //pistol
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 5;
+			return;
+		}
+		else if(role.equals("scout")) {	
+			p.speed = 180;
+			p.max_health = 75;
+			p.health = p.max_health;
+			p.weapon1 = new Shotgun(SAWED_OFF_SHOTGUN);
 			p.weapon2 = new Pistol(M1911); //pistol
 			p.weapon3 = null;
 			p.weapon4 = null;
 			p.currentWeapon = p.weapon1;
-			break;
-			
-		case "artillery":
-			break;
-			
-		case "infantry":
-			break;
-			
-		case "scout":
-			break;
-			
-		default:
+			p.visibility = 7;
+			return;
+		}
+		else {
 			throw new IllegalStateException("Player role is unacceptable!");
+		}
 	}
+	
+	public static Point get_nearest_map_node(Entity e, GameState g) {
+		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+		short i = 0, j = 0;
+		while (g.map.get(i).get(j).y != y) {
+			j++;
+		}
+		while (g.map.get(i).get(j).x != x) {
+			i++;
+		}
+		if (g.map.get(i).get(j).node_trav != false) {
+			return new Point(i, j);
+		} else {
+			x = (int) (Math.floor(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+			y = (int) (Math.floor(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+			i = 0;
+			j = 0;
+			while (g.map.get(i).get(j).y != y) {
+				j++;
+			}
+			while (g.map.get(i).get(j).x != x) {
+				i++;
+			}
+			if (g.map.get(i).get(j).node_trav != false) {
+				return new Point(i, j);
+			} else {
+				x = (int) (Math.floor(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+				y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+				i = 0;
+				j = 0;
+				while (g.map.get(i).get(j).y != y) {
+					j++;
+				}
+				while (g.map.get(i).get(j).x != x) {
+					i++;
+				}
+				if (g.map.get(i).get(j).node_trav != false) {
+					return new Point(i, j);
+				} else {
+					x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+					y = (int) (Math.floor(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
+					i = 0;
+					j = 0;
+					while (g.map.get(i).get(j).y != y) {
+						j++;
+					}
+					while (g.map.get(i).get(j).x != x) {
+						i++;
+					}
+					if (g.map.get(i).get(j).node_trav != false) {
+						return new Point(i, j);
+					} else {
+						System.out.println("Couldn't find a traversable node near entity");
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static ArrayList<ArrayList<mapNode>> generate_node_array(GameState g){ //passing GameState so it doesn't have to be static
+		short index_i = 0;
+		short index_j = 0;
+		ArrayList<ArrayList<mapNode>> map = new ArrayList<ArrayList<mapNode>>(); //2d map of nodes
+		for(int i = 0; i < (GRID_LENGTH * g.mapGridWidth); i += Utils.AI_NODE_PIXEL_DISTANCE){
+			ArrayList<mapNode> node_col = new ArrayList<mapNode>();
+			for(int j = 0;j < (GRID_LENGTH * g.mapGridHeight );j += Utils.AI_NODE_PIXEL_DISTANCE){
+				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1, "temp");//used for traversing
+				boolean traversable = true;
+				for(int t = 0; t < g.walls.size(); t++){
+					if(isColliding(test_player_ent, g.walls.get(t))){
+						traversable = false;
+						break; //colliding with one wall is enough to know this isn't a possible space
+					}
+				}
+				node_col.add(new mapNode(i, j, traversable, index_i, index_j));
+				index_j++;
+			}
+			map.add(node_col);
+			index_i++;
+			index_j = 0;
+		}
+		return map;
+	}
+	
+	public static ArrayList<mapNode> get_neighbors(GameState g, mapNode node, ArrayList<mapNode> closed_list, ArrayList<mapNode> open_list) {
+		ArrayList<mapNode> neighbors = new ArrayList<mapNode>();
+		if (g.map.get(node.gridX - 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+						&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX - 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		if (g.map.get(node.gridX - 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		// neighbor number 5
+		if (g.map.get(node.gridX + 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY + 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX + 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		if (g.map.get(node.gridX + 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = true;
+		}
+		if (g.map.get(node.gridX).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.map.get(node.gridX).get(node.gridY - 1));
+			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
+					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
+				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
+			}
+			neighbors.get(neighbors.size() - 1).corner = false;
+		}
+		return neighbors;
+	}
+	
+	public static String getGoodRandomString(List<String> currentList, int length) {
+		String output = createString(length);
+		while(!isStringGood(currentList, output)) {
+			output = createString(length);
+		}
+		return output;
+	}
+	
+	private static boolean isStringGood(List<String> currentList, String pw) {
+		for(String s : currentList) {
+			if(pw.equals(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static String createString(int length){
+		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+		Random rand = new Random();
+		String pass = "";
+		for(int i = 0; i < length; i++){
+			pass += s.charAt(rand.nextInt(s.length()));	
+		}
+		return pass;
 	}
 }
