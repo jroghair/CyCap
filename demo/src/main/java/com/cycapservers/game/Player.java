@@ -22,6 +22,7 @@ public class Player extends GameCharacter {
 		this.x = -256;
 		this.y = -256;
 		this.isDead = true;
+		this.item_slot = null;
 		this.lastDeathTime = System.currentTimeMillis();
 	}
 	

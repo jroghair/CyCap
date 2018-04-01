@@ -7,7 +7,7 @@ public class PlayerStats {
 	protected int wins;
 	protected int losses;
 	
-	//GAME SPECIFIC STATS//
+	//MODE SPECIFIC STATS//
 	
 	//CTF
 	protected int flag_grabs;

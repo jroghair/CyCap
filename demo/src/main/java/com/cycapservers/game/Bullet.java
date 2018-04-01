@@ -51,7 +51,7 @@ public class Bullet extends Entity {
 		if((System.currentTimeMillis() - this.birthTime) > this.lifeSpan){
 			return true;
 		}
-		int subUpdateResolution = 2; //we want to move the bullet smaller amounts so it can't jump walls
+		int subUpdateResolution = 4; //we want to move the bullet smaller amounts so it can't jump walls
 		double deltaX = this.speed * this.xRatio * game.currentDeltaTime / subUpdateResolution;
 		double deltaY = this.speed * this.yRatio * game.currentDeltaTime / subUpdateResolution;
 		
@@ -75,6 +75,9 @@ public class Bullet extends Entity {
 				}
 			}
 			for(Player p : game.players) {
+				if(p.equals(this.owner)) {
+					continue;
+				}
 				if(Utils.isColliding(this, p)) {
 					if(game.friendlyFire || (p.team != this.team)) {
 						p.takeDamage(this.damage);
@@ -89,13 +92,8 @@ public class Bullet extends Entity {
 	@Override
 	public String toDataString(String client_id) {
 		String output = "";
-		output += "001,";
-		output += super.toDataString(client_id) + ",";
-		output += this.speed + ",";
-		output += this.damage + ",";
-		output += this.team + ",";
-		output += this.xRatio + ",";
-		output += this.yRatio;
+		output += "020,";
+		output += super.toDataString(client_id);
 		return output;
 	}
 

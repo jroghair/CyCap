@@ -31,7 +31,9 @@ public class Flag extends Item {
 				}
 			}
 			else {
-				//TODO
+				this.grabber = grabber;
+				this.grabbed = true;
+				this.grabber.item_slot = this;
 			}
 		}
 	}

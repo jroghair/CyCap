@@ -27,7 +27,7 @@ public abstract class Item extends Entity {
 	
 	@Override
 	public String toDataString(String client_id) {
-		String output = "010,";
+		String output = "020,";
 		output += super.toDataString(client_id);
 		return output;
 	}
