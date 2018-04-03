@@ -10,7 +10,15 @@ public class Flag extends Item {
 		super(4, 0, node.getX(), node.getY(), w, h, r, a, "Flag", entity_id);
 		this.team = team;
 		this.base = node;
+		this.atBase = true;
 		this.spriteIndex = Utils.getSpriteIndexFromTeam(this.team);
+	}
+	
+	public void update() {
+		if(this.grabbed) {
+			this.x = this.grabber.x;
+			this.y = this.grabber.y;
+		}
 	}
 
 	@Override
@@ -31,6 +39,7 @@ public class Flag extends Item {
 				}
 			}
 			else {
+				this.atBase = false;
 				this.grabber = grabber;
 				this.grabbed = true;
 				this.grabber.item_slot = this;
@@ -38,7 +47,12 @@ public class Flag extends Item {
 		}
 	}
 	
-	private void returnToBase() {
+	public void returnToBase() {
+		if(this.grabber != null) {
+			this.grabber.item_slot = null;
+		}
+		this.grabber = null;
+		this.grabbed = false;
 		this.x = this.base.getX();
 		this.y = this.base.getY();
 		this.atBase = true;

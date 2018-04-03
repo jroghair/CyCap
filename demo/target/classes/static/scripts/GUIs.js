@@ -196,7 +196,7 @@ function RespawnCounter(x, y, length){
 	this.update = function(txt){
 		if((Date.now() - this.startTime) >= this.length){
 			if(this.active){
-				//this.stop();
+				this.stop();
 			}
 		}
 		else{

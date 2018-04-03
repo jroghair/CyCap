@@ -109,6 +109,7 @@ public class GameState extends TimerTask
 			}
 		}
 		
+		/////////UPDATE GAME OBJECTS///////////
 		//move all of the bullets first
 		ListIterator<Bullet> iter = this.bullets.listIterator();
 		while(iter.hasNext()){
@@ -118,6 +119,9 @@ public class GameState extends TimerTask
 		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
 		    }
 		}
+		//UPDATE the flags
+		this.team1_flag.update();
+		this.team2_flag.update();
 		
 		for(int i = 0; i < this.unhandledInputs.size(); i++) {
 			try {
@@ -134,13 +138,16 @@ public class GameState extends TimerTask
 				ai.update(this, null);
 		}
 		
+		//Check For Flag captures
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
-			//+1 to team 2
-			//return flag to base
+			this.team_scores.put(2, this.team_scores.get(2) + 1); //+1 to team 2
+			this.team1_flag.returnToBase(); //return the flag to base
+			if(Utils.DEBUG) System.out.println("FLAG 1 CAPTURED!!");
 		}
 		else if(!this.team2_flag.atBase && this.team1_flag.atBase && Utils.isColliding(this.team2_flag, team1_base)) {
-			//+1 to team 1
-			//return flag to base
+			this.team_scores.put(1, this.team_scores.get(1) + 1); //+1 to team 2
+			this.team2_flag.returnToBase(); //return the flag to base
+			if(Utils.DEBUG) System.out.println("FLAG 2 CAPTURED!!");
 		}
 		
 		pu_handler.update(this); //update the powerups
@@ -161,6 +168,8 @@ public class GameState extends TimerTask
 	public List<Item> getItemList(){
 		List<Item> list = new ArrayList<Item>();
 		list.addAll(this.pu_handler.getPowerUpsList());
+		list.add(this.team1_flag);
+		list.add(this.team2_flag);
 		return list;
 	}
 	
@@ -218,7 +227,7 @@ public class GameState extends TimerTask
 			this.playersOnTeam1++;
 		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
-		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
 		this.userPasswords.add(pass);
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
@@ -232,7 +241,7 @@ public class GameState extends TimerTask
 		// make AI player and send map reference
 		//mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
-		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
 		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
 	}

@@ -16,8 +16,8 @@ public class AI_player extends GameCharacter {
 	protected AI_path_generator path_gen;
 	// private long lastDeathTime;
 
-	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id, GameState g) {
-		super(0, 0, x, y, w, h, r, a, ai_id, team, role);
+	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id, GameState g, PlayerStats stats) {
+		super(0, 0, x, y, w, h, r, a, ai_id, team, role, stats);
 
 		mapNode randomNode = getRandomNode(g);
 		// set new location

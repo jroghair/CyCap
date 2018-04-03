@@ -54,7 +54,6 @@ function GameState(role){
 	
 	this.intp_entities = [];
 	this.entities = [];
-	this.bullets = []; //all bullets, including artillery shells
 	this.walls = []; //all of the walls in the game
 	this.part_fx = []; //particle effects
 	this.map; //the set of tiles and map data
@@ -75,7 +74,6 @@ function GameState(role){
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].updated = false;
 		}
-		this.bullets = []; //remove old bullets
 		this.entities = [];
 		for(let i = 0; i < objects.length; i++){
 			let obj = objects[i].split(",");
@@ -112,9 +110,6 @@ function GameState(role){
 				//new sound
 			}
 			*/
-			else if(obj[0] == "010"){
-				this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
-			}
 			else if(obj[0] == "020"){
 				let found = false;
 				for(let i = 0; i < this.intp_entities.length; i++){
@@ -149,9 +144,6 @@ function GameState(role){
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].update();
 		}
-		for(let i = this.bullets.length - 1; i >= 0; i--){
-			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
-		}
 	}
 	
 	this.drawGameState = function(){
@@ -173,10 +165,6 @@ function GameState(role){
 		
 		for(let i = 0; i < this.entities.length; i++){
 			this.entities[i].draw();
-		}
-		
-		for(let i = 0; i < this.bullets.length; i++){
-			this.bullets[i].draw();
 		}
 		/*
 		for(let i = 0; i < this.part_fx.length; i++){
