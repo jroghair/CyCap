@@ -6,7 +6,7 @@ public class Flag extends Item {
 	protected boolean atBase;
 	protected GridLockedNode base;
 	
-	public Flag(GridLockedNode node, double w, double h, double r, double a, String name, String entity_id, int team) {
+	public Flag(GridLockedNode node, double w, double h, double r, double a, String entity_id, int team) {
 		super(4, 0, node.getX(), node.getY(), w, h, r, a, "Flag", entity_id);
 		this.team = team;
 		this.base = node;

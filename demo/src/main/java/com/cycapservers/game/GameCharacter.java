@@ -6,6 +6,9 @@ public abstract class GameCharacter extends Entity {
 
 	protected int team;
 	protected String role;
+	
+	protected PlayerStats stats;
+	
 	protected Weapon weapon1;
 	protected Weapon weapon2;
 	protected Weapon weapon3;

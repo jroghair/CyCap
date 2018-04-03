@@ -40,7 +40,7 @@ public final class Utils{
 		}
 	}
 	
-	public static double distanceBetweenEntities(Entity ent1, Entity ent2){
+	public static double distanceBetween(Entity ent1, Entity ent2){
 		return Math.sqrt(Math.pow(ent1.getX() - ent2.getX(), 2) + Math.pow(ent1.getY() - ent2.getY(), 2));
 	}
 	
@@ -56,9 +56,31 @@ public final class Utils{
 		return Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 	}
 	
+	public static double distanceBetween(Node n1, Node n2) {
+		return Math.sqrt(Math.pow(n2.getX() - n1.getX(), 2.0) + Math.pow(n2.getY() - n1.getY(), 2.0));
+	}
+	
+	public static double distanceBetween(Entity ent, Node n) {
+		return Math.sqrt(Math.pow(n.getX() - ent.x, 2.0) + Math.pow(n.getY() - ent.y, 2.0));
+	}
+	
+	public static boolean isColliding(Entity ent, Node n) {
+		if(distanceBetween(ent, n) >= ent.collision_radius){
+			return false;
+		}
+		else {
+			if(n.getX() > (ent.x - ent.drawWidth/2) && n.getX() < (ent.x + ent.drawWidth/2)) {
+				if(n.getY() > (ent.y - ent.drawHeight/2) && n.getY() < (ent.y + ent.drawHeight/2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
 		//QUICK COLLISION DETECTION
-		if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
+		if(distanceBetween(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
 			return false;
 		}
 		

@@ -153,3 +153,60 @@ function ItemSlotGUI(x, y){
 		this.item_image.draw();
 	}
 }
+
+function TextGUI(txt, font, x, y, a){
+	this.txt = txt;
+	this.font = font;
+	this.x = x;
+	this.y = y;
+	this.a = a;
+	this.active = true;
+	
+	this.update = function(txt){
+		this.txt = txt;
+	}
+	
+	this.draw = function(){
+		if(this.active){
+			gui_context.setTransform(1, 0, 0, 1, 0, 0); //set draw position
+			gui_context.globalAlpha = this.a;
+			gui_context.font = this.font;
+			gui_context.fillText(this.txt, this.x, this.y);
+		}
+	}
+}
+
+function RespawnCounter(x, y, length){
+	this.base = TextGUI;
+	this.base("", "25px Arial", x, y, 1.0);
+	this.length = length; //this is in ms
+	this.startTime = 0;
+	this.active = false;
+	
+	this.start = function(){
+		if(!this.active){
+			this.a = 1.0
+			this.active = true;
+			this.startTime = Date.now();
+			let time = (this.length - (Date.now() - this.startTime))/1000;
+			this.txt = "Respawning In: " + time.toFixed(2);
+		}
+	}
+	
+	this.update = function(txt){
+		if((Date.now() - this.startTime) >= this.length){
+			if(this.active){
+				//this.stop();
+			}
+		}
+		else{
+			let time = (this.length - (Date.now() - this.startTime))/1000;
+			this.txt = "Respawning In: " + time.toFixed(2);
+		}
+	}
+	
+	this.stop = function(){
+		this.active = false;
+		this.a = 0.0;
+	}
+}

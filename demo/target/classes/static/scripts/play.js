@@ -33,6 +33,7 @@ let masks = [];
 //NON-SERVER-BASED ITEMS
 let canvas_box;
 let guis = [];
+let respawnCounter;
 
 //FRAME TIME & DELTA_T
 let lastFrameTime;
@@ -97,15 +98,14 @@ function GameState(role){
 					this.player.speed_boost = +obj[17];
 					this.player.damage_boost = +obj[18];
 					this.player.visibility = +obj[19];
+					
+					if(this.player.health <= 0){
+						respawnCounter.start();
+					}
 				}
 				else{
 					this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
 				}
-			}
-			else if(obj[0] == "001"){ //bullets
-				this.bullets.push(new Bullet(+obj[6], +obj[7], +obj[3], +obj[4], +obj[5], 0, 0, +obj[11], +obj[10], 0));
-				this.bullets[this.bullets.length - 1].x_ratio = +obj[13];
-				this.bullets[this.bullets.length - 1].y_ratio = +obj[14];
 			}
 			/*
 			else if(obj[0] == "002"){
@@ -252,10 +252,11 @@ function setup() {
 	wallLine(18, 26, 2, 'x'); //done
 	
 	//////GUI ELEMENTS//////
-	guis.push(new HealthGUI(20, canvas.height - 20, 200, 20)); //health bar
+	guis.push(new HealthGUI(20, gui_canvas.height - 20, 200, 20)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
-	guis.push(new AmmoGUI(20, canvas.height - 50, 20, 200, 5));
+	guis.push(new AmmoGUI(20, gui_canvas.height - 50, 20, 200, 5));
+	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 10000);
 	////////////////////////
 
 	//////INPUT HANDLING//////
@@ -337,6 +338,7 @@ function run() {
 	for(let i = guis.length - 1; i >= 0; i--){
 		guis[i].update();
 	}
+	respawnCounter.update(null);
 	
 	
 	//TOGGLE THE ZOOM LEVEL V IMPORTANT
@@ -371,6 +373,7 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
+	respawnCounter.draw();
 	
 	//reset the 1 frame inputs
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);

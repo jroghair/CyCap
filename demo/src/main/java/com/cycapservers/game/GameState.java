@@ -3,6 +3,7 @@ package com.cycapservers.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
@@ -20,18 +21,20 @@ public class GameState extends TimerTask
 	
 	private List<InputSnapshot> unhandledInputs;
 	
+	//////PLAYERS//////
 	protected List<AI_player> AI_players;
 	protected List<Player> players;
 	protected int playersOnTeam1;
 	protected int playersOnTeam2;
-	protected int team1_score;
-	protected int team2_score;
 	protected boolean friendlyFire;
 	protected long respawnTime; //the amount of time to respawn after death in ms
+	//TODO: spawn nodes
+	///////////////////
 	
 	//////ITEMS//////
 	protected List<Item> current_item_list;
 	protected PowerUpHandler pu_handler;
+	////////////////
 	
 	protected List<String> new_sounds;
 	
@@ -44,6 +47,14 @@ public class GameState extends TimerTask
 	protected List<Wall> walls;
 	protected int mapGridWidth;
 	protected int mapGridHeight;
+	
+	protected HashMap<Integer, Integer> team_scores;
+	//////CTF STUFF//////
+	protected GridLockedNode team1_base;
+	protected GridLockedNode team2_base;
+	protected Flag team1_flag;
+	protected Flag team2_flag;
+	/////////////////////
 	
 	private long lastGSMessage;
 	protected double currentDeltaTime; //the time since the last game state update in seconds
@@ -64,8 +75,9 @@ public class GameState extends TimerTask
 		
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
-		team1_score = 0;
-		team2_score = 0;
+		this.team_scores = new HashMap<Integer, Integer>();
+		this.team_scores.put(1, 0); //for TDM and CTF only
+		this.team_scores.put(2, 0);
 		
 		friendlyFire = false;
 		respawnTime = 10000; //10 seconds respawn time
@@ -76,6 +88,8 @@ public class GameState extends TimerTask
 		this.AI_players = new ArrayList<AI_player>();
 		// generate the map when player is constructed
 		this.map = Utils.generate_node_array(this);
+		this.add_AI_player(1, "recruit");
+		this.add_AI_player(2, "recruit");
 	}
 
 	public void updateGameState() {
@@ -114,11 +128,20 @@ public class GameState extends TimerTask
 				System.out.println("unhandled input " + i + ": " + e);
 			}
 		}
+		
 		// updating AI players
-		/*
 		for (AI_player ai : AI_players) {
-				ai.update(this);
-		}*/
+				ai.update(this, null);
+		}
+		
+		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
+			//+1 to team 2
+			//return flag to base
+		}
+		else if(!this.team2_flag.atBase && this.team1_flag.atBase && Utils.isColliding(this.team2_flag, team1_base)) {
+			//+1 to team 1
+			//return flag to base
+		}
 		
 		pu_handler.update(this); //update the powerups
 		
@@ -145,16 +168,15 @@ public class GameState extends TimerTask
 		String output = "";
 		//fill the output
 		for(int i = 0; i < players.size(); i++) {
-			if((players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+			if((players.get(i).team == p.team) || (Utils.distanceBetween(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
 				output += players.get(i).toDataString(p.entity_id) + ":";
 			}
 		}
-		/*
 		for (int i = 0; i < AI_players.size(); i++) {
-			if((AI_players.get(i).team == p.team) || (Utils.distanceBetweenEntities(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
-				output += AI_players.get(i).toDataString(p.client_id) + ":";
+			if((AI_players.get(i).team == p.team) || (Utils.distanceBetween(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += AI_players.get(i).toDataString(p.entity_id) + ":";
 			}
-		}*/
+		}
 		for (Item i : this.current_item_list) {
 			output += i.toDataString(p.entity_id) + ":";
 		}
@@ -198,8 +220,6 @@ public class GameState extends TimerTask
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
 		this.userPasswords.add(pass);
-		this.add_AI_player(1, role);
-		this.add_AI_player(2, role);
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
 		} catch (IOException e) {
