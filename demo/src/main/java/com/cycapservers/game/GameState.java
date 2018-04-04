@@ -47,6 +47,7 @@ public class GameState extends TimerTask
 	protected List<Wall> walls;
 	protected int mapGridWidth;
 	protected int mapGridHeight;
+	protected List<SpawnNode> spawns;
 	
 	protected HashMap<Integer, Integer> team_scores;
 	//////CTF STUFF//////
@@ -67,6 +68,7 @@ public class GameState extends TimerTask
 		this.players = new ArrayList<Player>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
+		this.spawns = new ArrayList<SpawnNode>();
 		this.new_sounds = new ArrayList<String>();
 		this.current_item_list = new ArrayList<Item>();
 		
@@ -227,7 +229,8 @@ public class GameState extends TimerTask
 			this.playersOnTeam1++;
 		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
-		this.players.add(new Player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
+		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
 		this.userPasswords.add(pass);
 		try {
 			session.sendMessage(new TextMessage("join:" + pass));
@@ -241,7 +244,8 @@ public class GameState extends TimerTask
 		// make AI player and send map reference
 		//mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
-		AI_players.add(new AI_player(64, 64, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
+		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
 		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
 	}

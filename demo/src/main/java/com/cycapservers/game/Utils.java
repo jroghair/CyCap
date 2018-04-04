@@ -419,4 +419,24 @@ public final class Utils{
 				throw new IllegalArgumentException("illegal team number, no sprite index associated!");
 		}
 	}
+	
+	/**
+	 * Returns a random spawn node that has the same team as the parameter
+	 * @param nodes
+	 * @param team
+	 * @return
+	 */
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
+		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
+		for(SpawnNode n : nodes) {
+			if(n.team == team) {
+				goodNodes.add(n);
+			}
+		}
+		return goodNodes.get(RANDOM.nextInt(goodNodes.size()));
+	}
+	
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
+		return nodes.get(RANDOM.nextInt(nodes.size()));
+	}
 }

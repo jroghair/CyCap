@@ -59,6 +59,8 @@ public abstract class GameCharacter extends Entity {
 		}
 	}
 	
+	protected abstract void respawn(GameState g);
+	
 	public abstract void die();
 	
 	public abstract void update(GameState game, InputSnapshot s);

@@ -51,13 +51,7 @@ public class AI_player extends GameCharacter {
 		// if(this.isDead){
 		// if((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime)
 		// {
-		// //re spawn player
-		// this.x = 64;
-		// this.y = 64;
-		// //set isDead to false
-		// this.isDead = false;
-		// //reset ammo and health
-		// Utils.setRole(this);
+		// 		this.respawn();
 		// }
 		// }
 
@@ -144,4 +138,14 @@ public class AI_player extends GameCharacter {
 		return g.map.get(randi).get(randj);
 	}
 
+	@Override
+	protected void respawn(GameState g) {
+		//respawn player
+		this.x = 64;
+		this.y = 64;
+		//set isDead to false
+		this.isDead = false;
+		//reset ammo and health
+		Utils.setRole(this);
+	}
 }

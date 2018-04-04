@@ -3,7 +3,7 @@ package com.cycapservers.game;
 public class HealthPack extends PowerUp {
 	
 	public HealthPack(int x, int y, int w, int h, int r, double a, String entity_id) {
-		super(4, 0, x, y, w, h, r, a, "Speed Potion", 0, entity_id);
+		super(4, 0, x, y, w, h, r, a, "Health Pack", 0, entity_id);
 	}
 	
 	public HealthPack(HealthPack hp, int x, int y, String entity_id) {

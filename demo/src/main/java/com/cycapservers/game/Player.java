@@ -33,13 +33,7 @@ public class Player extends GameCharacter {
 		
 		if(this.isDead){
 			if((System.currentTimeMillis() - this.lastDeathTime) > game.respawnTime) {
-				//respawn player
-				this.x = 64;
-				this.y = 64;
-				//set isDead to false
-				this.isDead = false;
-				//reset ammo and health
-				Utils.setRole(this);
+				this.respawn(game);
 			}
 		}
 		else {
@@ -196,5 +190,17 @@ public class Player extends GameCharacter {
 
 	public void setLastUnsentGameState(String lastUnsentGameState) {
 		this.lastUnsentGameState = lastUnsentGameState;
+	}
+
+	@Override
+	protected void respawn(GameState g) {
+		SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
+		//respawn player
+		this.x = n.getX();
+		this.y = n.getY();
+		//set isDead to false
+		this.isDead = false;
+		//reset ammo and health
+		Utils.setRole(this);
 	}
 }
