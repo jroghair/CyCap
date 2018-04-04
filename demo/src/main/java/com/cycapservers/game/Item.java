@@ -25,6 +25,13 @@ public abstract class Item extends Entity {
 	 */
 	public abstract boolean use();
 	
+	public void drop() {
+		this.x = this.grabber.x;
+		this.y = this.grabber.y;
+		this.grabber = null;
+		this.grabbed = false;
+	}
+	
 	@Override
 	public String toDataString(String client_id) {
 		String output = "020,";

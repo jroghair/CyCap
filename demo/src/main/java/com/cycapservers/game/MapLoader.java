@@ -76,12 +76,13 @@ public final class MapLoader {
 		g.team2_flag = new Flag(g.team2_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 2);
 		g.usedEntityIds.add(id);
 		
-		g.spawns.add(new SpawnNode((short) 1, (short) 16, 1));
+		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
+		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
 		g.spawns.add(new SpawnNode((short) 6, (short) 20, 1));
-		g.spawns.add(new SpawnNode((short) 7, (short) 28, 1));
-		g.spawns.add(new SpawnNode((short) 39, (short) 1, 2));
+		g.spawns.add(new SpawnNode((short) 6, (short) 28, 1));
+		g.spawns.add(new SpawnNode((short) 38, (short) 1, 2));
 		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
-		g.spawns.add(new SpawnNode((short) 39, (short) 12, 2));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
 	}
 
 }

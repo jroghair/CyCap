@@ -40,11 +40,11 @@ shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
 let ammo_pack = new Image();
 ammo_pack.src = "res/images/ammo_box.png";
-ammo_pack.src = [{x:0, y:0, w:128, h:128}];
+ammo_pack.sprites = [{x:0, y:0, w:128, h:128}];
 
 let health_pack = new Image();
 health_pack.src = "res/images/health_pack.png";
-health_pack.src = [{x:0, y:0, w:128, h:128}];
+health_pack.sprites = [{x:0, y:0, w:128, h:128}];
 
 let color_boxes = new Image();
 color_boxes.src = "res/images/colors.png";

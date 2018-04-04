@@ -244,7 +244,7 @@ function setup() {
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
 	guis.push(new AmmoGUI(20, gui_canvas.height - 50, 20, 200, 5));
-	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 10000);
+	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 9900);
 	////////////////////////
 
 	//////INPUT HANDLING//////

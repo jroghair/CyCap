@@ -28,6 +28,7 @@ public final class Utils{
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
 	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
+	public final static AmmoPack AMMO_PACK = new AmmoPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "ammo_pack_template");
 	
 	private Utils(){} //prevents the class from being constructed
 	

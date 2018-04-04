@@ -31,7 +31,7 @@ public class GameManager {
 		timer = new Timer(true);
 		games = new ArrayList<GameState>();
 		games.add(new GameState());
-		timer.scheduleAtFixedRate(games.get(0), 0, 100);
+		timer.scheduleAtFixedRate(games.get(0), 500, 100);
 	}
 	
 	//Ask about sending purpose of message;

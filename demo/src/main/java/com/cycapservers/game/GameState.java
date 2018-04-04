@@ -90,8 +90,8 @@ public class GameState extends TimerTask
 		this.AI_players = new ArrayList<AI_player>();
 		// generate the map when player is constructed
 		this.map = Utils.generate_node_array(this);
-		this.add_AI_player(1, "recruit");
-		this.add_AI_player(2, "recruit");
+		//this.add_AI_player(1, "recruit");
+		//this.add_AI_player(2, "recruit");
 	}
 
 	public void updateGameState() {
@@ -133,12 +133,15 @@ public class GameState extends TimerTask
 			catch(ConcurrentModificationException e) {
 				System.out.println("unhandled input " + i + ": " + e);
 			}
+			catch(NullPointerException e) {
+				System.out.println("Null pointer Exception when getting index " + i + " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
+			}
 		}
 		
-		// updating AI players
+		/*/ updating AI players
 		for (AI_player ai : AI_players) {
 				ai.update(this, null);
-		}
+		}*/
 		
 		//Check For Flag captures
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {

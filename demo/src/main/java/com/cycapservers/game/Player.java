@@ -19,10 +19,11 @@ public class Player extends GameCharacter {
 	}
 	
 	public void die() {
+		this.isDead = true;
+		this.item_slot.drop();
+		this.item_slot = null;
 		this.x = -256;
 		this.y = -256;
-		this.isDead = true;
-		this.item_slot = null;
 		this.lastDeathTime = System.currentTimeMillis();
 	}
 	
