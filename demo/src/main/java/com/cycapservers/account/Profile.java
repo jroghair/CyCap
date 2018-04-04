@@ -1,17 +1,15 @@
 package com.cycapservers.account;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Entity
 @Table(name="profile")
 public class Profile {
-    @Id
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private int id=0;
@@ -22,30 +20,44 @@ public class Profile {
     private String userID;
     
     @NotNull
-    @Column(name="character")
-    private String character;
+    @Column(name="CharClass")
+    private String charclass;
     
     @NotNull
-    @Column(name="kills")
+    @Column(name="Kills")
     private int kills;
     
 
     @NotNull
-    @Column(name="deaths")
+    @Column(name="Deaths")
     private int deaths;
     
     @NotNull
-    @Column(name="wins")
-    private int wins;
+    @Column(name="GameWins")
+    private int gamewins;
 
     @NotNull
-    @Column(name="losses")
+    @Column(name="GameLosses")
     private int losses;
 
     
     @NotNull
-    @Column(name="gamesplayed")
+    @Column(name="GamesPlayed")
     private int gamesplayed;
+    
+
+    @NotNull
+    @Column(name="FlagGrabs")
+    private int flaggrabs;
+    
+    @NotNull
+    @Column(name="FlagReturns")
+    private int flagreturns; 
+    
+    @NotNull
+    @Column(name="FlagCaptures")
+    private int flagcaptures;
+    
     
     //experience int
     //flag grabs, flag returns, flag captures
@@ -55,14 +67,33 @@ public class Profile {
     	
     }
     
-   
-	public String getCharacter() {
-		return character;
+	public int getId() {
+		return id;
 	}
 
 
-	public void setCharacter(String character) {
-		this.character = character;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	public String getUserID() {
+		return userID;
+	}
+
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
+
+	public String getCharclass() {
+		return charclass;
+	}
+
+
+	public void setCharclass(String charclass) {
+		this.charclass = charclass;
 	}
 
 
@@ -86,13 +117,13 @@ public class Profile {
 	}
 
 
-	public int getWins() {
-		return wins;
+	public int getGamewins() {
+		return gamewins;
 	}
 
 
-	public void setWins(int wins) {
-		this.wins = wins;
+	public void setGamewins(int gamewins) {
+		this.gamewins = gamewins;
 	}
 
 
@@ -116,14 +147,35 @@ public class Profile {
 	}
 
 
-	public String getUserID() {
-		
-		return this.userID;
-	}
-    
-	public void setUserID(String userID) {
-		this.userID = userID;
+	public int getFlaggrabs() {
+		return flaggrabs;
 	}
 
+
+	public void setFlaggrabs(int flaggrabs) {
+		this.flaggrabs = flaggrabs;
+	}
+
+
+	public int getFlagreturns() {
+		return flagreturns;
+	}
+
+
+	public void setFlagreturns(int flagreturns) {
+		this.flagreturns = flagreturns;
+	}
+
+
+	public int getFlagcaptures() {
+		return flagcaptures;
+	}
+
+
+	public void setFlagcaptures(int flagcaptures) {
+		this.flagcaptures = flagcaptures;
+	}
+
+   
 }
 

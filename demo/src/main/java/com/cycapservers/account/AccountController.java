@@ -180,7 +180,12 @@ public class AccountController {
     
     @GetMapping("/accounts/profile")
     public String profilePage(@SessionAttribute("account") Account account) {
+    	logger.info("Entered into get Profile controller Layer");
     	//model.addAttribute("account", account);
+    	
     	return "accounts/profile";
     }
 }
+
+
+

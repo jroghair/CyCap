@@ -1,5 +1,101 @@
-<h1 id="user"></h1>
-<button><a href="/accounts/friends">Friend's List</a></button>
+<html>
+
+
+<head>
+<ul>
+  <li><a class="active" href="/accounts/chat">Chat</a></li>
+  <li><a href="/game_list">Available Games</a></li>
+  <li><a href="/accounts/profile">Profile</a></li>
+</ul>
+</head>
+
+
+<h1> Account Profile</h1>
+<form>
+<button href="/accounts/profile">Overall</button>
+<button href="/accounts/profileInfantry">Infantry</button>
+<button href="/accounts/profileRecruit">Recruit</button>
+<button href="/accounts/profileScout">Scout</button>
+</form>
+
+<style>
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+#stats {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#stats td, #stats th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#stats tr:nth-child(even){background-color: #f2f2f2;}
+
+#cstats tr:hover {background-color: #ddd;}
+
+#stats th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+
+<body>
+ <table id="stats">
+    <thead>
+      <tr>
+        <th>Kills</th>
+        <th>Deaths</th>
+        <th>Game Wins</th>
+        <th>Game Losses</th>
+        <th>Games Played</th>
+        <th>Flag Grabs</th>
+        <th>Flag Returns</th>
+        <th>Flag Captures</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+		<td>32</td>
+		<td>21</td>
+		<td>4</td>
+		<td>2</td>
+		<td>6</td>
+		<td>6</td>
+		<td>7</td>
+		<td>5</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
 <script th:inline="javascript">
 	/*<![CDATA[*/
 	
@@ -8,4 +104,9 @@
 	document.getElementById("user").innerHTML = temp;
 	
 	/*]]>*/
+	
+	
+	
 </script>
+
+</html>

@@ -14,7 +14,6 @@ public interface ProfileRepository extends CrudRepository<Profile, String> {
 
     @Query("SELECT DISTINCT profile FROM Profile profile WHERE profile.userID =:userID")
 	@Transactional(readOnly = true)
-
     Collection<String> findByUserID(@Param("userID") String userID);   
     
 	

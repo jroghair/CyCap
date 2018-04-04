@@ -3374,3 +3374,9 @@ Caused by: java.lang.Error: Unresolved compilation problem:
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1624) ~[spring-beans-4.3.14.RELEASE.jar:4.3.14.RELEASE]
 	... 75 common frames omitted
 
+2018-04-04 16:51:32.447  INFO 9124 --- [restartedMain] com.cycapservers.CyCapApplication        : Starting CyCapApplication on DESKTOP-CDFGVDB with PID 9124 (started by Jeremy in C:\Users\Jeremy\Bryans Branch File\demo)
+2018-04-04 16:51:32.459  INFO 9124 --- [restartedMain] com.cycapservers.CyCapApplication        : No active profile set, falling back to default profiles: default
+2018-04-04 16:51:32.473  INFO 7004 --- [restartedMain] com.cycapservers.CyCapApplication        : Starting CyCapApplication on DESKTOP-CDFGVDB with PID 7004 (started by Jeremy in C:\Users\Jeremy\Bryans Branch File\demo)
+2018-04-04 16:51:32.474  INFO 7004 --- [restartedMain] com.cycapservers.CyCapApplication        : No active profile set, falling back to default profiles: default
+2018-04-04 16:51:32.979  INFO 9124 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@22f97bdf: startup date [Wed Apr 04 16:51:32 CDT 2018]; root of context hierarchy
+2018-04-04 16:51:33.037  INFO 7004 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@634bfbfc: startup date [Wed Apr 04 16:51:33 CDT 2018]; root of context hierarchy
