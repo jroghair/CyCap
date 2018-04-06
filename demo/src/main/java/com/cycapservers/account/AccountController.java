@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
-import com.cycapservers.account.Account; 
+
+import javassist.bytecode.Descriptor.Iterator; 
 
 @Controller
 @SessionAttributes("account")
@@ -39,6 +40,10 @@ public class AccountController {
     @Autowired
     private FriendRepository friendsRepository;
 
+    @Autowired
+    private ProfilesRepository profilesRepository;
+    
+    
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
     
     @ModelAttribute("account")
@@ -181,11 +186,27 @@ public class AccountController {
     @GetMapping("/accounts/profile")
     public String profilePage(@SessionAttribute("account") Account account) {
     	logger.info("Entered into get Profile controller Layer");
-    	//model.addAttribute("account", account);
+    	//model.addAttribute("account", account);]
+    	System.out.println(account.getUserID());
+    	Profiles test = profilesRepository.findByUserIDInfantry(account.getUserID());
+    	//account.getUserID(),
+    	System.out.println(test.getDeaths());
+    
     	
     	return "accounts/profile";
-    }
+    }   
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
