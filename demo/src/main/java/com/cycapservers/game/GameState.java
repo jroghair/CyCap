@@ -146,11 +146,13 @@ public class GameState extends TimerTask
 		//Check For Flag captures
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
 			this.team_scores.put(2, this.team_scores.get(2) + 1); //+1 to team 2
+			((CTF_PlayerStats) this.team1_flag.grabber.stats).addFlagCap(); //give the proper player a flag capture
 			this.team1_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 1 CAPTURED!!");
 		}
 		else if(!this.team2_flag.atBase && this.team1_flag.atBase && Utils.isColliding(this.team2_flag, team1_base)) {
-			this.team_scores.put(1, this.team_scores.get(1) + 1); //+1 to team 2
+			this.team_scores.put(1, this.team_scores.get(1) + 1); //+1 to team 1
+			((CTF_PlayerStats) this.team2_flag.grabber.stats).addFlagCap(); //give the proper player a flag capture
 			this.team2_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 2 CAPTURED!!");
 		}
@@ -180,6 +182,10 @@ public class GameState extends TimerTask
 	
 	public String toDataString(Player p) {
 		String output = "";
+		
+		//add game score data
+		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + ":";
+		
 		//fill the output
 		for(int i = 0; i < players.size(); i++) {
 			if((players.get(i).team == p.team) || (Utils.distanceBetween(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {

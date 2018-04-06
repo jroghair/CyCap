@@ -33,6 +33,7 @@ public final class Utils{
 	private Utils(){} //prevents the class from being constructed
 	
 	public static boolean isBetween(double num, double lower, double upper){
+		//TODO: change this to > && < instead of >= && <=
 		if(num >= lower && num <= upper){
 			return true;
 		}

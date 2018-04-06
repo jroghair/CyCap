@@ -34,6 +34,7 @@ let masks = [];
 let canvas_box;
 let guis = [];
 let respawnCounter;
+let gameScoreGUI;
 
 //FRAME TIME & DELTA_T
 let lastFrameTime;
@@ -49,6 +50,8 @@ let rolling_buffer_length = 30;
 ///////////////////
 
 function GameState(role){
+	this.game_mode = "ctf";
+	
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
 	this.pw;
 	
@@ -101,8 +104,11 @@ function GameState(role){
 						respawnCounter.start();
 					}
 				}
-				else{
-					this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
+			}
+			else if(obj[0] == "001"){
+				if(this.game_mode == "ctf"){
+					//TODO: update the game score gui
+					gameScoreGUI.update(objects[i]);
 				}
 			}
 			/*
@@ -245,6 +251,7 @@ function setup() {
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
 	guis.push(new AmmoGUI(20, gui_canvas.height - 50, 20, 200, 5));
 	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 9900);
+	gameScoreGUI = new GameScoreGUI(gui_canvas.width/2, 0, gameState.game_mode);
 	////////////////////////
 
 	//////INPUT HANDLING//////
@@ -362,6 +369,7 @@ function run() {
 		guis[i].draw();
 	}
 	respawnCounter.draw();
+	gameScoreGUI.draw();
 	
 	//reset the 1 frame inputs
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);

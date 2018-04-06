@@ -176,9 +176,26 @@ function TextGUI(txt, font, x, y, a){
 	}
 }
 
+function GameScoreGUI(x, y, type){
+	this.base = TextGUI;
+	this.base("Red: 0  |  Blue: 0", "25px Arial", x - 100, y + 20, 1.0);
+	this.game_type = type;
+	if(this.game_type == "ctf"){
+		this.txt = "Red: 0  |  Blue: 0";
+	}
+	
+	this.update = function(txt){
+		let data = txt.split(",");
+		if(this.game_type == "ctf"){
+			this.txt = "Red: " + data[1] + "  |  Blue: " + data[2];
+		}
+	}
+	
+}
+
 function RespawnCounter(x, y, length){
 	this.base = TextGUI;
-	this.base("", "25px Arial", x, y, 1.0);
+	this.base("", "25px Arial", x - 100, y + 11, 1.0);
 	this.length = length; //this is in ms
 	this.startTime = 0;
 	this.active = false;

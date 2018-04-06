@@ -36,12 +36,14 @@ public class Flag extends Item {
 				}
 				else {
 					returnToBase();
+					((CTF_PlayerStats) grabber.stats).addFlagReturn();
 				}
 			}
 			else {
 				this.atBase = false;
 				this.grabber = grabber;
 				this.grabbed = true;
+				((CTF_PlayerStats) grabber.stats).addFlagGrab();
 				this.grabber.item_slot = this;
 			}
 		}
