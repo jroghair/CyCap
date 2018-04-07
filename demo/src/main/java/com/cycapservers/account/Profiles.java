@@ -39,7 +39,7 @@ public class Profiles {
 
     @NotNull
     @Column(name="GameLosses")
-    private int losses;
+    private int gamelosses;
 
     
     @NotNull
@@ -56,12 +56,31 @@ public class Profiles {
     private int flagreturns;
     
     @NotNull
+    @Column(name="FlagCaptures")
+    private int flagcaptures;
+    
+    @NotNull
     @Column(name="Experience")
     private int experience; 
     //experience int
     //flag grabs, flag returns, flag captures
 
-
+    public Profiles(String userID, String champion, int kills, int deaths, int gamewins, int gamelosses, int gamesplayed, int flaggrabs,
+    		int flagreturns, int flagcaptures, int experience){
+    	this.userID=userID;
+    	this.champion=champion; 
+    	this.kills=kills;
+    	this.deaths=deaths;
+    	this.gamewins=gamewins;
+    	this.gamelosses=gamelosses;
+    	this.gamesplayed=gamesplayed;
+    	this.flaggrabs=flaggrabs; 
+    	this.flagreturns=flagreturns; 
+    	this.flagcaptures=flagcaptures; 
+    	this.experience=experience; 
+    }
+    
+    
 	public String getUserID() {
 		return this.userID;
 	}
@@ -102,23 +121,23 @@ public class Profiles {
 	}
 
 
-	public int getGamewins() {
+	public int getGameWins() {
 		return this.gamewins;
 	}
 
 
-	public void setGamewins(int gamewins) {
+	public void setGameWins(int gamewins) {
 		this.gamewins = gamewins;
 	}
 
 
-	public int getLosses() {
-		return this.losses;
+	public int getGameLosses() {
+		return this.gamelosses;
 	}
 
 
-	public void setLosses(int losses) {
-		this.losses = losses;
+	public void setGameLosses(int gamelosses) {
+		this.gamelosses = gamelosses;
 	}
 
 
@@ -151,6 +170,18 @@ public class Profiles {
 		this.flagreturns = flagreturns;
 	}
 	
+	
+	
+	public int getFlagcaptures() {
+		return flagcaptures;
+	}
+
+
+	public void setFlagcaptures(int flagcaptures) {
+		this.flagcaptures = flagcaptures;
+	}
+
+
 	public int getExperience(){
 		return this.experience;
 	}

@@ -15,6 +15,7 @@ public class GameState extends TimerTask
 {
 	private List<InputSnapshot> unhandledInputs;
 	
+	protected List<PlayerStats> playerstats; 
 	protected List<AI_player> AI_players;
 	protected List<Player> players;
 	protected int playersOnTeam1;
@@ -46,6 +47,8 @@ public class GameState extends TimerTask
 	public GameState() {
 		
 		this.players = new ArrayList<Player>();
+
+		
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
 		this.new_sounds = new ArrayList<String>();

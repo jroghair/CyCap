@@ -19,6 +19,8 @@ public interface ProfilesRepository extends CrudRepository<Profiles, String> {
 	//and profile.charclass=:charclass
     //profile.userID =:userID 
     
-    //Friend save(Profile profile);
+    Profiles save(Profiles profile);
+    
+    void delete(Profiles profile);
     
 }

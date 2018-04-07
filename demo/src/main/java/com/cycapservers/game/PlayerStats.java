@@ -28,10 +28,6 @@ public class PlayerStats {
 	public PlayerStats(Player player, String champion){
 		this.userID=player.client_id; //may need to change
 		this.userID=player.role; //need to ensure role was already assigned
-		
-		ArrayList cur = callDB(player.client_id, player.role);
-		
-
 		this.kills=0;
 		this.deaths=0; 
 		this.wins=0; 
@@ -81,14 +77,58 @@ public class PlayerStats {
 	public ArrayList callDB(String userID, String champion){
 		//call db controller and get list of player attributes for that role.
 		
+		ProfileDataUpdate db = new ProfileDataUpdate(); 
+		
 		
 		
 		return new ArrayList();  //delete later
 		
 	}
-	
-	
 
+	//getter methods for saving to DB
+	public String getUserID() {
+		return userID;
+	}
+
+	public String getChampion() {
+		return champion;
+	}
+
+	public int getExperience() {
+		return experience;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public int getKills() {
+		return kills;
+	}
+
+	public int getDeaths() {
+		return deaths;
+	}
+
+	public int getWins() {
+		return wins;
+	}
+
+	public int getLosses() {
+		return losses;
+	}
+
+	public int getFlag_grabs() {
+		return flag_grabs;
+	}
+
+	public int getFlag_returns() {
+		return flag_returns;
+	}
+
+	public int getFlag_captures() {
+		return flag_captures;
+	}
 }
 
 
