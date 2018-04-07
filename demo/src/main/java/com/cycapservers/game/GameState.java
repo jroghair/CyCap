@@ -242,7 +242,11 @@ public class GameState extends TimerTask
 		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
 		this.userPasswords.add(pass);
 		try {
-			session.sendMessage(new TextMessage("join:" + pass));
+			String message = "join:" + pass;
+			for(Wall w : this.walls) {
+				message += ":" + w.toDataString(client_id);
+			}
+			session.sendMessage(new TextMessage(message));
 		} catch (IOException e) {
 			System.out.println("could not send password for " + client_id + "! error!");
 			e.printStackTrace();
