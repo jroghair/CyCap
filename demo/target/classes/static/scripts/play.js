@@ -33,6 +33,8 @@ let masks = [];
 //NON-SERVER-BASED ITEMS
 let canvas_box;
 let guis = [];
+let respawnCounter;
+let gameScoreGUI;
 
 //FRAME TIME & DELTA_T
 let lastFrameTime;
@@ -48,12 +50,13 @@ let rolling_buffer_length = 30;
 ///////////////////
 
 function GameState(role){
+	this.game_mode = "ctf";
+	
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
 	this.pw;
 	
 	this.intp_entities = [];
 	this.entities = [];
-	this.bullets = []; //all bullets, including artillery shells
 	this.walls = []; //all of the walls in the game
 	this.part_fx = []; //particle effects
 	this.map; //the set of tiles and map data
@@ -74,7 +77,6 @@ function GameState(role){
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].updated = false;
 		}
-		this.bullets = []; //remove old bullets
 		this.entities = [];
 		for(let i = 0; i < objects.length; i++){
 			let obj = objects[i].split(",");
@@ -97,23 +99,30 @@ function GameState(role){
 					this.player.speed_boost = +obj[17];
 					this.player.damage_boost = +obj[18];
 					this.player.visibility = +obj[19];
-				}
-				else{
-					this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
+					
+					if(this.player.health <= 0){
+						respawnCounter.start();
+					}
 				}
 			}
-			else if(obj[0] == "001"){ //bullets
-				this.bullets.push(new Bullet(+obj[6], +obj[7], +obj[3], +obj[4], +obj[5], 0, 0, +obj[11], +obj[10], 0));
-				this.bullets[this.bullets.length - 1].x_ratio = +obj[13];
-				this.bullets[this.bullets.length - 1].y_ratio = +obj[14];
+			else if(obj[0] == "001"){
+				if(this.game_mode == "ctf"){
+					//TODO: update the game score gui
+					gameScoreGUI.update(objects[i]);
+				}
 			}
 			/*
 			else if(obj[0] == "002"){
 				//new sound
 			}
 			*/
-			else if(obj[0] == "010"){
-				this.entities.push(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]));
+			else if(obj[0] == "012"){
+				//add wall
+				this.addWall(obj);
+			}
+			else if(obj[0] == "013"){
+				//remove wall
+				this.removeWall(obj);
 			}
 			else if(obj[0] == "020"){
 				let found = false;
@@ -144,13 +153,30 @@ function GameState(role){
 		}
 	}
 	
+	this.addWall = function(wallObject){
+		this.walls.push(new Wall(wall_image, +wallObject[2], +wallObject[3]));
+	}
+	
+	this.addWalls = function(wallList){
+		for(let i = 0; i < wallList.length; i++){
+			let obj = wallList[i].split(",");
+			this.addWall(obj);
+		}
+	}
+	
+	this.removeWall = function(wallObject){
+		for(let i = 0; i < this.walls.length; i++){
+			if(+wallObject[2] == this.walls[i].grid_x  && +wallObject[3] == this.walls[i].grid_y){
+				this.walls.splice(i, 1);
+				return;
+			}
+		}
+	}
+	
 	this.updateGameState = function(snapshot) {
 		this.player.update(snapshot);
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].update();
-		}
-		for(let i = this.bullets.length - 1; i >= 0; i--){
-			this.bullets[i].update(snapshot); //we go through this backwards so that if one is removed, it still checks the others
 		}
 	}
 	
@@ -159,12 +185,11 @@ function GameState(role){
 		this.map.draw();
 		for(let i = 0; i < this.masks.length; i++){
 			this.masks[i].draw();
-		}
+		}*/
 		for(let i = 0; i < this.walls.length; i++){
 			this.walls[i].draw();
 		}
 		
-		*/
 		
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].draw();
@@ -173,10 +198,6 @@ function GameState(role){
 		
 		for(let i = 0; i < this.entities.length; i++){
 			this.entities[i].draw();
-		}
-		
-		for(let i = 0; i < this.bullets.length; i++){
-			this.bullets[i].draw();
 		}
 		/*
 		for(let i = 0; i < this.part_fx.length; i++){
@@ -213,7 +234,8 @@ function setup() {
 
 	canvas_box = new Entity(background_tiles, 0, gameState.player.x, gameState.player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
 	map = new TiledBackground(background_tiles);
-	placeBorder(bg_width_grids, bg_height_grids, 0, 0);
+	//placeBorder(bg_width_grids, bg_height_grids, 0, 0);
+	/*
 	wallLine(5, 10, 5, 'x');  //done
 	wallLine(9, 3, 7, 'y');   //done
 	wallLine(12, 3, 15, 'x'); //done
@@ -249,13 +271,15 @@ function setup() {
 	wallLine(3, 24, 2, 'y');  //done
 	wallLine(3, 26, 3, 'x');  //done
 	wallLine(11, 26, 5, 'x'); //done
-	wallLine(18, 26, 2, 'x'); //done
+	wallLine(18, 26, 2, 'x'); //done*/
 	
 	//////GUI ELEMENTS//////
-	guis.push(new HealthGUI(20, canvas.height - 20, 200, 20)); //health bar
+	guis.push(new HealthGUI(20, gui_canvas.height - 20, 200, 20)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
-	guis.push(new AmmoGUI(20, canvas.height - 50, 20, 200, 5));
+	guis.push(new AmmoGUI(20, gui_canvas.height - 50, 20, 200, 5));
+	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 9900);
+	gameScoreGUI = new GameScoreGUI(gui_canvas.width/2, 0, gameState.game_mode);
 	////////////////////////
 
 	//////INPUT HANDLING//////
@@ -337,6 +361,7 @@ function run() {
 	for(let i = guis.length - 1; i >= 0; i--){
 		guis[i].update();
 	}
+	respawnCounter.update(null);
 	
 	
 	//TOGGLE THE ZOOM LEVEL V IMPORTANT
@@ -371,6 +396,8 @@ function run() {
 	for(let i = 0; i < guis.length; i++){
 		guis[i].draw();
 	}
+	respawnCounter.draw();
+	gameScoreGUI.draw();
 	
 	//reset the 1 frame inputs
 	input_handler.keys_pnr.splice(0, input_handler.keys_pnr.length);
@@ -740,8 +767,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		if(delta_x != 0){
 			this.x += delta_x;
 			gt5 -= (delta_x * gt1);
-			for(let i = 0; i < walls.length; i++){
-				if(isColliding(this, walls[i]))
+			for(let i = 0; i < gameState.walls.length; i++){
+				if(isColliding(this, gameState.walls[i]))
 				{
 					//if the player hit a wall, reset the player positions and global transforms
 					this.x -= delta_x;
@@ -753,8 +780,8 @@ function Player(width, height, img, x, y, role, team, client_id) {
 		if(delta_y != 0){
 			this.y += delta_y;
 			gt6 -= (delta_y * gt4);
-			for(let i = 0; i < walls.length; i++){
-				if(isColliding(this, walls[i]))
+			for(let i = 0; i < gameState.walls.length; i++){
+				if(isColliding(this, gameState.walls[i]))
 				{
 					//if the player hit a wall, reset the player positions and global transforms
 					this.y -= delta_y;

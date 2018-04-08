@@ -28,10 +28,12 @@ public final class Utils{
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
 	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
+	public final static AmmoPack AMMO_PACK = new AmmoPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "ammo_pack_template");
 	
 	private Utils(){} //prevents the class from being constructed
 	
 	public static boolean isBetween(double num, double lower, double upper){
+		//TODO: change this to > && < instead of >= && <=
 		if(num >= lower && num <= upper){
 			return true;
 		}
@@ -40,7 +42,7 @@ public final class Utils{
 		}
 	}
 	
-	public static double distanceBetweenEntities(Entity ent1, Entity ent2){
+	public static double distanceBetween(Entity ent1, Entity ent2){
 		return Math.sqrt(Math.pow(ent1.getX() - ent2.getX(), 2) + Math.pow(ent1.getY() - ent2.getY(), 2));
 	}
 	
@@ -56,9 +58,31 @@ public final class Utils{
 		return Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 	}
 	
+	public static double distanceBetween(Node n1, Node n2) {
+		return Math.sqrt(Math.pow(n2.getX() - n1.getX(), 2.0) + Math.pow(n2.getY() - n1.getY(), 2.0));
+	}
+	
+	public static double distanceBetween(Entity ent, Node n) {
+		return Math.sqrt(Math.pow(n.getX() - ent.x, 2.0) + Math.pow(n.getY() - ent.y, 2.0));
+	}
+	
+	public static boolean isColliding(Entity ent, Node n) {
+		if(distanceBetween(ent, n) >= ent.collision_radius){
+			return false;
+		}
+		else {
+			if(n.getX() > (ent.x - ent.drawWidth/2) && n.getX() < (ent.x + ent.drawWidth/2)) {
+				if(n.getY() > (ent.y - ent.drawHeight/2) && n.getY() < (ent.y + ent.drawHeight/2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
 		//QUICK COLLISION DETECTION
-		if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
+		if(distanceBetween(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
 			return false;
 		}
 		
@@ -383,5 +407,38 @@ public final class Utils{
 			pass += s.charAt(rand.nextInt(s.length()));	
 		}
 		return pass;
+	}
+	
+	public static int getSpriteIndexFromTeam(int team) {
+		switch(team) {
+			case 1:
+				return 4;
+				
+			case 2:
+				return 0;
+				
+			default:
+				throw new IllegalArgumentException("illegal team number, no sprite index associated!");
+		}
+	}
+	
+	/**
+	 * Returns a random spawn node that has the same team as the parameter
+	 * @param nodes
+	 * @param team
+	 * @return
+	 */
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
+		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
+		for(SpawnNode n : nodes) {
+			if(n.team == team) {
+				goodNodes.add(n);
+			}
+		}
+		return goodNodes.get(RANDOM.nextInt(goodNodes.size()));
+	}
+	
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
+		return nodes.get(RANDOM.nextInt(nodes.size()));
 	}
 }

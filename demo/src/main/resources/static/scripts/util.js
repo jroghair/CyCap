@@ -4,12 +4,11 @@ const SIN_45 = Math.sin(Math.PI/4);
 const SIN_30 = 0.5;
 const SIN_60 = Math.sin(Math.PI/3);
 const ARTILLERY_TIME = 3000; //milliseconds
-const TIME_BETWEEN_SHOTS = 100; //milliseconds. this will eventually be dependent on the role of the player, essentially which weapon they are using
 
 const CLOSE_ZOOM_LEVEL = 2.0;
 const NORMAL_ZOOM_LEVEL = 1.0;
 const FAR_ZOOM_LEVEL = 0.5;
-const FOG_DARKNESS = 100;
+const FOG_DARKNESS = 140;
 const FADE_RING_WIDTH = 40;
 
 let gt1, gt2, gt3, gt4, gt5, gt6; //GLOBAL TRANSFORMS
@@ -223,6 +222,8 @@ function message_handler(msg){
 	let temp = msg.data.split(":");
 	if(temp[0] == "join"){
 		gameState.pw = temp[1];
+		temp.splice(0, 2)
+		gameState.addWalls(temp);
 	}
 	else{
 		gameState.receiveGameState(msg.data);

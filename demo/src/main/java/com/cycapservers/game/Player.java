@@ -9,8 +9,8 @@ public class Player extends GameCharacter {
 	protected int highestHandledSnapshot;
 	protected String lastUnsentGameState;
 	
-	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session){
-		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role);
+	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session, PlayerStats stats){
+		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role, stats);
 	
 		this.password = password;
 		this.session = session;
@@ -19,9 +19,13 @@ public class Player extends GameCharacter {
 	}
 	
 	public void die() {
+		this.isDead = true;
+		if(this.item_slot !=  null) {
+			this.item_slot.drop();
+			this.item_slot = null;
+		}
 		this.x = -256;
 		this.y = -256;
-		this.isDead = true;
 		this.lastDeathTime = System.currentTimeMillis();
 	}
 	
@@ -32,13 +36,7 @@ public class Player extends GameCharacter {
 		
 		if(this.isDead){
 			if((System.currentTimeMillis() - this.lastDeathTime) > game.respawnTime) {
-				//respawn player
-				this.x = 64;
-				this.y = 64;
-				//set isDead to false
-				this.isDead = false;
-				//reset ammo and health
-				Utils.setRole(this);
+				this.respawn(game);
 			}
 		}
 		else {
@@ -195,5 +193,17 @@ public class Player extends GameCharacter {
 
 	public void setLastUnsentGameState(String lastUnsentGameState) {
 		this.lastUnsentGameState = lastUnsentGameState;
+	}
+
+	@Override
+	protected void respawn(GameState g) {
+		SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
+		//respawn player
+		this.x = n.getX();
+		this.y = n.getY();
+		//set isDead to false
+		this.isDead = false;
+		//reset ammo and health
+		Utils.setRole(this);
 	}
 }

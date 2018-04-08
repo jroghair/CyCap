@@ -19,6 +19,9 @@ public abstract class Weapon{
 	protected int mag_size;
 	protected int ammo_in_clip;
 	protected int extra_ammo;
+	protected int max_ammo_refill; //the level to which to refill the extra_ammo field when using an ammo pack
+	
+	protected String shot_sound;
 
 	public Weapon(String name, int damage, int bt, int rate, int bullet_speed, int mag_size, int extra_mags, int reload_time, double shot_variation) {
 		this.name = name;
@@ -34,6 +37,8 @@ public abstract class Weapon{
 		this.mag_size = mag_size;
 		this.ammo_in_clip = this.mag_size;
 		this.extra_ammo = extra_mags * this.mag_size;
+		this.max_ammo_refill = this.extra_ammo;
+		this.shot_sound = "m9_gunshot";
 	}
 	
 	/**
@@ -54,6 +59,7 @@ public abstract class Weapon{
 		this.mag_size = w.mag_size;
 		this.ammo_in_clip = w.ammo_in_clip;
 		this.extra_ammo = w.extra_ammo;
+		this.max_ammo_refill = w.max_ammo_refill;
 	}
 	
 	public abstract void update(Player p, InputSnapshot s, GameState g);

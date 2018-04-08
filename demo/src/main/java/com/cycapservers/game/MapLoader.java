@@ -57,6 +57,7 @@ public final class MapLoader {
 		Utils.placeBorder(g, 41, 30, 0, 0, true);
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
+		
 		//make a list of nodes
 		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
 		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
@@ -65,6 +66,23 @@ public final class MapLoader {
 		pu_nodes.add(new PowerUpNode((short) 33, (short) 6));
 		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
 		g.pu_handler.setNodeList(pu_nodes);
+		
+		g.team1_base = new GridLockedNode((short) 4, (short) 25);
+		g.team2_base = new GridLockedNode((short) 38, (short) 2);
+		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team1_flag = new Flag(g.team1_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 1);
+		g.usedEntityIds.add(id);
+		id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team2_flag = new Flag(g.team2_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 2);
+		g.usedEntityIds.add(id);
+		
+		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
+		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 20, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 28, 1));
+		g.spawns.add(new SpawnNode((short) 38, (short) 1, 2));
+		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
 	}
 
 }

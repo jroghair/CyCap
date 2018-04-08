@@ -96,7 +96,6 @@ function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, s
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		gameState.bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player.x, player.y, snapshot.mapX, snapshot.mapY, this.damage, this.bullet_speed, this.shot_variation));
 		//make bullet sound
 		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
 		sound_test.play();
@@ -112,11 +111,6 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 		//make bullet sound
 		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
 		sound_test.play();
-		//get a random number of buckshot pellets between like 5 and 10 or something
-		let num_of_pellets = getRandomInRange(5, 10);
-		for(let i = 0; i < num_of_pellets; i++){
-			gameState.bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player.x, player.y, snapshot.mapX, snapshot.mapY, this.damage/num_of_pellets, this.bullet_speed, this.shot_variation));
-		}
 	}
 }
 
@@ -138,7 +132,6 @@ function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, re
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		gameState.bullets.push(new Bullet(grid_length * 0.125, grid_length * 0.125, this.bullet_type, player.x, player.y, snapshot.mapX, snapshot.mapY, this.damage, this.bullet_speed, this.shot_variation));
 		//make bullet sound
 		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
 		sound_test.play();
@@ -181,16 +174,6 @@ function Bullet(width, height, sprIdx, startX, startY, endX, endY, damage, speed
 	this.update = function(snapshot){
 		this.x += this.speed * this.x_ratio * snapshot.frameTime;
 		this.y += this.speed * this.y_ratio * snapshot.frameTime;
-
-		for(var j = 0; j < walls.length; j++){
-			if(isColliding(this, walls[j]))
-			{
-				let temp_index = gameState.bullets.indexOf(this);
-				gameState.bullets.splice(temp_index, 1);
-				break;
-			}
-			
-		}
 	}
 }
 
@@ -229,9 +212,6 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 			masks.push(new GroundMask(this.blast_img, Math.floor(this.end_x/grid_length), Math.floor(this.end_y/grid_length), 3, 1));
 			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
 			//TODO: deal damage
-			//remove from draw list
-			let temp_index = gameState.bullets.indexOf(this);
-			gameState.bullets.splice(temp_index, 1);
 		}
 	}
 }
