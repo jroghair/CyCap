@@ -143,10 +143,10 @@ public class GameState extends TimerTask
 			}
 		}
 		
-		/*/ updating AI players
+		// updating AI players
 		for (AI_player ai : AI_players) {
 				ai.update(this, null);
-		}*/
+		}
 		
 		//////Check For Flag captures//////
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
@@ -265,12 +265,15 @@ public class GameState extends TimerTask
 			System.out.println("could not send password for " + client_id + "! error!");
 			e.printStackTrace();
 		}
+		this.add_AI_player(1, "scout");
+		this.add_AI_player(2, "scout");
 	}
 	
 	public void add_AI_player(int team, String role) {
 		// make AI player and send map reference
 		//mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
+		System.out.println("length of spawn node list: " + this.spawns.size());
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
 		this.usedEntityIds.add(s);

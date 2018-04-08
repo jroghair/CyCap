@@ -430,6 +430,7 @@ public final class Utils{
 	 */
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
 		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
+		System.out.println("Length of spawn nodes: " + nodes.size());
 		for(SpawnNode n : nodes) {
 			if(n.team == team) {
 				goodNodes.add(n);

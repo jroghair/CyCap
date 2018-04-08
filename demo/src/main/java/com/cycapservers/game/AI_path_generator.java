@@ -38,11 +38,11 @@ public class AI_path_generator {
 	 *            starting point
 	 * @param b
 	 *            ending point
-	 * @throws Exception
 	 */
 	private ArrayList<mapNode> A_Star_Path(Point a, Point b) {
 		closed_list.clear();
 		open_list.clear();
+		System.out.println("starting x and y: " + a.x + "," + a.y);
 		mapNode start_node = g.map.get(a.x).get(a.y);
 		mapNode goal_node = g.map.get(b.x).get(b.y);
 		mapNode current_node;

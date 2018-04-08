@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class AI_player extends GameCharacter {
 
-	//Pathing Related Stuff
+	// Path Related Stuff
 	protected ArrayList<mapNode> path;
 	protected boolean moving;
 	protected int cur_p_node;
@@ -16,7 +16,8 @@ public class AI_player extends GameCharacter {
 	protected AI_path_generator path_gen;
 	// private long lastDeathTime;
 
-	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id, GameState g, PlayerStats stats) {
+	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id,
+			GameState g, PlayerStats stats) {
 		super(0, 0, x, y, w, h, r, a, ai_id, team, role, stats);
 
 		mapNode randomNode = getRandomNode(g);
@@ -51,27 +52,20 @@ public class AI_player extends GameCharacter {
 		// if(this.isDead){
 		// if((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime)
 		// {
-		// 		this.respawn();
+		// this.respawn();
 		// }
 		// }
 
 		// get initial path
 		if (this.last_path_update_time == 0) {
 			// running the path planning on a separate thread
-			Thread t1 = new Thread(new Runnable() {
-				public void run() {
-					get_path(g);
-				}
-			});
-			t1.start();
-			//
-			// this.new_path = true;
-			// this.last_path_update_time = System.currentTimeMillis();
-			// System.out.println("getting initial path...");
+			get_path(g);
 		}
 
 		// if its been 2.5 seconds or the path is almost done update the path.
-		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000 || (this.get_distance_to_target() < 10 && (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
+		if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
+				|| (this.get_distance_to_target() < 10
+						&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
 			get_path(g);
 		}
 
@@ -86,7 +80,8 @@ public class AI_player extends GameCharacter {
 																	// movement
 			}
 			if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-				 //System.out.println("waited " + (System.currentTimeMillis() -temp_move_time) + " ms to move");
+				// System.out.println("waited " + (System.currentTimeMillis()
+				// -temp_move_time) + " milliseconds to move");
 				while (this.cur_p_node >= path.size()) {
 					this.cur_p_node--;// just for safety
 				}
@@ -140,12 +135,12 @@ public class AI_player extends GameCharacter {
 
 	@Override
 	protected void respawn(GameState g) {
-		//respawn player
+		// re-spawn player
 		this.x = 64;
 		this.y = 64;
-		//set isDead to false
+		// set isDead to false
 		this.isDead = false;
-		//reset ammo and health
+		// reset ammo and health
 		Utils.setRole(this);
 	}
 }
