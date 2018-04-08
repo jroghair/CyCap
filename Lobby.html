@@ -1,9 +1,24 @@
+<!DOCTYPE html>
 <html>
 <head>
-<p>Select a game type please?</p>
+<h1>Select a game type please?</h1>
 </head>
 <body>
-<button onclick = "connect(death)">Team Death Match</button><br><br>
-<button onclick = "connect(capture)">Capture the Flag</button>
+<button onclick = "death()">Team Death Match</button>
+<button onclick = "capture()">Capture The Flag</button>
 </body>
+<script>
+function death(){
+sessionStorage.setItem("type", "Death");
+window.location.href = "LobbyScreen";
+}
+function capture(){
+sessionStorage.setItem("type", "Capture");
+window.location.href = "LobbyScreen";
+}
+function givenId(){
+//sessionStorage.setItem("type", document.getElementById("box").value);
+window.location.href = "LobbyScreen";
+}
+</script>
 </html>
