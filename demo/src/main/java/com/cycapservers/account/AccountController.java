@@ -274,10 +274,6 @@ public class AccountController {
     	Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
     	Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
     	
-    	System.out.println("is profiles null?" + infantry==null);
-    	System.out.println("is profiles null?" + recruit==null);
-    	System.out.println("is profiles null?" + scout==null);
-    	
     	int kills = infantry.getKills() + recruit.getKills() + scout.getKills();
     	int deaths = infantry.getDeaths() + recruit.getDeaths() + scout.getDeaths();
     	int gamewins = infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins();
@@ -307,25 +303,8 @@ public class AccountController {
     	System.out.println("is profiles nullFINAL?" + profiles==null);
     	
     	model.addAttribute("profiles", profiles);
-    	/*
-    	List<Integer> list = new LinkedList<Integer>();
-    	list.add(experience);
-    	list.add(flagcaptures);
-    	list.add(flagreturns);
-    	list.add(flaggrabs);
-    	list.add(gamesplayed);
-    	list.add(gamelosses);
-    	list.add(gamewins);
-    	list.add(deaths);
-    	list.add(kills); 
 
-    	profilesList.setProfilesList(list);
-    	System.out.println(list.size());
-    	
-    	model.addAttribute("profilesList", profilesList);*/
-    	
-    	//account.getUserID(),
-    	System.out.println("infantry deaths: " + infantry.getDeaths());
+
     	return "accounts/profile";
     }   
     
@@ -387,6 +366,34 @@ public class AccountController {
     	
     	return "accounts/profileScout";
     }  
+    
+    
+    @ModelAttribute(value = "ProfilesList")
+    public ProfilesList newProfilesList(){
+    	return new ProfilesList();
+    }
+    
+    @GetMapping("/accounts/leaderboards")
+    public String LeaderBoards(Model model, @SessionAttribute("account") Account account, @ModelAttribute("ProfilesList") ProfilesList profilesList) {
+    	logger.info("Entered into get leaderboards controller Layer");
+    	Collection<Profiles> overall = profilesRepository.findByAllProfiles();
+    	System.out.println(overall.size());
+    	System.out.println("here3");
+    	List<Profiles> list;
+    	if (overall instanceof List){
+    		list = (List<Profiles>)overall;
+    	}
+    	else{
+    	  list = new ArrayList<Profiles>(overall);
+    	}
+    	profilesList.setProfilesList(list);
+    	System.out.println("here");
+    	model.addAttribute("profilesList", profilesList.getProfilesList());
+    	System.out.println("here2");
+    	/*Profiles profiles = new Profiles(account.getUserID(), "Overall", kills, deaths, gamewins, gamelosses, gamesplayed,
+    									flaggrabs, flagreturns, flagcaptures, experience);*/
+    	return "accounts/leaderboards";
+    }
 }
 
 

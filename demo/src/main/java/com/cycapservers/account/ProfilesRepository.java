@@ -26,6 +26,11 @@ public interface ProfilesRepository extends CrudRepository<Profiles, String> {
 	//and profile.charclass=:charclass
     //profile.userID =:userID 
     
+    @Query("SELECT DISTINCT profiles FROM Profiles profiles")
+   	@Transactional(readOnly = true)
+       Collection<Profiles> findByAllProfiles();   
+    
+    
     /**Saves an row of data for a specific user and role into the database for profile table
      * @param Profile profiles entity object for a specific user and role to be saved in the database
      * @return void
