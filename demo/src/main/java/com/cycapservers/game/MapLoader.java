@@ -18,45 +18,46 @@ public final class MapLoader {
 	}
 	
 	private static void loadMap0(GameState g) {
-		Utils.generateWallLine(g.walls, 5, 10, 5, 'x');  //done
-		Utils.generateWallLine(g.walls, 9, 3, 7, 'y');   //done
-		Utils.generateWallLine(g.walls, 12, 3, 15, 'x'); //done
-		Utils.generateWallLine(g.walls, 12, 4, 4, 'y');  //done
-		Utils.generateWallLine(g.walls, 12, 10, 8, 'x'); //done
-		Utils.generateWallLine(g.walls, 20, 4, 8, 'y');  //done
-		Utils.generateWallLine(g.walls, 21, 7, 3, 'x');  //done
-		Utils.generateWallLine(g.walls, 26, 4, 4, 'y');  //done
-		Utils.generateWallLine(g.walls, 29, 1, 2, 'y');  //done
-		Utils.generateWallLine(g.walls, 29, 5, 2, 'y');  //done
-		Utils.generateWallLine(g.walls, 29, 7, 2, 'x');  //done
-		Utils.generateWallLine(g.walls, 31, 7, 19, 'y'); //done
-		Utils.generateWallLine(g.walls, 34, 1, 8, 'y');  //done
-		Utils.generateWallLine(g.walls, 38, 5, 2, 'x');  //done
-		Utils.generateWallLine(g.walls, 32, 9, 6, 'x');  //done
-		Utils.generateWallLine(g.walls, 34, 12, 6, 'x'); //done
-		Utils.generateWallLine(g.walls, 34, 13, 4, 'y'); //done
-		Utils.generateWallLine(g.walls, 34, 19, 10, 'y');//done
-		Utils.generateWallLine(g.walls, 24, 10, 5, 'x'); //done
-		Utils.generateWallLine(g.walls, 23, 10, 16, 'y');//done
-		Utils.generateWallLine(g.walls, 28, 14, 3, 'x'); //done
-		Utils.generateWallLine(g.walls, 26, 17, 3, 'x'); //done
-		Utils.generateWallLine(g.walls, 26, 20, 4, 'y'); //done
-		Utils.generateWallLine(g.walls, 27, 23, 4, 'x'); //done
-		Utils.generateWallLine(g.walls, 23, 26, 9, 'x'); //done
-		Utils.generateWallLine(g.walls, 20, 14, 13, 'y');//done
-		Utils.generateWallLine(g.walls, 1, 15, 19, 'x'); //done
-		Utils.generateWallLine(g.walls, 1, 18, 2, 'x');  //done
-		Utils.generateWallLine(g.walls, 5, 18, 3, 'x');  //done
-		Utils.generateWallLine(g.walls, 8, 18, 11, 'y'); //done
-		Utils.generateWallLine(g.walls, 11, 18, 8, 'y'); //done
-		Utils.generateWallLine(g.walls, 12, 18, 6, 'x'); //done
-		Utils.generateWallLine(g.walls, 3, 24, 2, 'y');  //done
-		Utils.generateWallLine(g.walls, 3, 26, 3, 'x');  //done
-		Utils.generateWallLine(g.walls, 11, 26, 5, 'x'); //done
-		Utils.generateWallLine(g.walls, 18, 26, 2, 'x'); //done
-		Utils.placeBorder(g.walls, 41, 30, 0, 0, true);
+		Utils.generateWallLine(g, 5, 10, 5, 'x');  //done
+		Utils.generateWallLine(g, 9, 3, 7, 'y');   //done
+		Utils.generateWallLine(g, 12, 3, 15, 'x'); //done
+		Utils.generateWallLine(g, 12, 4, 4, 'y');  //done
+		Utils.generateWallLine(g, 12, 10, 8, 'x'); //done
+		Utils.generateWallLine(g, 20, 4, 8, 'y');  //done
+		Utils.generateWallLine(g, 21, 7, 3, 'x');  //done
+		Utils.generateWallLine(g, 26, 4, 4, 'y');  //done
+		Utils.generateWallLine(g, 29, 1, 2, 'y');  //done
+		Utils.generateWallLine(g, 29, 5, 2, 'y');  //done
+		Utils.generateWallLine(g, 29, 7, 2, 'x');  //done
+		Utils.generateWallLine(g, 31, 7, 19, 'y'); //done
+		Utils.generateWallLine(g, 34, 1, 8, 'y');  //done
+		Utils.generateWallLine(g, 38, 5, 2, 'x');  //done
+		Utils.generateWallLine(g, 32, 9, 6, 'x');  //done
+		Utils.generateWallLine(g, 34, 12, 6, 'x'); //done
+		Utils.generateWallLine(g, 34, 13, 4, 'y'); //done
+		Utils.generateWallLine(g, 34, 19, 10, 'y');//done
+		Utils.generateWallLine(g, 24, 10, 5, 'x'); //done
+		Utils.generateWallLine(g, 23, 10, 16, 'y');//done
+		Utils.generateWallLine(g, 28, 14, 3, 'x'); //done
+		Utils.generateWallLine(g, 26, 17, 3, 'x'); //done
+		Utils.generateWallLine(g, 26, 20, 4, 'y'); //done
+		Utils.generateWallLine(g, 27, 23, 4, 'x'); //done
+		Utils.generateWallLine(g, 23, 26, 9, 'x'); //done
+		Utils.generateWallLine(g, 20, 14, 13, 'y');//done
+		Utils.generateWallLine(g, 1, 15, 19, 'x'); //done
+		Utils.generateWallLine(g, 1, 18, 2, 'x');  //done
+		Utils.generateWallLine(g, 5, 18, 3, 'x');  //done
+		Utils.generateWallLine(g, 8, 18, 11, 'y'); //done
+		Utils.generateWallLine(g, 11, 18, 8, 'y'); //done
+		Utils.generateWallLine(g, 12, 18, 6, 'x'); //done
+		Utils.generateWallLine(g, 3, 24, 2, 'y');  //done
+		Utils.generateWallLine(g, 3, 26, 3, 'x');  //done
+		Utils.generateWallLine(g, 11, 26, 5, 'x'); //done
+		Utils.generateWallLine(g, 18, 26, 2, 'x'); //done
+		Utils.placeBorder(g, 41, 30, 0, 0, true);
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
+		
 		//make a list of nodes
 		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
 		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
@@ -65,6 +66,23 @@ public final class MapLoader {
 		pu_nodes.add(new PowerUpNode((short) 33, (short) 6));
 		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
 		g.pu_handler.setNodeList(pu_nodes);
+		
+		g.team1_base = new GridLockedNode((short) 4, (short) 25);
+		g.team2_base = new GridLockedNode((short) 38, (short) 2);
+		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team1_flag = new Flag(g.team1_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 1);
+		g.usedEntityIds.add(id);
+		id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team2_flag = new Flag(g.team2_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 2);
+		g.usedEntityIds.add(id);
+		
+		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
+		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 20, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 28, 1));
+		g.spawns.add(new SpawnNode((short) 38, (short) 1, 2));
+		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
 	}
 
 }

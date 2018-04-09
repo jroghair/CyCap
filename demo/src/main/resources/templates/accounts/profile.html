@@ -9,13 +9,13 @@
 </ul>
 </head>
 
-
 <h1> Account Profile</h1>
 <form>
-<button href="/accounts/profile">Overall</button>
-<button href="/accounts/profileInfantry">Infantry</button>
-<button href="/accounts/profileRecruit">Recruit</button>
-<button href="/accounts/profileScout">Scout</button>
+<!-- <button th:action="@{/accounts/profile}">Overall</button>  -->
+<input type="button"  onclick="location.href='/accounts/profile'" value="Overall"/>
+<input type="button"  onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
+<input type="button"  onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
+<input type="button"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
 </form>
 
 <style>
@@ -80,10 +80,25 @@ li a:hover {
         <th>Flag Grabs</th>
         <th>Flag Returns</th>
         <th>Flag Captures</th>
+        <th>Experience</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
+		<th:block th:each="profiles : ${profiles}">
+     	 	<tr>
+         		<td th:text="${profiles.kills}">...</td>
+         		<td th:text="${profiles.deaths}">...</td>
+         	    <td th:text="${profiles.gamewins}">...</td> 
+         	    <td th:text="${profiles.gamelosses}">...</td>
+         	    <td th:text="${profiles.gamesplayed}">...</td>
+         	    <td th:text="${profiles.flaggrabs}">...</td>
+         	    <td th:text="${profiles.flagreturns}">...</td>
+         	    <td th:text="${profiles.flagcaptures}">...</td>
+         	    <td th:text="${profiles.experience}">...</td>
+      		</tr>
+   		</th:block>
+	
+      	<!--
 		<td>32</td>
 		<td>21</td>
 		<td>4</td>
@@ -91,8 +106,7 @@ li a:hover {
 		<td>6</td>
 		<td>6</td>
 		<td>7</td>
-		<td>5</td>
-      </tr>
+		<td>5</td> -->	
     </tbody>
   </table>
 </body>

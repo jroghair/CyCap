@@ -6,13 +6,13 @@ public abstract class PowerUp extends Item {
 	protected long startTime;
 	protected long duration;
 	
-	public PowerUp(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String name, long duration) {
-		super(id, sprIdx, x, y, w, h, r, a, name);
+	public PowerUp(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String name, long duration, String entity_id) {
+		super(id, sprIdx, x, y, w, h, r, a, name, entity_id);
 		this.duration = duration;
 	}
 	
-	public PowerUp(PowerUp p, double x, double y) {
-		super(p.imageId, p.spriteIndex, x, y, p.drawWidth, p.drawHeight, p.rotation, p.alpha, p.name);
+	public PowerUp(PowerUp p, double x, double y, String entity_id) {
+		super(p.imageId, p.spriteIndex, x, y, p.drawWidth, p.drawHeight, p.rotation, p.alpha, p.name, entity_id);
 		this.duration = p.duration;
 	}
 	

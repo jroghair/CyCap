@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public final class Utils{
-	public final static boolean DEBUG = true;
+	public final static boolean DEBUG = false;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -26,11 +26,14 @@ public final class Utils{
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
 	
 	//////THE POWERUPS//////
-	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0);
+	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
+	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
+	public final static AmmoPack AMMO_PACK = new AmmoPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "ammo_pack_template");
 	
 	private Utils(){} //prevents the class from being constructed
 	
 	public static boolean isBetween(double num, double lower, double upper){
+		//TODO: change this to > && < instead of >= && <=
 		if(num >= lower && num <= upper){
 			return true;
 		}
@@ -39,7 +42,7 @@ public final class Utils{
 		}
 	}
 	
-	public static double distanceBetweenEntities(Entity ent1, Entity ent2){
+	public static double distanceBetween(Entity ent1, Entity ent2){
 		return Math.sqrt(Math.pow(ent1.getX() - ent2.getX(), 2) + Math.pow(ent1.getY() - ent2.getY(), 2));
 	}
 	
@@ -55,10 +58,31 @@ public final class Utils{
 		return Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 	}
 	
+	public static double distanceBetween(Node n1, Node n2) {
+		return Math.sqrt(Math.pow(n2.getX() - n1.getX(), 2.0) + Math.pow(n2.getY() - n1.getY(), 2.0));
+	}
+	
+	public static double distanceBetween(Entity ent, Node n) {
+		return Math.sqrt(Math.pow(n.getX() - ent.x, 2.0) + Math.pow(n.getY() - ent.y, 2.0));
+	}
+	
+	public static boolean isColliding(Entity ent, Node n) {
+		if(distanceBetween(ent, n) >= ent.collision_radius){
+			return false;
+		}
+		else {
+			if(n.getX() > (ent.x - ent.drawWidth/2) && n.getX() < (ent.x + ent.drawWidth/2)) {
+				if(n.getY() > (ent.y - ent.drawHeight/2) && n.getY() < (ent.y + ent.drawHeight/2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
-		//TODO: fix the entity variable references
 		//QUICK COLLISION DETECTION
-		if(distanceBetweenEntities(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
+		if(distanceBetween(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
 			return false;
 		}
 		
@@ -99,15 +123,19 @@ public final class Utils{
 		return getRandomInt(upper - lower + 1) + lower;
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, false));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, false, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -115,15 +143,19 @@ public final class Utils{
 		}
 	}
 	
-	public static void generateWallLine(List<Wall> walls, int startX, int startY, int length, char axis, boolean invincible) {
+	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis, boolean invincible) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX + i, startY, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX + i, startY, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else if(axis == 'y'){
 			for(int i = 0; i < length; i++){
-				walls.add(new Wall(0, startX, startY + i, invincible));
+				String s = getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+				g.walls.add(new Wall(0, startX, startY + i, invincible, s));
+				g.usedEntityIds.add(s);
 			}
 		}
 		else{
@@ -131,25 +163,25 @@ public final class Utils{
 		}
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY){
-		generateWallLine(walls, startX, startY, width, 'x');
-		generateWallLine(walls, startX, height + startY - 1, width, 'x');
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y');
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y');
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY){
+		generateWallLine(g, startX, startY, width, 'x');
+		generateWallLine(g, startX, height + startY - 1, width, 'x');
+		generateWallLine(g, startX, startY + 1, height - 2, 'y');
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 	
-	public static void placeBorder(List<Wall> walls, int width, int height, int startX, int startY, boolean invincible){
-		generateWallLine(walls, startX, startY, width, 'x', invincible);
-		generateWallLine(walls, startX, height + startY - 1, width, 'x', invincible);
-		generateWallLine(walls, startX, startY + 1, height - 2, 'y', invincible);
-		generateWallLine(walls, width + startX - 1, startY + 1, height - 2, 'y', invincible);
+	public static void placeBorder(GameState g, int width, int height, int startX, int startY, boolean invincible){
+		generateWallLine(g, startX, startY, width, 'x', invincible);
+		generateWallLine(g, startX, height + startY - 1, width, 'x', invincible);
+		generateWallLine(g, startX, startY + 1, height - 2, 'y', invincible);
+		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y', invincible);
 	}
 	
 	/**
 	 * Sets the role data of the player based off of their "role" field
 	 * @param p The player which we are setting the role/class data
 	 */
-	public static void setRole(Player p) {
+	public static void setRole(GameCharacter p) {
 		String role = p.role;
 		if(role.equals("recruit")) {
 			p.speed = 140;
@@ -262,7 +294,7 @@ public final class Utils{
 		for(int i = 0; i < (GRID_LENGTH * g.mapGridWidth); i += Utils.AI_NODE_PIXEL_DISTANCE){
 			ArrayList<mapNode> node_col = new ArrayList<mapNode>();
 			for(int j = 0;j < (GRID_LENGTH * g.mapGridHeight );j += Utils.AI_NODE_PIXEL_DISTANCE){
-				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1);//used for traversing
+				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1, "temp");//used for traversing
 				boolean traversable = true;
 				for(int t = 0; t < g.walls.size(); t++){
 					if(isColliding(test_player_ent, g.walls.get(t))){
@@ -348,5 +380,65 @@ public final class Utils{
 			neighbors.get(neighbors.size() - 1).corner = false;
 		}
 		return neighbors;
+	}
+	
+	public static String getGoodRandomString(List<String> currentList, int length) {
+		String output = createString(length);
+		while(!isStringGood(currentList, output)) {
+			output = createString(length);
+		}
+		return output;
+	}
+	
+	private static boolean isStringGood(List<String> currentList, String pw) {
+		for(String s : currentList) {
+			if(pw.equals(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static String createString(int length){
+		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+		Random rand = new Random();
+		String pass = "";
+		for(int i = 0; i < length; i++){
+			pass += s.charAt(rand.nextInt(s.length()));	
+		}
+		return pass;
+	}
+	
+	public static int getSpriteIndexFromTeam(int team) {
+		switch(team) {
+			case 1:
+				return 4;
+				
+			case 2:
+				return 0;
+				
+			default:
+				throw new IllegalArgumentException("illegal team number, no sprite index associated!");
+		}
+	}
+	
+	/**
+	 * Returns a random spawn node that has the same team as the parameter
+	 * @param nodes
+	 * @param team
+	 * @return
+	 */
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
+		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
+		for(SpawnNode n : nodes) {
+			if(n.team == team) {
+				goodNodes.add(n);
+			}
+		}
+		return goodNodes.get(RANDOM.nextInt(goodNodes.size()));
+	}
+	
+	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
+		return nodes.get(RANDOM.nextInt(nodes.size()));
 	}
 }

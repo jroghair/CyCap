@@ -1,5 +1,6 @@
 package com.cycapservers.game;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 import org.springframework.web.socket.WebSocketSession;
@@ -18,15 +19,23 @@ public class PlayerStats {
 	protected int losses;
 	
 	//MODE SPECIFIC STATS//
-	
 	//CTF
 	protected int flag_grabs;
 	protected int flag_returns;
 	protected int flag_captures;
+	
+	
+	
+
+	//GameSpecific Stats
+	protected String game_type;
+	int gamesplayed; 
+	int gamewins;
+	int gamelosses;
 
 
 	public PlayerStats(Player player, String champion){
-		this.userID=player.client_id; //may need to change
+		this.userID=player.getEntity_id(); //need to add this in later
 		this.userID=player.role; //need to ensure role was already assigned
 		this.kills=0;
 		this.deaths=0; 
@@ -36,6 +45,11 @@ public class PlayerStats {
 		this.flag_grabs=0;
 		this.flag_captures=0; 
 		this.experience=0; 
+		this.game_type=null;
+		this.gamesplayed=0;
+		this.gamelosses=0;
+		this.gamewins=0; 
+
 	}
 	
 	public void playerGetsKill(){
@@ -72,17 +86,6 @@ public class PlayerStats {
 	
 	public void calculatePlayerLevel(){
 		this.level= experience/100;
-	}
-	
-	public ArrayList callDB(String userID, String champion){
-		//call db controller and get list of player attributes for that role.
-		
-		ProfileDataUpdate db = new ProfileDataUpdate(); 
-		
-		
-		
-		return new ArrayList();  //delete later
-		
 	}
 
 	//getter methods for saving to DB
@@ -129,6 +132,60 @@ public class PlayerStats {
 	public int getFlag_captures() {
 		return flag_captures;
 	}
+	
+	public void setGameType(String gametype){
+		this.game_type=gametype; 
+	}
+	
+
+	public int getGamesplayed() {
+		return gamesplayed;
+	}
+
+	public void setGamesplayed(int gamesplayed) {
+		this.gamesplayed = gamesplayed;
+	}
+
+	public int getGamewins() {
+		return gamewins;
+	}
+
+	public void setGamewins(int gamewins) {
+		this.gamewins = gamewins;
+	}
+
+	public int getGamelosses() {
+		return gamelosses;
+	}
+
+	public void setGamelosses(int gamelosses) {
+		this.gamelosses = gamelosses;
+	}
+
+	
+	public void updateScore(){ //could have this take in winning team to double scores potentially
+		if(this.game_type==null){
+			throw new IllegalStateException("Cannot update xp when game type has not been set!");
+		}
+		if(this.game_type.equals("ctf")){
+			this.experience+=this.kills*10;
+			this.experience+=this.flag_grabs*25;
+			this.experience+=this.flag_captures*100;
+			this.experience+=this.flag_returns*35;
+			//somehow double if team won
+			//call util class to calculate level and experience it takes in level and experience
+			
+			//Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience)); //so util returns a pair
+			
+			//parse the point and send to database 
+		}
+		else if(this.game_type.equals("tdm")){
+				}
+		else if(this.game_type.equals("ffa")){
+		}
+	}
+
+
 }
 
 

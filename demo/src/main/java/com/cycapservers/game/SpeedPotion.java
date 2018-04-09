@@ -4,19 +4,18 @@ public class SpeedPotion extends PowerUp {
 	
 	protected final double BOOST_AMOUNT = 2.0;
 	
-	public SpeedPotion(double x, double y, double w, double h, double r, double a) {
-		super(3, 0, x, y, w, h, r, a, "Speed Potion", 10000);
+	public SpeedPotion(double x, double y, double w, double h, double r, double a, String entity_id) {
+		super(3, 0, x, y, w, h, r, a, "Speed Potion", 10000, entity_id);
 	}
 	
-	public SpeedPotion(SpeedPotion sp, double x, double y) {
-		super(sp, x, y);
+	public SpeedPotion(SpeedPotion sp, double x, double y, String entity_id) {
+		super(sp, x, y, entity_id);
 	}
 
 	@Override
 	public boolean update() {
 		if(this.started && ((System.currentTimeMillis() - this.startTime) > this.duration)){
 			this.grabber.speed_boost /= this.BOOST_AMOUNT;
-			this.grabber.item_slot = null;
 			return true;
 		}
 		return false;

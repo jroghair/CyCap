@@ -4,26 +4,61 @@ import java.util.ArrayList;
 
 public class Lobby {
 	
-	private ArrayList<Player> players;
+	private GameState game;
+	private ArrayList<String> players = new ArrayList<String>();
 	private int curSize;
 	private int maxSize;
-	private String gamemode;
 	
 	public Lobby(String gamemode){
 		this.curSize=0;
-		this.maxSize=0; 
+		if(gamemode.equals("Death")){
+			this.game = new Death();
+		}
+		else if(gamemode.equals("Capture")){
+			this.game = new Capture();
+		}
+		else{
+			this.game = new GameState();
+		}
+		this.maxSize = game.maxPlayers;
 		
 	}
 	
-	public void addPlayer(Player p){
+	public int getCurrentSize(){
+		return this.curSize;
+	}
+	
+	public String getPlayer(int num){
+		return this.players.get(num);
+	}
+	
+	public String getId(){
+		return game.game_id;
+	}
+	
+	public boolean hasSpace(){
+		if(this.curSize < this.maxSize){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	public GameState getGame(){
+		return this.game;
+	}
+	
+	public void addPlayer(String p){
 		players.add(p);
+		this.curSize++;
 	}
 	
-	public void removePlayer(Player p){
+	public void removePlayer(String p){
 		players.remove(p);
+		this.curSize--;
 	}
 	
-	public ArrayList<Player> getPlayersList(){
+	public ArrayList<String> getPlayersList(){
 		return players; 
 	}
 	

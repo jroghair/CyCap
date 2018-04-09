@@ -38,7 +38,7 @@ public class PowerUpHandler {
 		setNextSpawnTime();
 	}
 	
-	public void update() {
+	public void update(GameState g) {
 		for(PowerUpNode n : nodes) {
 			n.update();
 		}
@@ -51,7 +51,7 @@ public class PowerUpHandler {
 				}
 			}
 			if(!freeNodes.isEmpty()) {
-				freeNodes.get(Utils.RANDOM.nextInt(freeNodes.size())).spawnPowerUp();
+				freeNodes.get(Utils.RANDOM.nextInt(freeNodes.size())).spawnPowerUp(g);
 				//inform game state that new powerup has been spawned
 			}
 			setNextSpawnTime();

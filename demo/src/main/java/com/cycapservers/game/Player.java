@@ -2,74 +2,30 @@ package com.cycapservers.game;
 
 import org.springframework.web.socket.WebSocketSession;
 
-public class Player extends Entity {
+public class Player extends GameCharacter {
 	
-	protected int team;
-	protected String client_id;
 	protected String password;
 	protected WebSocketSession session;
 	protected int highestHandledSnapshot;
 	protected String lastUnsentGameState;
 	
-	protected String role;
-	protected Weapon weapon1;
-	protected Weapon weapon2;
-	protected Weapon weapon3;
-	protected Weapon weapon4;
-	protected Weapon currentWeapon;
-	protected Item item_slot;
-	
-	protected int health;
-	protected int max_health;
-	protected boolean isDead;
-	protected long lastDeathTime;
-	
-	protected double speed; //TODO determine if this needs to be sent
-	protected int visibility; //TODO: handle visibility!
-	
-	protected boolean is_invincible;
-	protected double speed_boost;
-	protected double damage_boost;
-	
 	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session){
-		super(0, 0, x, y, width, height, rotation, alpha);
-		if(team == 1) {
-			this.spriteIndex = 4;
-		}
-		else {
-			this.spriteIndex = 0;
-		}
-		this.team = team;
-		this.role = role;
-		
-		this.client_id = client_id;
+		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role);
+	
 		this.password = password;
 		this.session = session;
 		this.highestHandledSnapshot = 0;
 		this.lastUnsentGameState = null;
-		
-		this.isDead = false;
-		this.is_invincible = false;
-		this.speed_boost = 1.0;
-		this.damage_boost = 1.0;
-		
-		this.item_slot = null;
-		Utils.setRole(this); //TODO check if this causes a concurrent edit error
-	}
-	
-	public void takeDamage(int amount) {
-		if(!this.is_invincible){
-			this.health -= amount;
-		}
-		if(this.health <= 0){
-			this.die(); //idk what this is gonna do yet
-		}
 	}
 	
 	public void die() {
+		this.isDead = true;
+		if(this.item_slot !=  null) {
+			this.item_slot.drop();
+			this.item_slot = null;
+		}
 		this.x = -256;
 		this.y = -256;
-		this.isDead = true;
 		this.lastDeathTime = System.currentTimeMillis();
 	}
 	
@@ -80,13 +36,7 @@ public class Player extends Entity {
 		
 		if(this.isDead){
 			if((System.currentTimeMillis() - this.lastDeathTime) > game.respawnTime) {
-				//respawn player
-				this.x = 64;
-				this.y = 64;
-				//set isDead to false
-				this.isDead = false;
-				//reset ammo and health
-				Utils.setRole(this);
+				this.respawn(game);
 			}
 		}
 		else {
@@ -202,54 +152,11 @@ public class Player extends Entity {
 		}
 	}
 	
-	private void useItem() {
-		if(this.item_slot == null){
-			return;
-		}
-		else{
-			if(this.item_slot.use()) {
-				this.item_slot = null;
-			}
-		}
-	}
-	
-	private void switchWeapon(int weaponNum) {
-		switch(weaponNum){
-			case 1:
-				if(this.weapon1 != null){
-					this.currentWeapon = this.weapon1;
-				}
-				break;
-				
-			case 2:
-				if(this.weapon2 != null){
-					this.currentWeapon = this.weapon2;
-				}
-				break;
-				
-			case 3:
-				if(this.weapon3 != null){
-					this.currentWeapon = this.weapon3;
-				}
-				break;
-				
-			case 4:
-				if(this.weapon4 != null){
-					this.currentWeapon = this.weapon4;
-				}
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Illegal argument in player.switchWeapon()");
-		}
-	}
-	
 	@Override
 	public String toDataString(String client_id){
-		if(this.client_id.equals(client_id)) {
+		if(this.entity_id.equals(client_id)) {
 			String output = "";
 			output += "000,";
-			output += this.client_id + ",";
 			output += this.highestHandledSnapshot + ",";
 			output += super.toDataString(client_id) + ",";
 			output += this.role + ",";
@@ -270,7 +177,7 @@ public class Player extends Entity {
 		}
 		else {
 			String output = "";
-			output += "000,";
+			output += "020,";
 			output += super.toDataString(client_id);
 			return output;
 		}
@@ -286,5 +193,17 @@ public class Player extends Entity {
 
 	public void setLastUnsentGameState(String lastUnsentGameState) {
 		this.lastUnsentGameState = lastUnsentGameState;
+	}
+
+	@Override
+	protected void respawn(GameState g) {
+		SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
+		//respawn player
+		this.x = n.getX();
+		this.y = n.getY();
+		//set isDead to false
+		this.isDead = false;
+		//reset ammo and health
+		Utils.setRole(this);
 	}
 }
