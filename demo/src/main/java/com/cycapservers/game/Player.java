@@ -9,8 +9,8 @@ public class Player extends GameCharacter {
 	protected int highestHandledSnapshot;
 	protected String lastUnsentGameState;
 	
-	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session, PlayerStats stats){
-		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role, stats);
+	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session){
+		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role);
 	
 		this.password = password;
 		this.session = session;

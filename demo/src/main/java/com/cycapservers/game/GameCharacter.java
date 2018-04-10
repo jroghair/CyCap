@@ -28,7 +28,7 @@ public abstract class GameCharacter extends Entity {
 	protected double speed_boost;
 	protected double damage_boost;
 	
-	public GameCharacter(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id, int team, String role, PlayerStats stats) {
+	public GameCharacter(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id, int team, String role) {
 		super(id, sprIdx, x, y, w, h, r, a, entity_id);
 		if(team == 1) {
 			this.spriteIndex = 4;
@@ -47,7 +47,7 @@ public abstract class GameCharacter extends Entity {
 		this.item_slot = null;
 		Utils.setRole(this);
 		
-		this.stats = stats;
+		this.stats = new PlayerStats(this.entity_id, this.role);
 	}
 	
 	public void takeDamage(int amount) {

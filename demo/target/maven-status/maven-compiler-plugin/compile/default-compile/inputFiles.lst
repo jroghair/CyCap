@@ -3,6 +3,8 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\mapNode.ja
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Shotgun.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUpHandler.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_player.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\ArtilleryShell.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\ThrownWeapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\InputSnapshot.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Weapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\FriendRepository.java
@@ -12,6 +14,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Account
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatWebsocketConfig.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Friends.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MapLoader.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MortarWeapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Wall.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUpNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\SpawnNode.java
@@ -28,7 +31,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\HealthPack
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Player.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Node.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\WebSocketConfig.java
-C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\CTF_PlayerStats.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PlacedWeapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Bullet.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\SpeedPotion.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Flag.java

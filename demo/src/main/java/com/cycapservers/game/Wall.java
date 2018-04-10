@@ -7,7 +7,7 @@ public class Wall extends Entity {
 	protected boolean invincible;
 	
 	/**
-	 * 
+	 * Creates a new Wall with the variable width and height
 	 * @param id
 	 * @param sprIdx
 	 * @param gridX the x position on the grid map
@@ -24,6 +24,14 @@ public class Wall extends Entity {
 		this.invincible = invc;
 	}
 	
+	/**
+	 * Creates a new Wall with the width and height of one grid space
+	 * @param sprIdx
+	 * @param gridX
+	 * @param gridY
+	 * @param invc
+	 * @param entity_id
+	 */
 	public Wall(int sprIdx, int gridX, int gridY, boolean invc, String entity_id) {
 		super(3, sprIdx, (gridX*Utils.GRID_LENGTH + Utils.GRID_LENGTH/2), (gridY*Utils.GRID_LENGTH + Utils.GRID_LENGTH/2), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, entity_id);
 		this.gridX = gridX;

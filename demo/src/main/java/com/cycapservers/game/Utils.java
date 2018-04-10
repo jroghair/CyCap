@@ -1,3 +1,6 @@
+/**
+ * @author bryanf
+ */
 package com.cycapservers.game;
 
 import java.awt.Point;
@@ -6,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 public final class Utils{
-	public final static boolean DEBUG = false;
+	public final static boolean DEBUG = true;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -24,6 +27,7 @@ public final class Utils{
 	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
 	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
+	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000);
 	
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
@@ -32,9 +36,15 @@ public final class Utils{
 	
 	private Utils(){} //prevents the class from being constructed
 	
+	/**
+	 * returns true if num is between the parameters lower and upper, non-inclusive
+	 * @param num
+	 * @param lower
+	 * @param upper
+	 * @return
+	 */
 	public static boolean isBetween(double num, double lower, double upper){
-		//TODO: change this to > && < instead of >= && <=
-		if(num >= lower && num <= upper){
+		if(num > lower && num < upper){
 			return true;
 		}
 		else{
@@ -42,6 +52,12 @@ public final class Utils{
 		}
 	}
 	
+	/**
+	 * Returns the distance between two entities in pixels
+	 * @param ent1
+	 * @param ent2
+	 * @return
+	 */
 	public static double distanceBetween(Entity ent1, Entity ent2){
 		return Math.sqrt(Math.pow(ent1.getX() - ent2.getX(), 2) + Math.pow(ent1.getY() - ent2.getY(), 2));
 	}
@@ -58,14 +74,32 @@ public final class Utils{
 		return Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 	}
 	
+	/**
+	 * Returns the distance between two nodes
+	 * @param n1
+	 * @param n2
+	 * @return
+	 */
 	public static double distanceBetween(Node n1, Node n2) {
 		return Math.sqrt(Math.pow(n2.getX() - n1.getX(), 2.0) + Math.pow(n2.getY() - n1.getY(), 2.0));
 	}
 	
+	/**
+	 * returns the distance between an entity and a node
+	 * @param ent
+	 * @param n
+	 * @return
+	 */
 	public static double distanceBetween(Entity ent, Node n) {
 		return Math.sqrt(Math.pow(n.getX() - ent.x, 2.0) + Math.pow(n.getY() - ent.y, 2.0));
 	}
 	
+	/**
+	 * returns true if the given node is placed within the entity
+	 * @param ent
+	 * @param n
+	 * @return
+	 */
 	public static boolean isColliding(Entity ent, Node n) {
 		if(distanceBetween(ent, n) >= ent.collision_radius){
 			return false;
@@ -80,6 +114,12 @@ public final class Utils{
 		return false;
 	}
 	
+	/**
+	 * returns true if the two entities are colliding
+	 * @param ent_1
+	 * @param ent_2
+	 * @return
+	 */
 	public static boolean isColliding(Entity ent_1, Entity ent_2){
 		//QUICK COLLISION DETECTION
 		if(distanceBetween(ent_1, ent_2) >= (ent_1.collision_radius + ent_2.collision_radius)){
@@ -113,16 +153,33 @@ public final class Utils{
 		*/
 	}
 	
-	//returns a random int between 0 and max, not including max
+	/**
+	 * returns a random int between 0 and max, not including max
+	 * @param max
+	 * @return
+	 */
 	public static int getRandomInt(int max){
 		return (int) Math.floor(Math.random() * max);
 	}
 
-	//returns a random int between lower and upper, inclusive
+	/**
+	 * returns a random int between lower and upper, inclusive
+	 * @param lower
+	 * @param upper
+	 * @return
+	 */
 	public static int getRandomInRange(int lower, int upper){
 		return getRandomInt(upper - lower + 1) + lower;
 	}
 	
+	/**
+	 * generates and adds a breakable wall line to the passed gameState
+	 * @param g
+	 * @param startX
+	 * @param startY
+	 * @param length
+	 * @param axis
+	 */
 	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
@@ -143,6 +200,15 @@ public final class Utils{
 		}
 	}
 	
+	/**
+	 * generates and adds a wall line to the passed gameState. you decide if the walls are breakable or not
+	 * @param g
+	 * @param startX
+	 * @param startY
+	 * @param length
+	 * @param axis
+	 * @param invincible
+	 */
 	public static void generateWallLine(GameState g, int startX, int startY, int length, char axis, boolean invincible) {
 		if(axis == 'x'){
 			for(int i = 0; i < length; i++){
@@ -163,6 +229,14 @@ public final class Utils{
 		}
 	}
 	
+	/**
+	 * places a breakable wall border into the specified gameState, with the given height and width
+	 * @param g
+	 * @param width
+	 * @param height
+	 * @param startX
+	 * @param startY
+	 */
 	public static void placeBorder(GameState g, int width, int height, int startX, int startY){
 		generateWallLine(g, startX, startY, width, 'x');
 		generateWallLine(g, startX, height + startY - 1, width, 'x');
@@ -170,6 +244,15 @@ public final class Utils{
 		generateWallLine(g, width + startX - 1, startY + 1, height - 2, 'y');
 	}
 	
+	/**
+	 * places a wall border into the specified gameState, with the given height and width. You decide if it is breakable
+	 * @param g
+	 * @param width
+	 * @param height
+	 * @param startX
+	 * @param startY
+	 * @param invincible
+	 */
 	public static void placeBorder(GameState g, int width, int height, int startX, int startY, boolean invincible){
 		generateWallLine(g, startX, startY, width, 'x', invincible);
 		generateWallLine(g, startX, height + startY - 1, width, 'x', invincible);
@@ -203,7 +286,7 @@ public final class Utils{
 			p.max_health = 105;
 			p.health = p.max_health;
 			p.weapon1 = new AutomaticGun(MACHINE_GUN);
-			p.weapon2 = null;
+			p.weapon2 = new MortarWeapon(MORTAR);
 			p.weapon3 = new Pistol(M1911); //pistol
 			p.weapon4 = null;
 			p.currentWeapon = p.weapon1;
@@ -382,6 +465,12 @@ public final class Utils{
 		return neighbors;
 	}
 	
+	/**
+	 * returns a randomized string with the specified length that does not exist in currentList
+	 * @param currentList
+	 * @param length
+	 * @return
+	 */
 	public static String getGoodRandomString(List<String> currentList, int length) {
 		String output = createString(length);
 		while(!isStringGood(currentList, output)) {
@@ -390,6 +479,12 @@ public final class Utils{
 		return output;
 	}
 	
+	/**
+	 * returns false if the given string exists in currentListt
+	 * @param currentList
+	 * @param pw
+	 * @return
+	 */
 	private static boolean isStringGood(List<String> currentList, String pw) {
 		for(String s : currentList) {
 			if(pw.equals(s)) {
@@ -399,6 +494,11 @@ public final class Utils{
 		return true;
 	}
 	
+	/**
+	 * Generates a random string of a given length
+	 * @param length
+	 * @return
+	 */
 	private static String createString(int length){
 		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 		Random rand = new Random();
@@ -409,6 +509,11 @@ public final class Utils{
 		return pass;
 	}
 	
+	/**
+	 * returns the sprite index of the player image based on what team number is passed
+	 * @param team
+	 * @return
+	 */
 	public static int getSpriteIndexFromTeam(int team) {
 		switch(team) {
 			case 1:
@@ -438,7 +543,276 @@ public final class Utils{
 		return goodNodes.get(RANDOM.nextInt(goodNodes.size()));
 	}
 	
+	/**
+	 * returns a random spawn node from the passed list
+	 * @param nodes
+	 * @return
+	 */
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
 		return nodes.get(RANDOM.nextInt(nodes.size()));
+	}
+	
+	/**
+	 * Takes in the current level and experience in an object, updates them to the new values and then returns them
+	 * @param data
+	 * @return
+	 */
+	public static Point calculateLevelAndXP(Point data) {
+		int current_level = data.x;
+		switch(current_level) {
+			case 0:
+				if(data.y >= 0) {
+					data.x++;
+					data.y -= 0;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 1:
+				if(data.y >= 500) {
+					data.x++;
+					data.y -= 500;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 2:
+				if(data.y >= 1000) {
+					data.x++;
+					data.y -= 1000;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 3:
+				if(data.y >= 1500) {
+					data.x++;
+					data.y -= 1500;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 4:
+				if(data.y >= 2000) {
+					data.x++;
+					data.y -= 2000;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 5:
+				if(data.y >= 2250) {
+					data.x++;
+					data.y -= 2250;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 6:
+				if(data.y >= 2500) {
+					data.x++;
+					data.y -= 2500;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 7:
+				if(data.y >= 2750) {
+					data.x++;
+					data.y -= 2750;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 8:
+				if(data.y >= 3000) {
+					data.x++;
+					data.y -= 3000;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 9:
+				if(data.y >= 3200) {
+					data.x++;
+					data.y -= 3200;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 10:
+				if(data.y >= 3400) {
+					data.x++;
+					data.y -= 3400;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 11:
+				if(data.y >= 3550) {
+					data.x++;
+					data.y -= 3550;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 12:
+				if(data.y >= 3700) {
+					data.x++;
+					data.y -= 3700;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 13:
+				if(data.y >= 3850) {
+					data.x++;
+					data.y -= 3850;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 14:
+				if(data.y >= 4000) {
+					data.x++;
+					data.y -= 4000;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 15:
+				if(data.y >= 4100) {
+					data.x++;
+					data.y -= 4100;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 16:
+				if(data.y >= 4200) {
+					data.x++;
+					data.y -= 4200;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 17:
+				if(data.y >= 4300) {
+					data.x++;
+					data.y -= 4300;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 18:
+				if(data.y >= 4400) {
+					data.x++;
+					data.y -= 4400;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 19:
+				if(data.y >= 4500) {
+					data.x++;
+					data.y -= 4500;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 20:
+				if(data.y >= 4600) {
+					data.x++;
+					data.y -= 4600;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 21:
+				if(data.y >= 4700) {
+					data.x++;
+					data.y -= 4700;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 22:
+				if(data.y >= 4800) {
+					data.x++;
+					data.y -= 4800;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 23:
+				if(data.y >= 4900) {
+					data.x++;
+					data.y -= 4900;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 24:
+				if(data.y >= 5000) {
+					data.x++;
+					data.y -= 5000;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			default:
+				break;
+		}
+		return data;
 	}
 }

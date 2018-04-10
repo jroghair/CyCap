@@ -95,7 +95,16 @@ public class GameState extends TimerTask
 	}
 
 	public void updateGameState() {
+		
+		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
+		/*
+		 * if(yes){
+		 *     endGame();
+		 * }
+		 */
+		
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
+		this.lastGSMessage = System.currentTimeMillis();
 		
 		//DEV STUFF
 		if(Utils.DEBUG) {
@@ -146,13 +155,13 @@ public class GameState extends TimerTask
 		//Check For Flag captures
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
 			this.team_scores.put(2, this.team_scores.get(2) + 1); //+1 to team 2
-			((CTF_PlayerStats) this.team1_flag.grabber.stats).addFlagCap(); //give the proper player a flag capture
+			this.team1_flag.grabber.stats.addFlagCap(); //give the proper player a flag capture
 			this.team1_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 1 CAPTURED!!");
 		}
 		else if(!this.team2_flag.atBase && this.team1_flag.atBase && Utils.isColliding(this.team2_flag, team1_base)) {
 			this.team_scores.put(1, this.team_scores.get(1) + 1); //+1 to team 1
-			((CTF_PlayerStats) this.team2_flag.grabber.stats).addFlagCap(); //give the proper player a flag capture
+			this.team2_flag.grabber.stats.addFlagCap(); //give the proper player a flag capture
 			this.team2_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 2 CAPTURED!!");
 		}
@@ -160,8 +169,6 @@ public class GameState extends TimerTask
 		pu_handler.update(this); //update the powerups
 		
 		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
-		
-		this.lastGSMessage = System.currentTimeMillis();
 		
 		for(Player p : players) {
 			p.setLastUnsentGameState(this.toDataString(p));
@@ -239,7 +246,7 @@ public class GameState extends TimerTask
 		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
+		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
 		this.userPasswords.add(pass);
 		try {
 			String message = "join:" + pass;
@@ -258,7 +265,7 @@ public class GameState extends TimerTask
 		//mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
+		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
 		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
 	}
@@ -279,6 +286,19 @@ public class GameState extends TimerTask
 		    	iter.remove();
 		    	return;
 		    }
+		}
+	}
+	
+	public void setUpGame() {
+		for(Player p : this.players) {
+			//p.stats.setGameType("ctf");
+		}
+	}
+	
+	public void endGame() {
+		for(Player p : this.players) {
+			p.stats.updateScore();
+			//ProfileRepo.update(p)
 		}
 	}
 

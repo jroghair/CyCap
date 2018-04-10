@@ -42,8 +42,8 @@ public class Entity {
 		output += spriteIndex + ",";
 		output += (int) x + ",";
 		output += (int) y + ",";
-		output += (int) drawWidth + ",";
-		output += (int) drawHeight + ",";
+		output += drawWidth + ",";
+		output += drawHeight + ",";
 		output += rotation + ",";
 		output += alpha;
 		return output;

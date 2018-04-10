@@ -25,7 +25,6 @@ const RIGHT = 0b0001;
 
 //GAME STATE OBJECTS
 let gameState;
-let walls = [];
 let part_fx = [];
 let map;
 let masks = [];
@@ -234,44 +233,6 @@ function setup() {
 
 	canvas_box = new Entity(background_tiles, 0, gameState.player.x, gameState.player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
 	map = new TiledBackground(background_tiles);
-	//placeBorder(bg_width_grids, bg_height_grids, 0, 0);
-	/*
-	wallLine(5, 10, 5, 'x');  //done
-	wallLine(9, 3, 7, 'y');   //done
-	wallLine(12, 3, 15, 'x'); //done
-	wallLine(12, 4, 4, 'y');  //done
-	wallLine(12, 10, 8, 'x'); //done
-	wallLine(20, 4, 8, 'y');  //done
-	wallLine(21, 7, 3, 'x');  //done
-	wallLine(26, 4, 4, 'y');  //done
-	wallLine(29, 1, 2, 'y');  //done
-	wallLine(29, 5, 2, 'y');  //done
-	wallLine(29, 7, 2, 'x');  //done
-	wallLine(31, 7, 19, 'y'); //done
-	wallLine(34, 1, 8, 'y');  //done
-	wallLine(38, 5, 2, 'x');  //done
-	wallLine(32, 9, 6, 'x');  //done
-	wallLine(34, 12, 6, 'x'); //done
-	wallLine(34, 13, 4, 'y'); //done
-	wallLine(34, 19, 10, 'y');//done
-	wallLine(24, 10, 5, 'x'); //done
-	wallLine(23, 10, 16, 'y');//done
-	wallLine(28, 14, 3, 'x'); //done
-	wallLine(26, 17, 3, 'x'); //done
-	wallLine(26, 20, 4, 'y'); //done
-	wallLine(27, 23, 4, 'x'); //done
-	wallLine(23, 26, 9, 'x'); //done
-	wallLine(20, 14, 13, 'y');//done
-	wallLine(1, 15, 19, 'x'); //done
-	wallLine(1, 18, 2, 'x');  //done
-	wallLine(5, 18, 3, 'x');  //done
-	wallLine(8, 18, 11, 'y'); //done
-	wallLine(11, 18, 8, 'y'); //done
-	wallLine(12, 18, 6, 'x'); //done
-	wallLine(3, 24, 2, 'y');  //done
-	wallLine(3, 26, 3, 'x');  //done
-	wallLine(11, 26, 5, 'x'); //done
-	wallLine(18, 26, 2, 'x'); //done*/
 	
 	//////GUI ELEMENTS//////
 	guis.push(new HealthGUI(20, gui_canvas.height - 20, 200, 20)); //health bar
@@ -377,9 +338,6 @@ function run() {
 	map.draw();
 	for(let i = 0; i < masks.length; i++){
 		masks[i].draw();
-	}
-	for(let i = 0; i < walls.length; i++){
-		walls[i].draw();
 	}
 	
 	gameState.drawGameState(); //draws the player and the bullets

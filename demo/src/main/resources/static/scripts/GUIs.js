@@ -212,7 +212,7 @@ function RespawnCounter(x, y, length){
 	
 	this.update = function(txt){
 		if((Date.now() - this.startTime) >= this.length){
-			if(this.active){
+			if(this.active && gameState.player.health > 0){
 				this.stop();
 			}
 		}

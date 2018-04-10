@@ -1,0 +1,2 @@
+done-respawn counter plays twice after death 
+-if you pick up the red flag it shows you have the blue flag
