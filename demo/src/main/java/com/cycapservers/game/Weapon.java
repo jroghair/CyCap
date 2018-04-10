@@ -20,6 +20,8 @@ public abstract class Weapon{
 	protected int ammo_in_clip;
 	protected int extra_ammo;
 	protected int max_ammo_refill; //the level to which to refill the extra_ammo field when using an ammo pack
+	
+	protected String shot_sound;
 
 	public Weapon(String name, int damage, int bt, int rate, int bullet_speed, int mag_size, int extra_mags, int reload_time, double shot_variation) {
 		this.name = name;
@@ -36,6 +38,7 @@ public abstract class Weapon{
 		this.ammo_in_clip = this.mag_size;
 		this.extra_ammo = extra_mags * this.mag_size;
 		this.max_ammo_refill = this.extra_ammo;
+		this.shot_sound = "m9_gunshot";
 	}
 	
 	/**

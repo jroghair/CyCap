@@ -39,7 +39,7 @@ public class AutomaticGun extends Weapon {
 		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
 		g.bullets.add(new Bullet(this.bullet_type, p.x, p.y, s.mapX, s.mapY, Utils.GRID_LENGTH * 0.125, Utils.GRID_LENGTH * 0.125, 0, 1.0, this.bullet_speed, this.damage, this.shot_variation, p, id));
 		g.usedEntityIds.add(id);
-		//TODO: make bullet sound
+		g.new_sounds.add(p.x + "," + p.y + "," + this.shot_sound); //make bullet sound
 	}
 
 }
