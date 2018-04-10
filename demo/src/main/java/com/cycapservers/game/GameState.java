@@ -199,7 +199,7 @@ public class GameState extends TimerTask
 		
 		//////ADD NEW SOUNDS TO PLAY//////
 		for(int i = 0; i < new_sounds.size(); i++){
-			output += new_sounds.get(i) + ":";
+			output += "002," + new_sounds.get(i) + ":";
 		}
 		
 		//////ADD PLAYER MESSAGES///////
