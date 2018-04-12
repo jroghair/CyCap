@@ -110,11 +110,13 @@ function GameState(role){
 					gameScoreGUI.update(objects[i]);
 				}
 			}
-			/*
 			else if(obj[0] == "002"){
 				//new sound
+				if(obj[3] == "m9_gunshot"){
+					let sound_test = new SoundEmitter(gunshot1, false, +obj[1], +obj[2]);
+					sound_test.play();
+				}
 			}
-			*/
 			else if(obj[0] == "012"){
 				//add wall
 				this.addWall(obj);

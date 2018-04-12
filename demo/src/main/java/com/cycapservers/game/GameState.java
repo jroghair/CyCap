@@ -172,15 +172,15 @@ public class GameState extends TimerTask
 		
 		pu_handler.update(this); //update the powerups
 		
-		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
-		
 		for(Player p : players) {
 			p.setLastUnsentGameState(this.toDataString(p));
 		}
 		
 		this.current_item_list = getItemList();
 		
+		//////CLEAR LISTS/////
 		this.new_sounds.clear();
+		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 	}
 	
 	public List<Item> getItemList(){

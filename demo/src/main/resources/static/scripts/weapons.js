@@ -96,9 +96,6 @@ function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, s
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
 
@@ -108,9 +105,6 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
 
@@ -132,9 +126,6 @@ function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, re
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
 

@@ -27,7 +27,7 @@ public final class Utils{
 	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
 	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
-	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000);
+	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000, 6);
 	
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
@@ -814,5 +814,19 @@ public final class Utils{
 				break;
 		}
 		return data;
+	}
+	
+	/**
+	 * Takes in a map coordinate pair and returns the position of the grid in which it is placed.
+	 * The top-left grid is at position (0,0)
+	 * @param mapX - map x coordinate in pixels relative to the top left corner
+	 * @param mapY - map y coordinate in pixels relative to the top left corner
+	 * @return returns a point
+	 */
+	public static Point mapCoordinatesToGridCoordinates(double mapX, double mapY) {
+		Point p = new Point();
+		p.x = (int) Math.floor(mapX/Utils.GRID_LENGTH);
+		p.y = (int) Math.floor(mapY/Utils.GRID_LENGTH);
+		return p;
 	}
 }

@@ -18,6 +18,23 @@ public class Bullet extends Entity {
 	protected long lifeSpan;
 	protected long birthTime;
 	
+	/**
+	 * Creates a new bullet entity
+	 * @param sprIdx - sprite index on the bullet image
+	 * @param startX - start x position of the bullet
+	 * @param startY - start y position of the bullet
+	 * @param endX - x position of the mouse (used to calculate direction)
+	 * @param endY - y position of the mouse (used to calculate direction)
+	 * @param w - width of the entity
+	 * @param h - width of the entity
+	 * @param r - rotation of the entity
+	 * @param a - transparency of the entity
+	 * @param speed - movement speed of the bullet in pixels per second
+	 * @param damage - amount of damage the bullet deals upon impact
+	 * @param variation - the deviation from center
+	 * @param p - the owner of the bullet
+	 * @param entity_id - the entity's unique id
+	 */
 	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p, String entity_id) {
 		super(2, sprIdx, startX, startY, w, h, r, a, entity_id);
 		
@@ -89,6 +106,11 @@ public class Bullet extends Entity {
 		return false;
 	}
 	
+	/**
+	 * Returns the object data for this bullet for the specified client
+	 * @param client_id - the name of the client who the data is for
+	 * @return the data string of this object
+	 */
 	@Override
 	public String toDataString(String client_id) {
 		String output = "";

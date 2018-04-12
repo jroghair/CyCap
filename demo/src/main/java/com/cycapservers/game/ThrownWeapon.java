@@ -1,9 +1,12 @@
 package com.cycapservers.game;
 
-import static org.mockito.Matchers.intThat;
+import java.awt.Point;
 
 public abstract class ThrownWeapon extends Weapon {
 	
+	/**
+	 * the distance, in pixels, that this weapon can fire an ammo round
+	 */
 	protected int range;
 	
 	protected double max_height;
@@ -37,7 +40,10 @@ public abstract class ThrownWeapon extends Weapon {
 	public void checkFire(Player p, InputSnapshot s, GameState g) {
 		if(s.mouse_clicked && ((System.currentTimeMillis() - this.last_shot) >= this.fire_rate)){
 			if(this.ammo_in_clip - 1 != -1){
-				double fire_dist = Utils.distanceBetween(p.x, p.y, s.mapX, s.mapY);
+				Point point = Utils.mapCoordinatesToGridCoordinates(s.mapX, s.mapY);
+				int x = (int) (point.x * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2;
+				int y = (int) (point.y * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2;
+				double fire_dist = Utils.distanceBetween(p.x, p.y, x, y);
 				if(fire_dist < this.range) {
 					this.fire(p, s, g);
 					this.last_shot = System.currentTimeMillis();

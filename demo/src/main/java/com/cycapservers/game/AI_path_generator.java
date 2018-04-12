@@ -23,7 +23,6 @@ public class AI_path_generator {
 	 * @param end
 	 *            ending entity
 	 * @return
-	 * @throws Exception
 	 */
 	public ArrayList<mapNode> get_a_star_path(Entity start, Entity end) {
 		Point moving_point = Utils.get_nearest_map_node(start, this.g);
@@ -38,7 +37,6 @@ public class AI_path_generator {
 	 *            starting point
 	 * @param b
 	 *            ending point
-	 * @throws Exception
 	 */
 	private ArrayList<mapNode> A_Star_Path(Point a, Point b) {
 		closed_list.clear();
