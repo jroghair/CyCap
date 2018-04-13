@@ -352,7 +352,7 @@ public class AccountController {
      * @param model model for webpage
      * @param account session attribute for a players profile, generated after logging in 
      * @param profiles model attribute for profiles
-     * @return String returns html page for a user profile
+     * @return View returns html page for a user profile
      * */
     @GetMapping("/accounts/profileScout")
     public String profilePageScout(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
@@ -367,29 +367,50 @@ public class AccountController {
     	return "accounts/profileScout";
     }  
     
-    
+    /*
     @ModelAttribute(value = "ProfilesList")
     public ProfilesList newProfilesList(){
     	return new ProfilesList();
+    }*/
+    
+    /**Model for playerLBDataList use primarily for leaderboards
+     * @return PlayerLBDataList
+     * */
+    @ModelAttribute(value = "PlayerLBDataList")
+    public PlayerLBDataList newPlayerLBDataList(){
+    	return new PlayerLBDataList();
     }
     
+    /**Controller for handling leaderboards requests. 
+     * @param model model for PlayerLBDataList
+     * @param account session variable for a user, set at user login
+     * @param PlayerLBDataList Model attribute 
+     * @return View returns a view of account leaderboards 
+     * */
     @GetMapping("/accounts/leaderboards")
-    public String LeaderBoards(Model model, @SessionAttribute("account") Account account, @ModelAttribute("ProfilesList") ProfilesList profilesList) {
+    public String LeaderBoards(Model model, @SessionAttribute("account") Account account, @ModelAttribute("PlayerLBDataList") PlayerLBDataList playerLBDataList) {
     	logger.info("Entered into get leaderboards controller Layer");
     	Collection<Profiles> overall = profilesRepository.findByAllProfiles();
-    	System.out.println(overall.size());
-    	System.out.println("here3");
+    	/*
     	List<Profiles> list;
     	if (overall instanceof List){
     		list = (List<Profiles>)overall;
     	}
     	else{
     	  list = new ArrayList<Profiles>(overall);
+    	}*/
+    	
+    	List<PlayerLBData> list = new ArrayList<PlayerLBData>();
+    	for(Profiles x: overall){
+    		PlayerLBData p = new PlayerLBData(x.getUserID(), x.getChampion(), x.getLevel(), x.getKills(), x.getDeaths(), x.getGamesplayed(), x.getGamewins());
+    		list.add(p);
     	}
-    	profilesList.setProfilesList(list);
-    	System.out.println("here");
-    	model.addAttribute("profilesList", profilesList.getProfilesList());
-    	System.out.println("here2");
+    	
+    	playerLBDataList.setPlayerLBDataList(list);
+    	
+    	
+    	model.addAttribute("playerLBDataList", playerLBDataList.getPlayerLBDataList());
+    	
     	/*Profiles profiles = new Profiles(account.getUserID(), "Overall", kills, deaths, gamewins, gamelosses, gamesplayed,
     									flaggrabs, flagreturns, flagcaptures, experience);*/
     	return "accounts/leaderboards";

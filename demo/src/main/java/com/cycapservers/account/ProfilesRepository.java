@@ -25,7 +25,10 @@ public interface ProfilesRepository extends CrudRepository<Profiles, String> {
     //@Param("userID") String userID,
 	//and profile.charclass=:charclass
     //profile.userID =:userID 
-    
+ 
+	/**Pulls profile data from the database for a specific user
+	 * @return Collection<Profile> profile object representing a single users data in the database
+	 * */
     @Query("SELECT DISTINCT profiles FROM Profiles profiles")
    	@Transactional(readOnly = true)
        Collection<Profiles> findByAllProfiles();   

@@ -1,5 +1,5 @@
+<!DOCTYPE html>
 <html>
-
 
 <head>
 <ul>
@@ -65,93 +65,137 @@ li a:hover {
 <input type='text' id='filter' />
 <button id='btnFilter'>Go</button> 
  -->
+ <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/> 
+ <input type="button" id="Infantry" th:onclick= "'javascript:infantry(\''+'infantry'+'\');'" value="Infantry Rankings"/> 
+ <input type="button" id="recruit" th:onclick= "'javascript:recruit(\''+'recruit'+'\');'" value="Recruit Rankings"/>
+ <input type="button" id="scout" th:onclick= "'javascript:scout(\''+'scout'+'\');'" value="Scout Rankings"/>
+  
+<script th:inline="javascript">
+	function playerSearch(){
+    /*<![CDATA[*/
+    var input = document.getElementById("myInput");
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[0];
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+         
+    }
+    /*]]>*/
+	}
+</script>
 
- <input type="text" id="myInput" th:onkeyup= "'javascript:myfunction(\'a\');'" placeholder="Search for names.." title="Type in a name"/> 
+
+<script th:inline="javascript">
+	function infantry(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+<script th:inline="javascript">
+	function recruit(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+
+<script th:inline="javascript">
+	function scout(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
 
 <body>
  <table id="stats">
     <thead>
       <tr>
       	<th>Player</th>
+      	<th>Character Class</th>
+      	<th>Level</th>
         <th>Kills</th>
         <th>Deaths</th>
-        <th>Game Wins</th>
-        <th>Game Losses</th>
-        <th>Games Played</th>
-        <th>Flag Grabs</th>
-        <th>Flag Returns</th>
-        <th>Flag Captures</th>
-        <th>Experience</th>
+        <th>Game Average Kills</th>
+        <th>Kill/Death Ratio</th>
+        <th>Game Win Ratio</th>  
       </tr>
     </thead>
     <tbody>
-		<th:block th:each="profiles : ${profilesList}">
+		<th:block th:each="playerLBDataList : ${playerLBDataList}">
      	 	<tr>
-     	 		<td th:text="${profiles.userID}" class="user">...</td>
-         		<td th:text="${profiles.kills}">...</td>
-           	    <td th:text="${profiles.deaths}">...</td>
-         	    <td th:text="${profiles.gamewins}">...</td> 
-         	    <td th:text="${profiles.gamelosses}">...</td>
-         	    <td th:text="${profiles.gamesplayed}">...</td>
-         	    <td th:text="${profiles.flaggrabs}">...</td>
-         	    <td th:text="${profiles.flagreturns}">...</td>
-         	    <td th:text="${profiles.flagcaptures}">...</td>
-         	    <td th:text="${profiles.experience}">...</td>  
+     	 		<td th:text="${playerLBDataList.userID}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.role}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.level}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.kills}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.deaths}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.averagekills}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.kdratio}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.winrate}" class="user">...</td>	 		
       		</tr>
    		</th:block>
     </tbody>
   </table>
 </body>
-<script type="text/javascript" th:inline="javascript">
-	/*<![CDATA[*/
-	
-	let temp = /*[[${account.getUserID()}]]*/;
-	temp += "\'s Profile Page";
-	document.getElementById("user").innerHTML = temp;
-	
-	/*]]>*/
-</script>
-<!--  
-<script type="application/javascript">
-	//<![CDATA[
-	$('#btnFilter').click(function() {
-	   
-	    var name = $('#filter').val();
-	
-	    $('tr').show();
-	
-	    $('tr td.user').each(function() {
-	        if ($(this).text().substring(1) != filter)
-	        {
-	            $(this).parent().hide();
-	        }
-	    });
-	    
-	});
-
-</script> -->
- 
-<script type="application/javascript">
-//<![CDATA[
-function myFunction() {
-    console.log("in function call")
-	var input, filter, table, tr, a, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("stats");
-    tr = ul.getElementsByTagName("tr");
-    alert("inside function");
-    for (i = 0; i &lt; tr.length; i++) {
-        a = tr[i].getElementsByTagName("td")[0];
-        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-        } else {
-            tr[i].style.display = "none";
-        }
-    }
-}
-// ]]>
-</script> 
-
 
 </html>
