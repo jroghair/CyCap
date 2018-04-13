@@ -35,6 +35,7 @@ public class Player extends GameCharacter {
 	 */
 	public void die() {
 		this.isDead = true;
+		this.stats.addDeath(); //give player an extra death
 		if(this.item_slot !=  null) {
 			this.item_slot.drop();
 			this.item_slot = null;
@@ -228,5 +229,14 @@ public class Player extends GameCharacter {
 		this.isDead = false;
 		//reset ammo and health
 		Utils.setRole(this);
+	}
+	
+	public void leaveGame() {
+		//TODO
+		if(this.item_slot !=  null) {
+			this.item_slot.drop();
+			this.item_slot = null;
+		}
+		//give XP
 	}
 }

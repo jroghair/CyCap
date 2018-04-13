@@ -5,7 +5,7 @@ public class Bullet extends Entity {
 	protected double speed;
 	protected int damage;
 	
-	protected Player owner;
+	protected GameCharacter owner;
 	protected int team;
 	
 	protected double startX;
@@ -97,7 +97,7 @@ public class Bullet extends Entity {
 				}
 				if(Utils.isColliding(this, p)) {
 					if(game.friendlyFire || (p.team != this.team)) {
-						p.takeDamage(this.damage);
+						p.takeDamage(this.damage, this.owner);
 					}
 					return true;
 				}

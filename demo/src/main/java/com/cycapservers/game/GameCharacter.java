@@ -47,15 +47,16 @@ public abstract class GameCharacter extends Entity {
 		this.item_slot = null;
 		Utils.setRole(this);
 		
-		this.stats = new PlayerStats(this.entity_id, this.role);
+		this.stats = new PlayerStats(this);
 	}
 	
-	public void takeDamage(int amount) {
+	public void takeDamage(int amount, GameCharacter c) {
 		if(!this.is_invincible){
 			this.health -= amount;
 		}
 		if(this.health <= 0){
 			this.die(); //idk what this is gonna do yet
+			c.stats.addKill();
 		}
 	}
 	

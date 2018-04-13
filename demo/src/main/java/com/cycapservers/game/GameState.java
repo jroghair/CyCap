@@ -159,13 +159,13 @@ public class GameState extends TimerTask
 		//////Check For Flag captures//////
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
 			this.team_scores.put(2, this.team_scores.get(2) + 1); //+1 to team 2
-			this.team1_flag.grabber.stats.addFlagCap(); //give the proper player a flag capture
+			this.team1_flag.grabber.stats.addFlagCapture(); //give the proper player a flag capture
 			this.team1_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 1 CAPTURED!!");
 		}
 		else if(!this.team2_flag.atBase && this.team1_flag.atBase && Utils.isColliding(this.team2_flag, team1_base)) {
 			this.team_scores.put(1, this.team_scores.get(1) + 1); //+1 to team 1
-			this.team2_flag.grabber.stats.addFlagCap(); //give the proper player a flag capture
+			this.team2_flag.grabber.stats.addFlagCapture(); //give the proper player a flag capture
 			this.team2_flag.returnToBase(); //return the flag to base
 			if(Utils.DEBUG) System.out.println("FLAG 2 CAPTURED!!");
 		}
@@ -251,7 +251,10 @@ public class GameState extends TimerTask
 	
 	public void playerJoin(String client_id, WebSocketSession session, String role) {
 		int team;
-		if(this.playersOnTeam1 > this.playersOnTeam2) {
+		if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
+			team = Utils.RANDOM.nextInt(2) + 1;
+		}
+		else if(this.playersOnTeam1 > this.playersOnTeam2) {
 			team = 2;
 			this.playersOnTeam2++;
 		}
@@ -296,6 +299,7 @@ public class GameState extends TimerTask
 		    	else {
 		    		this.playersOnTeam2--;
 		    	}
+		    	temp.leaveGame(); //drops items, et cetera
 		    	this.usedEntityIds.remove(temp.entity_id);
 		    	this.userPasswords.remove(temp.password);
 		    	iter.remove();
@@ -306,14 +310,14 @@ public class GameState extends TimerTask
 	
 	public void setUpGame() {
 		for(Player p : this.players) {
-			//p.stats.setGameType("ctf");
+			p.stats.setGameType(this.getClass());
 		}
 	}
 	
 	public void endGame() {
 		for(Player p : this.players) {
 			p.stats.updateScore();
-			//ProfileRepo.update(p)
+			//TODO: ProfileRepo.update(p)
 		}
 	}
 

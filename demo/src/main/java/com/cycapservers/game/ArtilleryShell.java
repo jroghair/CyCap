@@ -61,7 +61,7 @@ public class ArtilleryShell extends Bullet{
 			for(Player p : game.players) {
 				if(Utils.distanceBetween(this, p) <= this.damage_range) {
 					if(game.friendlyFire || (p.team != this.team) || p.equals(this.owner)) {
-						p.takeDamage(this.damage);
+						p.takeDamage(this.damage, this.owner);
 					}
 				}
 			}

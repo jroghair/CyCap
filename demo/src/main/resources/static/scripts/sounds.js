@@ -31,6 +31,10 @@ function SoundEmitter(src, is_looping, x, y){
 	this.sound.volume = this.getVolume();
 }
 
+function SoundFactory(){
+	this.sounds = [];
+}
+
 let gunshot1 = document.createElement("audio");
 gunshot1.src = "res/sounds/m9_gunshot.mp3";
 gunshot1.setAttribute("preload", "auto");
