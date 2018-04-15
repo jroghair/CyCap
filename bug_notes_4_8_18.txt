@@ -1,4 +1,3 @@
-done-respawn counter plays twice after death 
 -if you pick up the red flag it shows you have the blue flag
--if you leave the game while you are carrying a flag, they can't be returned or grabbed
 -if you are carrying a flag, you can't return your teams flag
+-sometimes when the explosion animation is running, the client crashes (sprite index overflow)

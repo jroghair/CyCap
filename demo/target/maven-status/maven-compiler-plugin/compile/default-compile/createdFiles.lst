@@ -8,11 +8,13 @@ com\cycapservers\game\WebSocketConfig.class
 com\cycapservers\game\AutomaticGun.class
 com\cycapservers\game\Pistol.class
 com\cycapservers\CyCapApplication.class
+com\cycapservers\game\Lobby.class
 com\cycapservers\game\Particle.class
 com\cycapservers\game\mapNode.class
 com\cycapservers\game\Item.class
 com\cycapservers\game\AI_player$1.class
 com\cycapservers\game\GridLockedNode.class
+com\cycapservers\game\IncomingPlayer.class
 com\cycapservers\system\HomepageController.class
 com\cycapservers\game\TeamDeathMatch.class
 com\cycapservers\account\ChatMessage.class
@@ -22,7 +24,6 @@ com\cycapservers\game\Entity.class
 com\cycapservers\account\Account.class
 com\cycapservers\game\Utils.class
 com\cycapservers\account\ChatWebsocketConfig.class
-com\cycapservers\account\AccountController.class
 com\cycapservers\account\ChatController.class
 com\cycapservers\game\AmmoPack.class
 com\cycapservers\game\PlacedWeapon.class

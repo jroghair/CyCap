@@ -27,6 +27,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PlayerStat
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PowerUp.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MessageHandler.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameCharacter.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\IncomingPlayer.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_player.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\ThrownWeapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\InputSnapshot.java
@@ -43,11 +44,11 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AnimatedEn
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\CyCapApplication.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameState.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AmmoPack.java
-C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\AccountController.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Node.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\WebSocketConfig.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PlacedWeapon.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Friend.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\WebSocketEventListener.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AI_path_generator.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Lobby.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\system\HomepageController.java

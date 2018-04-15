@@ -14,6 +14,10 @@ import org.springframework.web.socket.WebSocketSession;
 public abstract class GameState extends TimerTask
 {
 	//////NITTY GRITTY STUFF//////
+	/**
+	 * Players that are planning to join the game.
+	 */
+	protected ArrayList<IncomingPlayer> incomingPlayers;
 	protected String game_id;
 	protected String game_type;
 	protected List<String> usedEntityIds;
@@ -61,6 +65,7 @@ public abstract class GameState extends TimerTask
 		entity_id_len = 6;
 		this.userPasswords = new ArrayList<String>();
 
+		this.incomingPlayers = new ArrayList<IncomingPlayer>();
 		this.players = new ArrayList<Player>();
 		this.AI_players = new ArrayList<AI_player>();
 		this.team_scores = new HashMap<Integer, Integer>();
@@ -102,6 +107,44 @@ public abstract class GameState extends TimerTask
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * Works with the lobby to show if a player is going to arrive.
+	 * @param userId
+	 */
+	public void addIncomingPlayer(IncomingPlayer p){
+		this.incomingPlayers.add(p);
+	}
+	
+	public void updatedIncomingPlayerRole(String userId, String role) {
+		for(IncomingPlayer i : incomingPlayers) {
+			if(i.client_id.equals(userId)) {
+				i.role = role;
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * Checks to see if the given userId is in the incoming players list and if they are adds them to the game.
+	 * @param userId
+	 * The person who wants to joins user id.
+	 * @param session
+	 * The person who wants to join websocketsession.
+	 * @param role
+	 * The role that the person wants.
+	 * @return
+	 * returns true if the person is in the incoming player list and they joined the game. returns false if they arn't.
+	 */
+	public boolean findIncomingPlayer(String userId, WebSocketSession session){
+		for(IncomingPlayer p : incomingPlayers){
+			if(p.client_id.equals(userId)){
+				this.playerJoin(p.client_id, session, p.role);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public abstract void playerJoin(String client_id, WebSocketSession session, String role);
