@@ -8,11 +8,13 @@ com\cycapservers\game\WebSocketConfig.class
 com\cycapservers\game\AutomaticGun.class
 com\cycapservers\game\Pistol.class
 com\cycapservers\CyCapApplication.class
+com\cycapservers\game\Particle.class
 com\cycapservers\game\mapNode.class
 com\cycapservers\game\Item.class
 com\cycapservers\game\AI_player$1.class
 com\cycapservers\game\GridLockedNode.class
 com\cycapservers\system\HomepageController.class
+com\cycapservers\game\TeamDeathMatch.class
 com\cycapservers\account\ChatMessage.class
 com\cycapservers\game\PowerUpHandler.class
 com\cycapservers\game\PlayerStats.class
@@ -24,11 +26,13 @@ com\cycapservers\account\AccountController.class
 com\cycapservers\account\ChatController.class
 com\cycapservers\game\AmmoPack.class
 com\cycapservers\game\PlacedWeapon.class
+com\cycapservers\game\FreeForAll.class
 com\cycapservers\game\Wall.class
 com\cycapservers\game\ThrownWeapon.class
 com\cycapservers\account\Friends.class
 com\cycapservers\game\GameCharacter.class
 com\cycapservers\account\WebSocketEventListener.class
+com\cycapservers\game\CaptureTheFlag.class
 com\cycapservers\game\Player.class
 com\cycapservers\game\GameManager.class
 com\cycapservers\game\InputSnapshot.class
@@ -46,4 +50,6 @@ com\cycapservers\game\Node.class
 com\cycapservers\game\MortarWeapon.class
 com\cycapservers\account\Friend.class
 com\cycapservers\account\AccountRepository.class
+com\cycapservers\game\ParticleEffect.class
 com\cycapservers\game\HealthPack.class
+com\cycapservers\game\AnimatedEntity.class

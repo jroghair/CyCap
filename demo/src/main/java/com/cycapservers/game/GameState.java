@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 public abstract class GameState extends TimerTask
 {
+	//////NITTY GRITTY STUFF//////
 	protected String game_id;
 	protected String game_type;
 	protected List<String> usedEntityIds;

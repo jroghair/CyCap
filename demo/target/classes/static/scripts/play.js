@@ -124,7 +124,6 @@ function GameState(role){
 				for(let i = 0; i < this.part_fx.length; i++){
 					if(this.part_fx[i].entity_id == obj[1]){
 						found = true;
-						console.log(obj);
 						this.part_fx[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]), this.currentServerTimeStep);
 						this.part_fx[i].updated = true;
 						break;
@@ -216,11 +215,10 @@ function GameState(role){
 			this.walls[i].draw();
 		}
 		
-		
+		this.player.draw();
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].draw();
 		}
-		this.player.draw();
 		
 		for(let i = 0; i < this.part_fx.length; i++){
 			this.part_fx[i].draw();
@@ -456,6 +454,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
+			console.log(Math.floor(this.sprIdx));
 			this.sprite = this.image.sprites[Math.floor(this.sprIdx)]; //make sure the correct sprite is being displayed
 			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
 			//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
@@ -484,6 +483,9 @@ function InterpolatingEntity(entity_id, ent){
 	this.update = function(){
 		if(this.last_ent != null){
 			this.last_ent.sprIdx += (this.d_sprIdx * global_delta_t);
+			if(this.last_ent.sprIdx >= this.last_ent.image.sprites.length){
+				this.last_ent.sprIdx = this.last_ent.image.sprites.length - 1;
+			}
 			this.last_ent.sprite = this.last_ent.image.sprites[Math.floor(this.last_ent.sprIdx)];
 			this.last_ent.x += (this.d_x * global_delta_t);
 			this.last_ent.y += (this.d_y * global_delta_t);
