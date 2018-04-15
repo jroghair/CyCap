@@ -286,7 +286,7 @@ public final class Utils{
 					if (g.map.get(i).get(j).node_trav != false) {
 						return new Point(i, j);
 					} else {
-						System.out.println("Couldn't find a traversable node near entity");
+						//System.out.println("Couldn't find a traversable node near entity");
 					}
 				}
 			}
@@ -437,7 +437,7 @@ public final class Utils{
 	 */
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
 		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
-		System.out.println("Length of spawn nodes: " + nodes.size());
+		//System.out.println("Length of spawn nodes: " + nodes.size());
 		
 //		for(SpawnNode s : nodes){
 //			System.out.println("node x: " + s.getX() + " node y: " + s.getY());
@@ -462,7 +462,7 @@ public final class Utils{
 	}
 	
 	public static boolean checkLineOfSight(Entity ent1, Entity ent2, GameState g){
-		System.out.println("Checking line of sight...");
+		//System.out.println("Checking line of sight...");
 		double delta_x = ent1.x - ent2.x;
 		double delta_y = ent1.y - ent2.y;
 		
@@ -475,11 +475,11 @@ public final class Utils{
 					y_coord, 0.0, 0.0, 0.0, 0.0, "");
 			Point temp = get_nearest_map_node(e, g);
 			if(temp == null){
-				System.out.println("Won't work...");
+				//System.out.println("Won't work...");
 				return false;
 			}
 		}
-		System.out.println("Will work");
+		//System.out.println("Will work");
 		return true;
 	}
 	

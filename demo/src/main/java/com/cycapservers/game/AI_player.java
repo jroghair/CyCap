@@ -106,88 +106,132 @@ public class AI_player extends GameCharacter {
 			if (System.currentTimeMillis() - this.last_shoot_time > 500) {
 				Random r = new Random();
 				if (r.nextDouble() <= this.firing_chance) {
+
 					/*
 					 * - see if anyone is within 7 * 32 pixels on the other team
 					 * - see if they are in the line of sight - shoot if they
 					 * are, do not if not - if multiple people, shoot flag
 					 * carrier or random
+					 * 
+					 * - currently shoots first person in sight, not on team
 					 */
 
 					for (Player p : g.players) {
 						if (p.team == 2 && this.team == 1) {// on enemy team
 							double distance = Utils.distanceBetween(this, p);// getting
 																				// distance
-							System.out.println("Distance between the two: " + distance);
-							if (distance <= (7 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								System.out.println("Found a player to shoot at...");
+//							System.out.println("Distance between the two: " + distance);
+							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
+								//System.out.println("Found a player to shoot at...");
 								// form new snap shot and fire weapon
 								InputSnapshot ai_snapshot = new InputSnapshot(
 										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
 								if (this.currentWeapon.ammo_in_clip > 1) {
 									this.currentWeapon.update(this, ai_snapshot, g);
 									this.last_shoot_time = System.currentTimeMillis();
+									break;
 								} else {
 									this.currentWeapon.reload();
+									break;
+								}
+							}
+						} else if (p.team == 1 && this.team == 2) {
+							double distance = Utils.distanceBetween(this, p);// getting
+							// distance
+							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
+								//System.out.println("Found a player to shoot at...");
+								// form new snap shot and fire weapon
+								InputSnapshot ai_snapshot = new InputSnapshot(
+										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
+								if (this.currentWeapon.ammo_in_clip > 1) {
+									this.currentWeapon.update(this, ai_snapshot, g);
+									this.last_shoot_time = System.currentTimeMillis();
+									break;
+								} else {
+									this.currentWeapon.reload();
+									break;
+								}
+							}
+						}
+					}
+					for (AI_player p : g.AI_players) {
+						if (p.team == 2 && this.team == 1 && System.currentTimeMillis() - this.last_shoot_time > 500) {// on enemy team
+							double distance = Utils.distanceBetween(this, p);// getting
+																				// distance
+//							System.out.println("Distance between the two: " + distance);
+							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
+								//System.out.println("Found a player to shoot at...");
+								// form new snap shot and fire weapon
+								InputSnapshot ai_snapshot = new InputSnapshot(
+										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
+								if (this.currentWeapon.ammo_in_clip > 1) {
+									this.currentWeapon.update(this, ai_snapshot, g);
+									this.last_shoot_time = System.currentTimeMillis();
+									break;
+								} else {
+									this.currentWeapon.reload();
+									break;
 								}
 							}
 						} else if (p.team == 1 && this.team == 2) {
 							double distance = Utils.distanceBetween(this, p);// getting
 							// distance
 							if (distance <= (7 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								System.out.println("Found a player to shoot at...");
+								//System.out.println("Found a player to shoot at...");
 								// form new snap shot and fire weapon
 								InputSnapshot ai_snapshot = new InputSnapshot(
 										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
 								if (this.currentWeapon.ammo_in_clip > 1) {
 									this.currentWeapon.update(this, ai_snapshot, g);
 									this.last_shoot_time = System.currentTimeMillis();
+									break;
 								} else {
 									this.currentWeapon.reload();
+									break;
 								}
 							}
 						}
 					}
-
 				}
+			}
 
-				// get initial path
-				if (this.last_path_update_time == 0) {
-					get_path(g);
+			// get initial path
+			if (this.last_path_update_time == 0) {
+				get_path(g);
+			}
+
+			// if its been 2.5 seconds or the path is almost done update the
+			// path.
+			if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
+					|| (this.get_distance_to_target() < 10
+							&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
+				get_path(g);
+			}
+
+			if (this.moving && path != null) {
+				if (this.new_path && (System.currentTimeMillis() - temp_move_time) > 150) {
+					this.cur_p_node = path.size() - 1;
+					this.x = path.get(cur_p_node).x;
+					this.y = path.get(cur_p_node).y;
+					this.new_path = false;
+					this.cur_p_node--;
+					this.temp_move_time = System.currentTimeMillis();// time
+																		// of
+																		// movement
 				}
-
-				// if its been 2.5 seconds or the path is almost done update the
-				// path.
-				if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
-						|| (this.get_distance_to_target() < 10
-								&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
-					get_path(g);
-				}
-
-				if (this.moving && path != null) {
-					if (this.new_path && (System.currentTimeMillis() - temp_move_time) > 150) {
-						this.cur_p_node = path.size() - 1;
-						this.x = path.get(cur_p_node).x;
-						this.y = path.get(cur_p_node).y;
-						this.new_path = false;
-						this.cur_p_node--;
-						this.temp_move_time = System.currentTimeMillis();// time
-																			// of
-																			// movement
+				if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
+					// System.out.println("waited " +
+					// (System.currentTimeMillis()
+					// -temp_move_time) + " milliseconds to move");
+					while (this.cur_p_node >= path.size()) {
+						this.cur_p_node--;// just for safety
 					}
-					if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-						// System.out.println("waited " +
-						// (System.currentTimeMillis()
-						// -temp_move_time) + " milliseconds to move");
-						while (this.cur_p_node >= path.size()) {
-							this.cur_p_node--;// just for safety
-						}
-						this.x = path.get(cur_p_node).x;
-						this.y = path.get(cur_p_node).y;
-						this.cur_p_node--;
-						this.temp_move_time = System.currentTimeMillis();// time
-																			// of
-																			// movement
-					}
+					this.x = path.get(cur_p_node).x;
+					this.y = path.get(cur_p_node).y;
+					this.cur_p_node--;
+					this.temp_move_time = System.currentTimeMillis();// time
+																		// of
+																		// movement
 				}
 			}
 		}

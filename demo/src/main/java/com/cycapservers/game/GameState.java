@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
@@ -146,8 +147,12 @@ public class GameState extends TimerTask
 		}
 		
 		// updating AI players
-		for (AI_player ai : AI_players) {
-				ai.update(this, null);
+		try{
+			for (AI_player ai : AI_players) {
+					ai.update(this, null);
+			}
+		}catch(ConcurrentModificationException e){
+			System.out.println("wadddupppppp");
 		}
 		
 		//////Check For Flag captures//////
@@ -273,7 +278,14 @@ public class GameState extends TimerTask
 			System.out.println("could not send password for " + client_id + "! error!");
 			e.printStackTrace();
 		}
+		
 		this.add_AI_player(2, "scout");
+		this.add_AI_player(1, "scout");
+		this.add_AI_player(2, "scout");
+//		this.add_AI_player(2, "scout");
+//		this.add_AI_player(1, "scout");
+//		this.add_AI_player(1, "scout");
+//		this.add_AI_player(1, "scout");
 	}
 	
 	public void add_AI_player(int team, String role) {
