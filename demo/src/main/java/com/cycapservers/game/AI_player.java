@@ -69,7 +69,7 @@ public class AI_player extends GameCharacter {
 				}
 			}
 		}
-//		System.out.println("pathting to: " + target);
+
 		path_gen = new AI_path_generator(this, g);
 		if (this.moving && g.players.size() > 0) {
 			this.path = path_gen.get_a_star_path(this, target);
