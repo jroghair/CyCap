@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -538,25 +539,53 @@ public class AccountController {
 		 */
 		return "accounts/leaderboards";
 	}
-	/*
-	 * @RequestMapping(value = "/accounts/leaderboards", method =
-	 * RequestMethod.POST) public String LeaderBoardsPost(Model
-	 * model, @SessionAttribute("account") Account account,
-	 * 
-	 * @ModelAttribute("PlayerLBDataList") PlayerLBDataList playerLBDataList) {
-	 * logger.info("Entered into get leaderboards Post controller Layer");
-	 * Collection<Profiles> overall = profilesRepository.findByAllProfiles();
-	 * List<PlayerLBData> list = new ArrayList<PlayerLBData>(); for (Profiles x
-	 * : overall) { PlayerLBData p = new PlayerLBData(x.getUserID(),
-	 * x.getChampion(), x.getLevel(), x.getKills(), x.getDeaths(),
-	 * x.getGamesplayed(), x.getGamewins()); list.add(p); }
-	 * 
-	 * playerLBDataList.setPlayerLBDataList(list);
-	 * 
-	 * model.addAttribute("playerLBDataList",
-	 * playerLBDataList.getPlayerLBDataList());
-	 * 
-	 * return "accounts/leaderboards"; }
-	 */
+
+	@RequestMapping(value = "/accounts/profile", method = RequestMethod.POST)
+	public String profilePagePost(@RequestParam("role") String role, HttpServletRequest request,
+			@SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
+		logger.info("Entered into get Profile Post controller Layer");
+
+		System.out.println(role);
+		// model.addAttribute("account", account);]
+		/*
+		 * System.out.println(account.getUserID()); Profiles infantry =
+		 * profilesRepository.findByUserID(account.getUserID(), "infantry");
+		 * Profiles recruit =
+		 * profilesRepository.findByUserID(account.getUserID(), "recruit");
+		 * Profiles scout = profilesRepository.findByUserID(account.getUserID(),
+		 * "scout");
+		 * 
+		 * int kills = infantry.getKills() + recruit.getKills() +
+		 * scout.getKills(); int deaths = infantry.getDeaths() +
+		 * recruit.getDeaths() + scout.getDeaths(); int gamewins =
+		 * infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins();
+		 * int gamelosses = infantry.getGamelosses() + recruit.getGamelosses() +
+		 * scout.getGamelosses(); int gamesplayed = infantry.getGamesplayed() +
+		 * recruit.getGamesplayed() + scout.getGamesplayed(); int flaggrabs =
+		 * infantry.getFlaggrabs() + recruit.getFlaggrabs() +
+		 * scout.getFlaggrabs(); int flagreturns = infantry.getFlagreturns() +
+		 * recruit.getFlagreturns() + scout.getFlagreturns(); int flagcaptures =
+		 * infantry.getFlagcaptures() + recruit.getFlagcaptures() +
+		 * scout.getFlagcaptures(); int experience = infantry.getExperience() +
+		 * recruit.getExperience() + scout.getExperience(); int level =
+		 * experience / 100;
+		 * 
+		 * 
+		 * profiles.setUserID(account.getUserID());
+		 * profiles.setChampion("Overall"); profiles.setKills(kills);
+		 * profiles.setDeaths(deaths); profiles.setGamewins(gamewins);
+		 * profiles.setGamelosses(gamelosses);
+		 * profiles.setGamesplayed(gamesplayed);
+		 * profiles.setFlaggrabs(flaggrabs);
+		 * profiles.setFlagreturns(flagreturns);
+		 * profiles.setFlagcaptures(flagcaptures);
+		 * profiles.setExperience(experience);
+		 * 
+		 * System.out.println("is profiles nullFINAL?" + profiles == null);
+		 * 
+		 * model.addAttribute("profiles", profiles);
+		 */
+		return "accounts/profile";
+	}
 
 }

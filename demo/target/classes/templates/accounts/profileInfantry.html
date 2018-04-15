@@ -8,16 +8,42 @@
   <li><a href="/accounts/profile">Profile</a></li>
 </ul>
 </head>
+<h1 id="user"/> 
 
 
-<h1> Account Profile</h1>
+<form>	
+<input type="button" class="button button1" onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>	
+<input type="button" class="button button1" onclick="location.href='/accounts/friends'" value="Friends List"/>
+</form>
+
+ 
+ 
 <form>
-<input type="button"  onclick="location.href='/accounts/profile'" value="Overall"/>
-<input type="button"  onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
-<input type="button"  onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
-<input type="button"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input type="button" class="button button1" onclick="location.href='/accounts/profile'" value="Overall"/>
+<input type="button"  class="button button1" onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
+<input type="button"  class="button button1" onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
+<input type="button"  class="button button1" onclick="location.href='/accounts/profileScout'" value="Scout"/>
 </form>
 <style>
+.button {
+
+    background-color: #4CAF50; /* Green  #4CAF50;*/
+    border: 1px solid #ddd;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    
+}
+.button1:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
 ul {
     list-style-type: none;
@@ -113,7 +139,7 @@ li a:hover {
 	/*<![CDATA[*/
 	
 	let temp = /*[[${account.getUserID()}]]*/;
-	temp += "\'s Profile Page";
+	temp += "\'s Profile";
 	document.getElementById("user").innerHTML = temp;
 	
 	/*]]>*/

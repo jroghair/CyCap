@@ -7,12 +7,44 @@
   <li><a href="/game_list">Available Games</a></li>
   <li><a href="/accounts/profile">Profile</a></li>
 </ul>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
 </head>
 
 <h1> CyCap LeaderBoards</h1>
 
 <style>
+#myInput {
+  background-image: url(https://www.w3schools.com/css/searchicon.png);
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 10%;
+  height: 10%
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
 
+.button {
+
+    background-color: #4CAF50; /* Green  #4CAF50;*/
+    border: 1px solid #ddd;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    =
+}
+.button1:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
 ul {
     list-style-type: none;
     margin: 0;
@@ -66,9 +98,9 @@ li a:hover {
 <button id='btnFilter'>Go</button> 
  -->
  <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/> 
- <input type="button" id="Infantry" th:onclick= "'javascript:infantry(\''+'infantry'+'\');'" value="Infantry Rankings"/> 
- <input type="button" id="recruit" th:onclick= "'javascript:recruit(\''+'recruit'+'\');'" value="Recruit Rankings"/>
- <input type="button" id="scout" th:onclick= "'javascript:scout(\''+'scout'+'\');'" value="Scout Rankings"/>
+ <input type="button" class="button button1" id="Infantry" th:onclick= "'javascript:infantry(\''+'infantry'+'\');'" value="Infantry Rankings"/> 
+ <input type="button" class="button button1" id="recruit" th:onclick= "'javascript:recruit(\''+'recruit'+'\');'" value="Recruit Rankings"/>
+ <input type="button"  class="button button1" id="scout" th:onclick= "'javascript:scout(\''+'scout'+'\');'" value="Scout Rankings"/>
   
 <script th:inline="javascript">
 	function playerSearch(){
@@ -259,14 +291,15 @@ function sortTableNumeric(n) {
  <table id="stats">
     <thead>
       <tr>
-      	<th th:onclick="'javascript:sortTableString(0);'">Player</th>
-      	<th th:onclick="'javascript:sortTableString(1);'">Character Class</th>
-      	<th th:onclick="'javascript:sortTableNumeric(2);'">Level</th>
-        <th th:onclick="'javascript:sortTableNumeric(3);'">Kills</th>
-        <th th:onclick="'javascript:sortTableNumeric(4);'">Deaths</th>
-        <th th:onclick="'javascript:sortTableNumeric(5);'">Game Average Kills</th>
-        <th th:onclick="'javascript:sortTableNumeric(6);'">Kill/Death Ratio</th>
-        <th th:onclick="'javascript:sortTableNumeric(7);'">Game Win Ratio</th>  
+      	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
+      	<th th:onclick="'javascript:sortTableString(1);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Character Class</th>
+      	<th th:onclick="'javascript:sortTableNumeric(2);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Level</th>
+        <th th:onclick="'javascript:sortTableNumeric(3);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Kills</th>
+        <th th:onclick="'javascript:sortTableNumeric(4);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Deaths</th>
+        <th th:onclick="'javascript:sortTableNumeric(5);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Kill/Death Ratio</th>
+        <th th:onclick="'javascript:sortTableNumeric(6);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Games Played</th>
+        <th th:onclick="'javascript:sortTableNumeric(7);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Game Average Kills</th>      
+        <th th:onclick="'javascript:sortTableNumeric(8);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Game Win Ratio</th>  
       </tr>
     </thead>
     <tbody>
@@ -277,8 +310,9 @@ function sortTableNumeric(n) {
      	 		<td th:text="${playerLBDataList.level}" class="user">...</td>
      	 		<td th:text="${playerLBDataList.kills}" class="user">...</td>
      	 		<td th:text="${playerLBDataList.deaths}" class="user">...</td>
-     	 		<td th:text="${playerLBDataList.averagekills}" class="user">...</td>
      	 		<td th:text="${playerLBDataList.kdratio}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.gamesplayed}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.averagekills}" class="user">...</td>
      	 		<td th:text="${playerLBDataList.winrate}" class="user">...</td>	 		
       		</tr>
    		</th:block>

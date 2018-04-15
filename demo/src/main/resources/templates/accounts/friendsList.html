@@ -1,14 +1,55 @@
 
 <html>
+<style>
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+</style>
+
+
 <head>
+<ul>
+  <li><a class="active" href="/accounts/chat">Chat</a></li>
+  <li><a href="/game_list">Available Games</a></li>
+  <li><a href="/accounts/profile">Profile</a></li>
+</ul>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
 </head>
+<h1 id="user"/> 
+
+
 	<h5 id="user"> </h5> 	<h2> Friends List</h2>
 
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';	
+		
+		let temp = /*[[${account.getUserID()}]]*/;
+		temp += "\'s FriendsList";
+		document.getElementById("user").innerHTML = temp;
+		
+		
 		/*]]>*/
 	</script>
 	
@@ -43,6 +84,7 @@
 	<!--
 	<script  th:inline="javascript">
 	function showTdSecond(_this) {
+	
 		var friend = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
 		document.getElementById('remove').value = friend; 
  		alert(_this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
@@ -51,7 +93,10 @@
 	-->
 	
 	</td> 
-</form>			
+</form>	
+
+
+		
     </tr>
     </tbody>
   </table>

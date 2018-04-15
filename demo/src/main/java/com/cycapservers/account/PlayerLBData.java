@@ -70,18 +70,18 @@ public class PlayerLBData {
 		this.deaths = deaths;
 		this.gamesplayed = gamesplayed;
 		if (gamesplayed != 0) {
-			this.averagekills = kills / gamesplayed;
-			this.averagedeaths = deaths / gamesplayed;
-			this.winrate = gamewins / gamesplayed;
+			this.averagekills = Math.floor((double) kills / gamesplayed * 100) / 100;
+			this.averagedeaths = Math.floor((double) deaths / gamesplayed) / 100;
+			this.winrate = Math.floor((double) gamewins / gamesplayed) / 100;
 
 		} else {
 			this.averagekills = 0;
 			this.averagedeaths = 0;
 			this.winrate = 0;
 		}
-		if (this.deaths != 0)
-			this.kdratio = kills / deaths;
-		else
+		if (this.deaths != 0) {
+			this.kdratio = Math.floor((double) kills / deaths * 100) / 100;
+		} else
 			this.kdratio = 0;
 	}
 
