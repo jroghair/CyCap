@@ -113,4 +113,14 @@ public class AccountController {
     public String unsuccessfulLogin() {
         return "accounts/unsuccessfullogin";
     }
+    
+    @GetMapping("/Lobby")
+    public String Lobby(){
+    	return "Lobby";
+    }
+    
+    @GetMapping("/LobbyScreen")
+    public String LobbyScreen(){
+    	return "LobbyScreen";
+    }
 }
