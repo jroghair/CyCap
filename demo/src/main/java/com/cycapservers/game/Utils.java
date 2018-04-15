@@ -229,7 +229,7 @@ public final class Utils{
 	
 	public static Point get_nearest_map_node(Entity e, GameState g) {
 		
-		System.out.println("nearest node argument x: " + e.x + " y: " + e.y);
+		//System.out.println("nearest node argument x: " + e.x + " y: " + e.y);
 		
 		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
@@ -240,7 +240,7 @@ public final class Utils{
 		while (g.map.get(i).get(j).x != x) {
 			i++;
 		}
-		System.out.println(g.map.get(i).get(j).toString());
+//		System.out.println(g.map.get(i).get(j).toString());
 		if (g.map.get(i).get(j).node_trav != false) {
 			return new Point(i, j);
 		} else {
@@ -254,7 +254,7 @@ public final class Utils{
 			while (g.map.get(i).get(j).x != x) {
 				i++;
 			}
-			System.out.println(g.map.get(i).get(j).toString());
+//			System.out.println(g.map.get(i).get(j).toString());
 			if (g.map.get(i).get(j).node_trav != false) {
 				return new Point(i, j);
 			} else {
@@ -268,7 +268,7 @@ public final class Utils{
 				while (g.map.get(i).get(j).x != x) {
 					i++;
 				}
-				System.out.println(g.map.get(i).get(j).toString());
+//				System.out.println(g.map.get(i).get(j).toString());
 				if (g.map.get(i).get(j).node_trav != false) {
 					return new Point(i, j);
 				} else {
@@ -282,7 +282,7 @@ public final class Utils{
 					while (g.map.get(i).get(j).x != x) {
 						i++;
 					}
-					System.out.println(g.map.get(i).get(j).toString());
+//					System.out.println(g.map.get(i).get(j).toString());
 					if (g.map.get(i).get(j).node_trav != false) {
 						return new Point(i, j);
 					} else {
@@ -460,4 +460,35 @@ public final class Utils{
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
 		return nodes.get(RANDOM.nextInt(nodes.size()));
 	}
+	
+	public static boolean checkLineOfSight(Entity ent1, Entity ent2, GameState g){
+		System.out.println("Checking line of sight...");
+		double delta_x = ent1.x - ent2.x;
+		double delta_y = ent1.y - ent2.y;
+		
+		//check 8 random points along the way
+		for(int i = 0;i < 8;i++){
+			double x_coord = (ent1.x + (delta_x/8.0) * i);
+			double y_coord = (ent1.y + (delta_y/8.0) * i);
+			
+			Entity e = new Entity(0,0,x_coord, 
+					y_coord, 0.0, 0.0, 0.0, 0.0, "");
+			Point temp = get_nearest_map_node(e, g);
+			if(temp == null){
+				System.out.println("Won't work...");
+				return false;
+			}
+		}
+		System.out.println("Will work");
+		return true;
+	}
+	
 }
+
+
+
+
+
+
+
+

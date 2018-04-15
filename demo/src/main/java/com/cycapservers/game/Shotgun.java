@@ -37,7 +37,7 @@ public class Shotgun extends Weapon {
 
 	@Override
 	public void fire(GameCharacter p, InputSnapshot s, GameState g) {
-		System.out.println("Firing");
+		//System.out.println("Firing");
 		this.ammo_in_clip--; //lose one bullet from the clip
 		g.new_sounds.add(p.x + "," + p.y + "," + this.shot_sound); //make bullet sound
 		int num_of_pellets = 5;
