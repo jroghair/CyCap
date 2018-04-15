@@ -9,7 +9,7 @@
 </ul>
 </head>
 
-<h1> LeaderBoards</h1>
+<h1> CyCap LeaderBoards</h1>
 
 <style>
 
@@ -167,18 +167,106 @@ li a:hover {
 </script>
 
 
+<script>
+function sortTableString(n) {
+    /*<![CDATA[*/
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("stats");
+  switching = true;
+  dir = "asc"; 
+  while (switching) {
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;      
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+  /*]]>*/
+}
+</script>
+
+<script>
+function sortTableNumeric(n) {
+    /*<![CDATA[*/
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("stats");
+  switching = true;
+  dir = "asc"; 
+  while (switching) {
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      x=parseFloat(x.innerHTML);
+      console.log(parseFloat(x.innerHTML));
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      y=parseFloat(y.innerHTML);
+      if (dir == "asc") {
+        if (x> y) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x < y) {
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;      
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+  /*]]>*/
+}
+</script>
+
+
+
 <body>
  <table id="stats">
     <thead>
       <tr>
-      	<th>Player</th>
-      	<th>Character Class</th>
-      	<th>Level</th>
-        <th>Kills</th>
-        <th>Deaths</th>
-        <th>Game Average Kills</th>
-        <th>Kill/Death Ratio</th>
-        <th>Game Win Ratio</th>  
+      	<th th:onclick="'javascript:sortTableString(0);'">Player</th>
+      	<th th:onclick="'javascript:sortTableString(1);'">Character Class</th>
+      	<th th:onclick="'javascript:sortTableNumeric(2);'">Level</th>
+        <th th:onclick="'javascript:sortTableNumeric(3);'">Kills</th>
+        <th th:onclick="'javascript:sortTableNumeric(4);'">Deaths</th>
+        <th th:onclick="'javascript:sortTableNumeric(5);'">Game Average Kills</th>
+        <th th:onclick="'javascript:sortTableNumeric(6);'">Kill/Death Ratio</th>
+        <th th:onclick="'javascript:sortTableNumeric(7);'">Game Win Ratio</th>  
       </tr>
     </thead>
     <tbody>
