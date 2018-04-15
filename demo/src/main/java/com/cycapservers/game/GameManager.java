@@ -30,7 +30,7 @@ public class GameManager {
 	public GameManager(){
 		timer = new Timer(true);
 		games = new ArrayList<GameState>();
-		games.add(new GameState());
+		games.add(new CaptureTheFlag(0));
 		timer.scheduleAtFixedRate(games.get(0), 500, 100);
 	}
 	

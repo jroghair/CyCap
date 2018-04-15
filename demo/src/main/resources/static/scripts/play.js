@@ -55,7 +55,6 @@ function GameState(role){
 	this.pw;
 	
 	this.intp_entities = [];
-	this.entities = [];
 	this.walls = []; //all of the walls in the game
 	this.part_fx = []; //particle effects
 	this.map; //the set of tiles and map data
@@ -70,13 +69,16 @@ function GameState(role){
 		this.currentServerTimeStep = Date.now() - this.lastTime;
 		this.lastTime = Date.now();
 		
-		//update every single game object
 		let objects = message.split(":");
 		
+		//set all interpolating entities' updated fields to false
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].updated = false;
 		}
-		this.entities = [];
+		for(let i = 0; i < this.part_fx.length; i++){
+			this.part_fx[i].updated = false;
+		}
+		
 		for(let i = 0; i < objects.length; i++){
 			let obj = objects[i].split(",");
 			
@@ -117,6 +119,20 @@ function GameState(role){
 					sound_test.play();
 				}
 			}
+			else if(obj[0] == "003"){
+				let found = false;
+				for(let i = 0; i < this.part_fx.length; i++){
+					if(this.part_fx[i].entity_id == obj[1]){
+						found = true;
+						this.part_fx[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]), this.currentServerTimeStep);
+						this.part_fx[i].updated = true;
+						break;
+					}
+				}
+				if(!found){
+					this.part_fx.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9])));
+				}
+			}
 			else if(obj[0] == "012"){
 				//add wall
 				this.addWall(obj);
@@ -145,6 +161,11 @@ function GameState(role){
 		for(let i = this.intp_entities.length - 1; i >= 0; i--){
 			if(this.intp_entities[i].updated == false){
 				this.intp_entities.splice(i, 1);
+			}
+		}
+		for(let i = this.part_fx.length - 1; i >= 0; i--){
+			if(this.part_fx[i].updated == false){
+				this.part_fx.splice(i, 1);
 			}
 		}
 		
@@ -179,6 +200,9 @@ function GameState(role){
 		for(let i = 0; i < this.intp_entities.length; i++){
 			this.intp_entities[i].update();
 		}
+		for(let i = 0; i < this.part_fx.length; i++){
+			this.part_fx[i].update();
+		}
 	}
 	
 	this.drawGameState = function(){
@@ -197,14 +221,9 @@ function GameState(role){
 		}
 		this.player.draw();
 		
-		for(let i = 0; i < this.entities.length; i++){
-			this.entities[i].draw();
-		}
-		/*
 		for(let i = 0; i < this.part_fx.length; i++){
 			this.part_fx[i].draw();
 		}
-		*/
 	}
 }
 
@@ -237,10 +256,10 @@ function setup() {
 	map = new TiledBackground(background_tiles);
 	
 	//////GUI ELEMENTS//////
-	guis.push(new HealthGUI(20, gui_canvas.height - 20, 200, 20)); //health bar
+	guis.push(new HealthGUI(30, gui_canvas.height - 20, 200, 20)); //health bar
 	guis.push(new WeaponSelectGUI());
 	guis.push(new ItemSlotGUI(gui_canvas.width - 45, gui_canvas.height - 45));
-	guis.push(new AmmoGUI(20, gui_canvas.height - 50, 20, 200, 5));
+	guis.push(new AmmoGUI(30, gui_canvas.height - 50, 20, 200, 5));
 	respawnCounter = new  RespawnCounter(gui_canvas.width/2, gui_canvas.height/2, 9900);
 	gameScoreGUI = new GameScoreGUI(gui_canvas.width/2, 0, gameState.game_mode);
 	////////////////////////
@@ -436,7 +455,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
-			this.sprite = this.image.sprites[this.sprIdx]; //make sure the correct sprite is being displayed
+			this.sprite = this.image.sprites[Math.floor(this.sprIdx)]; //make sure the correct sprite is being displayed
 			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
 			//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
 			context.rotate(this.r); //this is in radians

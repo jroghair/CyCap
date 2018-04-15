@@ -16,7 +16,9 @@ public class ArtilleryShell extends Bullet{
 	protected double start_height;
 	
 	protected double v_initial;
-	protected double max_height;
+	protected double max_mulitplier;
+	protected double max_height; //for physics
+	protected double formula_m;
 	
 	/**
 	 * the range, in pixels, in which a player will be damaged if the conditions are correct
@@ -49,7 +51,9 @@ public class ArtilleryShell extends Bullet{
 		this.xRatio = 1000 * (this.endX - this.startX) / this.lifeSpan; //in pixels per second
 		this.yRatio = 1000 * (this.endY - this.startY) / this.lifeSpan; 
 		this.v_initial = Utils.GRAVITY * this.lifeSpan / 1000;
-		this.max_height = max_height;
+		this.max_mulitplier = max_height;
+		this.max_height = (-Utils.GRAVITY * Math.pow(this.lifeSpan/2000, 2)) + (this.v_initial * this.lifeSpan/2000);
+		this.formula_m = (this.max_mulitplier - 1)/this.max_height;
 		
 		this.damage_range = (int) (1.5 * Utils.GRID_LENGTH); //TODO: pass this as a parameter
 	}
@@ -57,7 +61,10 @@ public class ArtilleryShell extends Bullet{
 	public boolean update(GameState game) {
 		double total_time = (double) (System.currentTimeMillis() - this.birthTime) / 1000.0;
 		if((total_time*1000) > this.lifeSpan){
-			//TODO: add new particle effect (explosion) & sound & explosion ground mask
+			String id = Utils.getGoodRandomString(game.usedEntityIds, game.entity_id_len);
+			game.particles.add(new Particle(7, 0, this.endX, this.endY, 3*Utils.GRID_LENGTH, 3*Utils.GRID_LENGTH, 0, 1.0, id, 74, 2500, false, 0, 0, 0, 0, 0, 0));
+			game.usedEntityIds.add(id);
+			//TODO: add sound & explosion ground mask
 			for(Player p : game.players) {
 				if(Utils.distanceBetween(this, p) <= this.damage_range) {
 					if(game.friendlyFire || (p.team != this.team) || p.equals(this.owner)) {
@@ -77,11 +84,10 @@ public class ArtilleryShell extends Bullet{
 		this.x += (this.xRatio * game.currentDeltaTime);
 		this.y += (this.yRatio * game.currentDeltaTime);
 
-		double temp_multiplier = 0.0907 * ((-9.8 * total_time * total_time) + (this.v_initial * total_time)) + 1;
-		this.drawWidth = this.start_width * temp_multiplier;
+		double temp_multiplier = this.formula_m * ((-Utils.GRAVITY * total_time * total_time) + (this.v_initial * total_time)) + 1;
+		this.setDrawWidth(this.start_width * temp_multiplier);
 		//if(Utils.DEBUG) System.out.println(this.drawWidth);
-		this.drawHeight = this.start_height * temp_multiplier;
-		
+		this.setDrawHeight(this.start_height * temp_multiplier);
 		return false;
 	}
 

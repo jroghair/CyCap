@@ -67,14 +67,15 @@ public final class MapLoader {
 		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
 		g.pu_handler.setNodeList(pu_nodes);
 		
-		g.team1_base = new GridLockedNode((short) 4, (short) 25);
-		g.team2_base = new GridLockedNode((short) 38, (short) 2);
-		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
-		g.team1_flag = new Flag(g.team1_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 1);
-		g.usedEntityIds.add(id);
-		id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
-		g.team2_flag = new Flag(g.team2_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 2);
-		g.usedEntityIds.add(id);
+		if(g.getClass().equals(CaptureTheFlag.class)) {
+			loadMap0_CTFElements((CaptureTheFlag) g);
+		}
+		else if(g.getClass().equals(FreeForAll.class)) {
+			loadMap0_FFAElements((FreeForAll) g);
+		}
+		else if(g.getClass().equals(TeamDeathMatch.class)) {
+			loadMap0_TDMElements((TeamDeathMatch) g);
+		}
 		
 		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
 		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
@@ -83,6 +84,25 @@ public final class MapLoader {
 		g.spawns.add(new SpawnNode((short) 38, (short) 1, 2));
 		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
 		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
+	}
+	
+	private static void loadMap0_CTFElements(CaptureTheFlag g) {
+		g.team1_base = new GridLockedNode((short) 4, (short) 25);
+		g.team2_base = new GridLockedNode((short) 38, (short) 2);
+		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team1_flag = new Flag(g.team1_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 1);
+		g.usedEntityIds.add(id);
+		id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+		g.team2_flag = new Flag(g.team2_base, Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, id, 2);
+		g.usedEntityIds.add(id);
+	}
+	
+	private static void loadMap0_FFAElements(FreeForAll g) {
+		
+	}
+	
+	private static void loadMap0_TDMElements(TeamDeathMatch g) {
+		
 	}
 
 }

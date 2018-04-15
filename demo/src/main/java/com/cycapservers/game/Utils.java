@@ -105,8 +105,8 @@ public final class Utils{
 			return false;
 		}
 		else {
-			if(n.getX() > (ent.x - ent.drawWidth/2) && n.getX() < (ent.x + ent.drawWidth/2)) {
-				if(n.getY() > (ent.y - ent.drawHeight/2) && n.getY() < (ent.y + ent.drawHeight/2)) {
+			if(n.getX() > (ent.x - ent.getDrawWidth()/2) && n.getX() < (ent.x + ent.getDrawWidth()/2)) {
+				if(n.getY() > (ent.y - ent.getDrawHeight()/2) && n.getY() < (ent.y + ent.getDrawHeight()/2)) {
 					return true;
 				}
 			}
@@ -127,15 +127,15 @@ public final class Utils{
 		}
 		
 		//ADVANCED COLLISION DETECTION
-		boolean y_collision = isBetween(ent_1.y - (ent_1.drawHeight/2), ent_2.y - (ent_2.drawHeight/2), ent_2.y + (ent_2.drawHeight/2)) || isBetween(ent_1.y + (ent_1.drawHeight/2), ent_2.y - (ent_2.drawHeight/2), ent_2.y + (ent_2.drawHeight/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.drawHeight/2), ent_2.y + (ent_2.drawHeight/2));
+		boolean y_collision = isBetween(ent_1.y - (ent_1.getDrawHeight()/2), ent_2.y - (ent_2.getDrawHeight()/2), ent_2.y + (ent_2.getDrawHeight()/2)) || isBetween(ent_1.y + (ent_1.getDrawHeight()/2), ent_2.y - (ent_2.getDrawHeight()/2), ent_2.y + (ent_2.getDrawHeight()/2)) || isBetween(ent_1.y, ent_2.y - (ent_2.getDrawHeight()/2), ent_2.y + (ent_2.getDrawHeight()/2));
 
-		if(isBetween(ent_1.x - (ent_1.drawWidth/2), ent_2.x - (ent_2.drawWidth/2), ent_2.x + (ent_2.drawWidth/2)) && y_collision){
+		if(isBetween(ent_1.x - (ent_1.getDrawWidth()/2), ent_2.x - (ent_2.getDrawWidth()/2), ent_2.x + (ent_2.getDrawWidth()/2)) && y_collision){
 			return true;
 		}
-		else if(isBetween(ent_1.x + (ent_1.drawWidth/2), ent_2.x - (ent_2.drawWidth/2), ent_2.x + (ent_2.drawWidth/2)) && y_collision){
+		else if(isBetween(ent_1.x + (ent_1.getDrawWidth()/2), ent_2.x - (ent_2.getDrawWidth()/2), ent_2.x + (ent_2.getDrawWidth()/2)) && y_collision){
 			return true;
 		}
-		else if(isBetween(ent_1.x, ent_2.x - (ent_2.drawWidth/2), ent_2.x + (ent_2.drawWidth/2)) && y_collision){
+		else if(isBetween(ent_1.x, ent_2.x - (ent_2.getDrawWidth()/2), ent_2.x + (ent_2.getDrawWidth()/2)) && y_collision){
 			return true;
 		}
 		else{
