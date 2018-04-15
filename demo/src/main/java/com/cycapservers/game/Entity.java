@@ -22,7 +22,8 @@ public class Entity {
 	
 	protected double alpha;
 	
-	public Entity(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id){
+	public Entity(int id, int sprIdx, double x, double y, double w, 
+			double h, double r, double a, String entity_id){
 		this.imageId = id;
 		this.spriteIndex = sprIdx;
 		this.x = x;

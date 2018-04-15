@@ -85,7 +85,7 @@ public class GameState extends TimerTask
 		this.team_scores.put(2, 0);
 		
 		friendlyFire = false;
-		respawnTime = 10000; //10 seconds respawn time
+		respawnTime = 10000; //10 seconds re-spawn time
 		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
 		
 		MapLoader.loadPredefinedMap(0, this);//load up the map
@@ -93,11 +93,12 @@ public class GameState extends TimerTask
 		this.AI_players = new ArrayList<AI_player>();
 		// generate the map when player is constructed
 		this.map = Utils.generate_node_array(this);
-		//this.add_AI_player(1, "recruit");
-		//this.add_AI_player(2, "recruit");
 	}
 
 	public void updateGameState() {
+//		if(this.players.size() > 0){
+//			System.out.println(this.players.get(0).is_invincible);
+//		}
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
 		this.lastGSMessage = System.currentTimeMillis();
 		
@@ -120,7 +121,8 @@ public class GameState extends TimerTask
 		ListIterator<Bullet> iter = this.bullets.listIterator();
 		while(iter.hasNext()){
 			Bullet temp = iter.next();
-		    if(temp.update(this)) {
+			boolean update = temp.update(this);
+		    if(update) {
 		    	this.usedEntityIds.remove(temp.entity_id);
 		    	iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
 		    }
@@ -253,6 +255,12 @@ public class GameState extends TimerTask
 		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+//		System.out.println("size of spawn node list: " + this.spawns.size());
+//		
+//		for(SpawnNode s : this.spawns){
+//			System.out.println("x : " + s.getX() + " y: " + s.getY());
+//		}
+		
 		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session, new CTF_PlayerStats()));
 		this.userPasswords.add(pass);
 		try {
@@ -265,7 +273,6 @@ public class GameState extends TimerTask
 			System.out.println("could not send password for " + client_id + "! error!");
 			e.printStackTrace();
 		}
-		this.add_AI_player(1, "scout");
 		this.add_AI_player(2, "scout");
 	}
 	
@@ -273,7 +280,7 @@ public class GameState extends TimerTask
 		// make AI player and send map reference
 		//mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
-		System.out.println("length of spawn node list: " + this.spawns.size());
+		//System.out.println("length of spawn node list: " + this.spawns.size());
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this, new CTF_PlayerStats()));
 		this.usedEntityIds.add(s);

@@ -62,11 +62,11 @@ public abstract class Weapon{
 		this.max_ammo_refill = w.max_ammo_refill;
 	}
 	
-	public abstract void update(Player p, InputSnapshot s, GameState g);
+	public abstract void update(GameCharacter p, InputSnapshot s, GameState g);
 	
-	public abstract void checkFire(Player p, InputSnapshot s, GameState g);
+	public abstract void checkFire(GameCharacter p, InputSnapshot s, GameState g);
 	
-	public abstract void fire(Player p, InputSnapshot s, GameState g);
+	public abstract void fire(GameCharacter p, InputSnapshot s, GameState g);
 	
 	public void reload() {
 		int bullets_to_refill = this.mag_size - this.ammo_in_clip;

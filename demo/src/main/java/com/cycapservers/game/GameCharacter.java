@@ -55,7 +55,7 @@ public abstract class GameCharacter extends Entity {
 			this.health -= amount;
 		}
 		if(this.health <= 0){
-			this.die(); //idk what this is gonna do yet
+			this.die(); 
 		}
 	}
 	

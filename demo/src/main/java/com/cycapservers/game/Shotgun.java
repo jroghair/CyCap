@@ -11,8 +11,9 @@ public class Shotgun extends Weapon {
 	}
 
 	@Override
-	public void update(Player p, InputSnapshot s, GameState g) {
+	public void update(GameCharacter p, InputSnapshot s, GameState g) {
 		if(!this.is_reloading){
+			//System.out.println("checking to fire s.mouseclicked: " + s.mouse_clicked + " s.lmb_down: " + s.lmb_down);
 			this.checkFire(p, s, g);
 		}
 		else{
@@ -21,7 +22,7 @@ public class Shotgun extends Weapon {
 	}
 
 	@Override
-	public void checkFire(Player p, InputSnapshot s, GameState g) {
+	public void checkFire(GameCharacter p, InputSnapshot s, GameState g) {
 		if(s.mouse_clicked && ((System.currentTimeMillis() - this.last_shot) >= this.fire_rate)){
 			if(this.ammo_in_clip - 1 != -1){
 				this.fire(p, s, g);
@@ -31,10 +32,12 @@ public class Shotgun extends Weapon {
 				//TODO: play click sound
 			}
 		}
+		
 	}
 
 	@Override
-	public void fire(Player p, InputSnapshot s, GameState g) {
+	public void fire(GameCharacter p, InputSnapshot s, GameState g) {
+		System.out.println("Firing");
 		this.ammo_in_clip--; //lose one bullet from the clip
 		g.new_sounds.add(p.x + "," + p.y + "," + this.shot_sound); //make bullet sound
 		int num_of_pellets = 5;

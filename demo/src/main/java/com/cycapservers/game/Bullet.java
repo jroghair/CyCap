@@ -5,7 +5,7 @@ public class Bullet extends Entity {
 	protected double speed;
 	protected int damage;
 	
-	protected Player owner;
+	protected GameCharacter owner;
 	protected int team;
 	
 	protected double startX;
@@ -18,7 +18,10 @@ public class Bullet extends Entity {
 	protected long lifeSpan;
 	protected long birthTime;
 	
-	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p, String entity_id) {
+	public Bullet(int sprIdx, double startX, double startY, double endX,
+			double endY, double w, double h, double r, double a,
+			double speed, int damage, double variation, GameCharacter p,
+			String entity_id) {
 		super(2, sprIdx, startX, startY, w, h, r, a, entity_id);
 		
 		this.birthTime = System.currentTimeMillis();
@@ -66,11 +69,14 @@ public class Bullet extends Entity {
 				}
 			}
 			for(AI_player ai : game.AI_players) {
+				if(ai.equals(this.owner)){
+					continue;
+					
+				}
 				if(Utils.isColliding(this, ai)) {
-					/* TODO: reinstate damage to AI after it is ready
 					if(ai.team != this.team) {
 						ai.takeDamage(this.damage);
-					}*/
+					}
 					return true;
 				}
 			}

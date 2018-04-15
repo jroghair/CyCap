@@ -18,12 +18,12 @@ public final class Utils{
 	public final static Random RANDOM = new Random();
 	
 	//////THE WEAPONS//////
-	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 4, 6000, 0.35);
-	public final static Pistol M1911 = new Pistol("Pistol", 10, 175, 400, 8, 4, 200, 0.05);
-	public final static Shotgun SAWED_OFF_SHOTGUN = new Shotgun("Sawed-Off Shotgun", 37, 350, 550, 2, 10, 2500, 0.55);
-	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
-	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
-	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
+	public final static Shotgun REMINGTON_870 = new Shotgun("Remington870", 25, 500, 500, 5, 400, 6000, 0.35);
+	public final static Pistol M1911 = new Pistol("Pistol", 10, 175, 400, 8, 400, 200, 0.05);
+	public final static Shotgun SAWED_OFF_SHOTGUN = new Shotgun("Sawed-Off Shotgun", 37, 350, 550, 2, 1000, 2500, 0.55);
+	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 400, 500, 0.1);
+	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 300, 1200, 0.08);
+	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 200, 1750, 0.15);
 	
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
@@ -228,6 +228,9 @@ public final class Utils{
 	}
 	
 	public static Point get_nearest_map_node(Entity e, GameState g) {
+		
+		System.out.println("nearest node argument x: " + e.x + " y: " + e.y);
+		
 		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		short i = 0, j = 0;
@@ -237,6 +240,7 @@ public final class Utils{
 		while (g.map.get(i).get(j).x != x) {
 			i++;
 		}
+		System.out.println(g.map.get(i).get(j).toString());
 		if (g.map.get(i).get(j).node_trav != false) {
 			return new Point(i, j);
 		} else {
@@ -250,6 +254,7 @@ public final class Utils{
 			while (g.map.get(i).get(j).x != x) {
 				i++;
 			}
+			System.out.println(g.map.get(i).get(j).toString());
 			if (g.map.get(i).get(j).node_trav != false) {
 				return new Point(i, j);
 			} else {
@@ -263,6 +268,7 @@ public final class Utils{
 				while (g.map.get(i).get(j).x != x) {
 					i++;
 				}
+				System.out.println(g.map.get(i).get(j).toString());
 				if (g.map.get(i).get(j).node_trav != false) {
 					return new Point(i, j);
 				} else {
@@ -276,6 +282,7 @@ public final class Utils{
 					while (g.map.get(i).get(j).x != x) {
 						i++;
 					}
+					System.out.println(g.map.get(i).get(j).toString());
 					if (g.map.get(i).get(j).node_trav != false) {
 						return new Point(i, j);
 					} else {
@@ -431,12 +438,23 @@ public final class Utils{
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes, int team) {
 		List<SpawnNode> goodNodes = new ArrayList<SpawnNode>();
 		System.out.println("Length of spawn nodes: " + nodes.size());
+		
+//		for(SpawnNode s : nodes){
+//			System.out.println("node x: " + s.getX() + " node y: " + s.getY());
+//		}
+		
 		for(SpawnNode n : nodes) {
 			if(n.team == team) {
 				goodNodes.add(n);
 			}
 		}
-		return goodNodes.get(RANDOM.nextInt(goodNodes.size()));
+		
+//		for(SpawnNode s : goodNodes){
+//			System.out.println("Possible node x: " + s.getX() + " node y: " + s.getY());
+//		}		
+		SpawnNode choice = goodNodes.get(RANDOM.nextInt(goodNodes.size())); 
+//		System.out.println("choice x: " + choice.getX() + " choice y: " + choice.getY());
+		return choice;
 	}
 	
 	public static SpawnNode getRandomSpawn(List<SpawnNode> nodes) {
