@@ -365,7 +365,7 @@ public class AccountController {
 		int flagreturns = infantry.getFlagreturns() + recruit.getFlagreturns() + scout.getFlagreturns();
 		int flagcaptures = infantry.getFlagcaptures() + recruit.getFlagcaptures() + scout.getFlagcaptures();
 		int experience = infantry.getExperience() + recruit.getExperience() + scout.getExperience();
-		int level = experience / 100;
+		// int level = ;
 
 		/*
 		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",

@@ -31,38 +31,70 @@ primary key (Id)
 );
 
 
+drop table db309sd1.profiles;
+
 create table db309sd1.profiles(
 Id int NOT NULL AUTO_INCREMENT,
 UserID varchar(255) NOT NULL,
-CharClass varchar(255) NOT NULL,
+Champion varchar(255) NOT NULL,
 Kills int NOT NULL,
 Deaths int NOT NULL,
-GameWins int NOT NULL,
-GameLosses int NOT NULL,
-GamesPlayed int NOT NULL,
-FlagGrabs int NOT NULL,
-FlagReturns int NOT NULL,
-FlagCaptures int NOT NULL,
+Gamewins int NOT NULL,
+Gamelosses int NOT NULL,
+Gamesplayed int NOT NULL,
+Flaggrabs int NOT NULL,
+Flagreturns int NOT NULL,
+Flagcaptures int NOT NULL,
+Experience int NOT NULL,
+Level int NOT NULL,
 primary key (Id)
 );
 
-insert into db309sd1.profiles
-VALUES (1, 'jroghair', 'infantry', 3, 5, 2, 1, 3, 1, 2, 1);
 
-
-
-insert into db309sd1.profiles
-VALUES (2, 'jroghair', 'scout', 3, 5, 2, 1, 3, 1, 2, 1);
-
+ALTER TABLE db309sd1.profiles AUTO_INCREMENT=1;
 
 
 insert into db309sd1.profiles
-VALUES (3, 'jroghair', 'recruit', 3, 5, 2, 1, 3, 1, 2, 1);
+VALUES (1, 'jroghair', 'infantry', 3, 5, 2, 1, 3, 1, 2, 1, 57,1);
+
+
+
+insert into db309sd1.profiles
+VALUES (2, 'jroghair', 'scout', 2, 6, 3, 2, 4, 1, 2, 1, 67,2);
+
+
+
+insert into db309sd1.profiles
+VALUES (3, 'jroghair', 'recruit', 3, 6, 5, 2, 4, 4, 2, 2, 13,8);
 
 
 
 
+insert into db309sd1.profiles
+VALUES (4, 'ted', 'infantry', 3, 5, 2, 1, 3, 1, 2, 1, 57,1);
 
 
+
+insert into db309sd1.profiles
+VALUES (5, 'ted', 'scout', 20, 8, 4, 2, 7, 8, 3, 2, 13,4);
+
+
+
+insert into db309sd1.profiles
+VALUES (6, 'ted', 'recruit', 56, 40, 4, 2, 4, 4, 2, 2, 13,20);
+
+
+insert into db309sd1.profiles
+VALUES (7, 'bryan', 'infantry', 34, 15, 2, 1, 3, 1, 2, 1, 15,9);
+
+
+
+insert into db309sd1.profiles
+VALUES (8, 'bryan', 'scout', 2, 6, 3, 2, 4, 1, 2, 1, 67,2);
+
+
+
+insert into db309sd1.profiles
+VALUES (9, 'bryan', 'recruit', 3, 6, 5, 2, 4, 7, 8, 3, 2,54);
 
 
