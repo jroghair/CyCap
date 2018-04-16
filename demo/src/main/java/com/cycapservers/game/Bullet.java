@@ -76,8 +76,9 @@ public class Bullet extends Entity {
 				if(Utils.isColliding(this, ai)) {
 					if(ai.team != this.team) {
 						ai.takeDamage(this.damage);
+						return true;
 					}
-					return true;
+					
 				}
 			}
 			for(Player p : game.players) {
@@ -87,8 +88,10 @@ public class Bullet extends Entity {
 				if(Utils.isColliding(this, p)) {
 					if(game.friendlyFire || (p.team != this.team)) {
 						p.takeDamage(this.damage);
+						return true;
+
 					}
-					return true;
+					
 				}
 			}
 		}

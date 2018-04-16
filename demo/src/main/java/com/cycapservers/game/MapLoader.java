@@ -80,9 +80,9 @@ public final class MapLoader {
 		g.spawns.add(new SpawnNode((short) 3, (short) 3, 1));
 		g.spawns.add(new SpawnNode((short) 4, (short) 4, 1));
 		g.spawns.add(new SpawnNode((short) 5, (short) 5, 1));
-		g.spawns.add(new SpawnNode((short) 4, (short) 5, 2));
-		g.spawns.add(new SpawnNode((short) 5, (short) 4, 2));
-		g.spawns.add(new SpawnNode((short) 6, (short) 6, 2));
+		g.spawns.add(new SpawnNode((short) 38, (short) 20, 2));
+		g.spawns.add(new SpawnNode((short) 37, (short) 21, 2));
+		g.spawns.add(new SpawnNode((short) 38, (short) 22, 2));
 		
 //		for(SpawnNode s : g.spawns){
 //			System.out.println("added node x: " + s.getX() + " node y: " + s.getY());

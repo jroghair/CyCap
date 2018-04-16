@@ -14,7 +14,7 @@ public final class Utils{
 	public final static int LEFT  = 0b0010;
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
-	public final static int AI_NODE_PIXEL_DISTANCE = 8;
+	public final static int AI_NODE_PIXEL_DISTANCE = 16;
 	public final static Random RANDOM = new Random();
 	
 	//////THE WEAPONS//////

@@ -39,7 +39,7 @@ public class AI_player extends GameCharacter {
 		 * if it has the flag then path to home base if enemy has the flag path
 		 * to them and shoot
 		 */
-
+//		long start_time = System.currentTimeMillis();
 		Entity target;
 
 		if (this.team == 1) {
@@ -52,7 +52,14 @@ public class AI_player extends GameCharacter {
 							0.0, 0.0, "");
 					target = e;
 				} else {
+					Random r = new Random();
+					if(r.nextInt(10) < 5){
 					target = g.team2_flag;
+					}else{
+						Entity e = new Entity(0, 0, (double) g.team1_base.getX(), (double) g.team1_base.getY(), 0.0, 0.0,
+								0.0, 0.0, "");
+						target = e;
+					}
 				}
 			}
 		} else {
@@ -65,18 +72,27 @@ public class AI_player extends GameCharacter {
 							0.0, 0.0, "");
 					target = e;
 				} else {
+					Random r = new Random();
+					if(r.nextInt(10) < 5){
 					target = g.team1_flag;
+					}else{
+						Entity e = new Entity(0, 0, (double) g.team2_base.getX(), (double) g.team2_base.getY(), 0.0, 0.0,
+								0.0, 0.0, "");
+						target = e;
+					}
 				}
 			}
 		}
-
+//		long end_time = System.currentTimeMillis();
+		
 		path_gen = new AI_path_generator(this, g);
 		if (this.moving && g.players.size() > 0) {
 			this.path = path_gen.get_a_star_path(this, target);
 		}
 		this.new_path = true;
 		this.last_path_update_time = System.currentTimeMillis();
-
+		
+//		System.out.println("get path: " + (end_time - start_time));
 	}
 
 	public double get_distance_to_target() {
@@ -89,6 +105,9 @@ public class AI_player extends GameCharacter {
 
 	public void update(GameState g, InputSnapshot s) {
 
+//		long total_start = System.currentTimeMillis();
+		Random r = new Random();
+		
 		if (this.isDead) {
 			if ((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime) {
 				this.respawn(g);
@@ -102,9 +121,9 @@ public class AI_player extends GameCharacter {
 					}
 				}
 			}
-
+//			long shoot_start = System.currentTimeMillis();
+			
 			if (System.currentTimeMillis() - this.last_shoot_time > 500) {
-				Random r = new Random();
 				if (r.nextDouble() <= this.firing_chance) {
 
 					/*
@@ -195,6 +214,9 @@ public class AI_player extends GameCharacter {
 				}
 			}
 
+//			long shoot_end = System.currentTimeMillis();
+//			System.out.println("total time for shooting update: " + (shoot_end - shoot_start));
+			
 			// get initial path
 			if (this.last_path_update_time == 0) {
 				get_path(g);
@@ -202,9 +224,9 @@ public class AI_player extends GameCharacter {
 
 			// if its been 2.5 seconds or the path is almost done update the
 			// path.
-			if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > 5000
+			if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > (5000 + r.nextInt(1000) - 500)
 					|| (this.get_distance_to_target() < 10
-							&& (System.currentTimeMillis() - this.last_path_update_time) > 1000)) {
+							&& (System.currentTimeMillis() - this.last_path_update_time) > (1000 + r.nextInt(200) - 100))) {
 				get_path(g);
 			}
 
@@ -235,6 +257,8 @@ public class AI_player extends GameCharacter {
 				}
 			}
 		}
+//		long total_end = System.currentTimeMillis();
+//		System.out.println("total time for update function: " + (total_end - total_start));
 	}
 
 	@Override
