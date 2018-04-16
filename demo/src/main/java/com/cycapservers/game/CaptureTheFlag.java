@@ -24,8 +24,8 @@ public class CaptureTheFlag extends GameState {
 	protected Flag team2_flag;
 	/////////////////////
 	
-	public CaptureTheFlag(int map) {
-		super();
+	public CaptureTheFlag(String id, int map) {
+		super(id);
 		this.max_players = 8;
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
@@ -192,23 +192,27 @@ public class CaptureTheFlag extends GameState {
 	
 	public void playerJoin(String client_id, WebSocketSession session, String role) {
 		int team;
-		if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
-			team = Utils.RANDOM.nextInt(2) + 1;
-		}
-		else if(this.playersOnTeam1 > this.playersOnTeam2) {
-			team = 2;
-			this.playersOnTeam2++;
-		}
-		else {
-			team = 1;
-			this.playersOnTeam1++;
-		}
+		//synchronized {
+			if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
+				team = Utils.RANDOM.nextInt(2) + 1;
+			}
+			else if(this.playersOnTeam1 > this.playersOnTeam2) {
+				team = 2;
+				this.playersOnTeam2++;
+			}
+			else {
+				team = 1;
+				this.playersOnTeam1++;
+			}
+		//}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
 		this.userPasswords.add(pass);
 		try {
-			String message = "join:" + pass;
+			
+			String message = "join:" + pass + ":" + this.game_id + ":" + "CTF:" + role;
+			if(Utils.DEBUG) System.out.println(message);
 			for(Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);
 			}

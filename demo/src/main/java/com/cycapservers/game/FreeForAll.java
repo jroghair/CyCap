@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.web.socket.WebSocketSession;
 
 public class FreeForAll extends GameState {
+	
+	public FreeForAll(String id) {
+		super(id);
+	}
 
 	@Override
 	public void updateGameState() {

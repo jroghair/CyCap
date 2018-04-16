@@ -2,6 +2,7 @@ package com.cycapservers.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 
@@ -13,6 +14,8 @@ import org.springframework.web.socket.WebSocketSession;
 public class GameManager {
 	
 	private volatile ArrayList<GameState> games;
+	protected volatile List<String> game_ids;
+	protected final int GAME_ID_LENGTH = 5;
 	
 	/**
 	 * A list of all of the currently active lobbies
@@ -35,10 +38,13 @@ public class GameManager {
 	//Get a method to check last message.
 	
 	public GameManager(){
+		game_ids = new ArrayList<String>();
 		timer = new Timer(true);
 		games = new ArrayList<GameState>();
 		lobbies = new ArrayList<Lobby>();
-		games.add(new CaptureTheFlag(0));
+		String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
+		games.add(new CaptureTheFlag(id, 0));
+		game_ids.add(id);
 		timer.scheduleAtFixedRate(games.get(0), 500, 100);
 	}
 	
@@ -49,7 +55,12 @@ public class GameManager {
 		
 		String[] arr = message.split(":");
 		if(arr[0].equals("input")) {
-			games.get(0).addInputSnap(new InputSnapshot(message));
+			String game_id = arr[1];
+			for(GameState g : games) {
+				if(g.game_id.equals(game_id)) {
+					g.addInputSnap(new InputSnapshot(message));
+				}
+			}
 		}
 		else if(arr[0].equals("join")) {
 			for(GameState s: games){
@@ -59,7 +70,7 @@ public class GameManager {
 				}
 			}
 			if(!found){
-				games.get(0).playerJoin(arr[1], session, arr[2]);
+				games.get(0).playerJoin(arr[1], session, "recruit"); //the player can only play as the recruit in the guest game
 			}
 		}
 		
@@ -85,7 +96,9 @@ public class GameManager {
 					}
 					if(!foundGame){
 						System.out.println(arr[3]);
-						Lobby l = new Lobby(TeamDeathMatch.class);
+						String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
+						Lobby l = new Lobby(TeamDeathMatch.class, id);
+						game_ids.add(id);
 						l.addPlayer(arr[3],session);
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
@@ -108,7 +121,9 @@ public class GameManager {
 						}
 					}
 					if(!foundGame){
-						Lobby l = new Lobby(CaptureTheFlag.class);
+						String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
+						Lobby l = new Lobby(CaptureTheFlag.class, id);
+						game_ids.add(id);
 						l.addPlayer(arr[3], session);
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
@@ -132,7 +147,9 @@ public class GameManager {
 						}
 					}
 					if(!foundGame){
-						Lobby l = new Lobby(FreeForAll.class);
+						String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
+						Lobby l = new Lobby(FreeForAll.class,  id);
+						game_ids.add(id);
 						l.addPlayer(arr[3], session);
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);

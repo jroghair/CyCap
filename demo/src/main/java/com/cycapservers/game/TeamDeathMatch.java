@@ -6,8 +6,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class TeamDeathMatch extends GameState {
 	
-	public TeamDeathMatch() {
-		super();
+	public TeamDeathMatch(String id) {
+		super(id);
 	}
 
 	@Override

@@ -60,7 +60,8 @@ public abstract class GameState extends TimerTask
 	protected long lastGSMessage;
 	protected double currentDeltaTime; //the time since the last game state update in seconds
 	
-	public GameState() {
+	public GameState(String id) {
+		this.game_id = id;
 		this.usedEntityIds = new ArrayList<String>();
 		entity_id_len = 6;
 		this.userPasswords = new ArrayList<String>();

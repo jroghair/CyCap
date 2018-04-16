@@ -48,11 +48,11 @@ let fps_frame_times = [];
 let rolling_buffer_length = 30;
 ///////////////////
 
-function GameState(role){
-	this.game_mode = "ctf";
+function GameState(role, pw, type){
+	this.game_mode = type;
 	
 	this.player = new Player(grid_length, grid_length, player_images, 64, 64, role, "1", client_id); //the current player on this client
-	this.pw;
+	this.pw = pw;
 	
 	this.intp_entities = [];
 	this.walls = []; //all of the walls in the game
@@ -107,7 +107,7 @@ function GameState(role){
 				}
 			}
 			else if(obj[0] == "001"){
-				if(this.game_mode == "ctf"){
+				if(this.game_mode == "CTF"){
 					//TODO: update the game score gui
 					gameScoreGUI.update(objects[i]);
 				}
@@ -227,14 +227,10 @@ function GameState(role){
 }
 
 //all functions
-function setup() {
-	let role = "";
-	while(!((role == "scout") || (role == "recruit") || (role == "infantry"))){
-		role = prompt("Please choose a class. The acceptable options are \"scout\", \"recruit\", or \"infantry\". Please type carefully."); 
-	}
+function setup(arr) {
 	
 	//initialize the game state
-	gameState = new GameState(role);
+	gameState = new GameState(arr[4], arr[1], arr[3]);
 
 	//Draw fog of war images and put the normal zoom one on
 	drawFogOfWarImages(gameState.player.visibility);
@@ -264,7 +260,7 @@ function setup() {
 	////////////////////////
 
 	//////INPUT HANDLING//////
-	input_handler = new InputHandler();
+	input_handler = new InputHandler(arr[2]);
 	//when a key goes down it is added to a list and when it goes up its taken out
 	document.addEventListener("keydown", function(event) {
 		if (!input_handler.keys_down.includes(event.keyCode)) {
@@ -299,8 +295,11 @@ function setup() {
 	}, false);
 
 	lastFrameTime = Date.now();
-	connectToServer(role);
-	//loadMapFrom server
+	
+	////LOAD UP WALLS///
+	arr.splice(0, 5);
+	gameState.addWalls(arr);
+	
 	document.getElementById("loading_screen").remove();
 }
 
@@ -320,6 +319,7 @@ function run() {
 		}
 	}
 
+	////CLEAR THE CANVASES////
 	context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
 	context.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
 	gui_context.setTransform(1, 0, 0, 1, 0, 0); //reset the transform so the clearRect function works
@@ -454,7 +454,10 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
-			console.log(Math.floor(this.sprIdx));
+			//console.log(Math.floor(this.sprIdx));
+			if(this.sprIdx >= this.image.sprites.length){
+				this.sprIdx = this.image.sprites.length - 1;
+			}
 			this.sprite = this.image.sprites[Math.floor(this.sprIdx)]; //make sure the correct sprite is being displayed
 			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
 			//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
@@ -860,10 +863,10 @@ function BGTile(img, grid_x, grid_y, index){
 //certain functions in other files that require classes that exist in this file
 //to have already been defined
 if(document.getElementById("loading_screen").complete){
-	setup(); //only call setup once
+	connectToServer();
 }
 else{
 	document.getElementById("loading_screen").onload = function(){
-		setup();
+		connectToServer();
 	}
 }

@@ -43,16 +43,16 @@ public class Lobby {
 	 * @param gamemode
 	 * String representing the game mode.
 	 */
-	public Lobby(Class<? extends GameState> c){
+	public Lobby(Class<? extends GameState> c, String id){
 		this.curSize=0;
 		if(c.equals(TeamDeathMatch.class)){
-			this.game = new TeamDeathMatch();
+			this.game = new TeamDeathMatch(id);
 		}
 		else if(c.equals(CaptureTheFlag.class)){
-			this.game = new CaptureTheFlag(0);
+			this.game = new CaptureTheFlag(id, 0);
 		}
 		else if(c.equals(FreeForAll.class)){
-			this.game = new FreeForAll();
+			this.game = new FreeForAll(id);
 		}
 		this.maxSize = game.max_players;
 		
@@ -134,7 +134,7 @@ public class Lobby {
 	 * @throws IOException
 	 */
 	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
-		players.add(new IncomingPlayer(p, "recruit", s));
+		players.add(new IncomingPlayer(p, "recruit", s)); //TODO: this needs to use the role that was chosen on the lobby page
 		this.curSize++;
 		for(IncomingPlayer i : players){
 			this.GivePlayerList(i.session, game.game_id);
