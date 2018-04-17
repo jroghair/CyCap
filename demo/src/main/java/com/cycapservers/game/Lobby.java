@@ -46,13 +46,13 @@ public class Lobby {
 	public Lobby(Class<? extends GameState> c, String id){
 		this.curSize=0;
 		if(c.equals(TeamDeathMatch.class)){
-			this.game = new TeamDeathMatch(id);
+			this.game = new TeamDeathMatch(id, 0);
 		}
 		else if(c.equals(CaptureTheFlag.class)){
 			this.game = new CaptureTheFlag(id, 0);
 		}
 		else if(c.equals(FreeForAll.class)){
-			this.game = new FreeForAll(id);
+			this.game = new FreeForAll(id, 0);
 		}
 		this.maxSize = game.max_players;
 		

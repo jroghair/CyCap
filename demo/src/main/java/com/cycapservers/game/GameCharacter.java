@@ -56,7 +56,9 @@ public abstract class GameCharacter extends Entity {
 		}
 		if(this.health <= 0){
 			this.die(); //idk what this is gonna do yet
-			c.stats.addKill();
+			if(!c.entity_id.equals(this.entity_id)) {
+				c.stats.addKill(); //adds a kill if you didn't kill yourself lmao
+			}
 		}
 	}
 	

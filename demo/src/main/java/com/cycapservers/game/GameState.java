@@ -2,10 +2,8 @@ package com.cycapservers.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.TimerTask;
 
 import org.springframework.web.socket.TextMessage;
@@ -19,11 +17,11 @@ public abstract class GameState extends TimerTask
 	 */
 	protected ArrayList<IncomingPlayer> incomingPlayers;
 	protected String game_id;
-	protected String game_type;
 	protected List<String> usedEntityIds;
 	protected int entity_id_len;
 	protected List<String> userPasswords;
 	protected List<InputSnapshot> unhandledInputs;
+	/////////////////////////////
 	
 	//////PLAYERS//////
 	protected int max_players;
@@ -55,7 +53,13 @@ public abstract class GameState extends TimerTask
 	protected List<Particle> particles;
 	protected List<ParticleEffect> effects;
 	
+	//////SCORES AND TIME//////
 	protected HashMap<Integer, Integer> team_scores;
+	protected long start_time;
+	protected int time_limit;
+	protected boolean started;
+	protected int winner;
+	protected int score_limit;
 	
 	protected long lastGSMessage;
 	protected double currentDeltaTime; //the time since the last game state update in seconds
@@ -81,8 +85,7 @@ public abstract class GameState extends TimerTask
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
 		
-		friendlyFire = false;
-		respawnTime = 10000; //10 seconds respawn time
+		this.started = false;
 	}
 
 	public abstract void updateGameState();
@@ -165,6 +168,21 @@ public abstract class GameState extends TimerTask
 
 	@Override
 	public void run() {
-		updateGameState();
+		if(started) {
+			////UPDATE GAME STATE////
+			updateGameState();
+			
+			////GET NEW ITEM LIST////
+			this.current_item_list = getItemList();
+			
+			////INFORM PLAYERS OF GS UPDATE////
+			for(Player p : players) {
+				p.setLastUnsentGameState(this.toDataString(p));
+			}
+			
+			//////CLEAR LISTS/////
+			this.new_sounds.clear();
+			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
+		}
 	}
 }

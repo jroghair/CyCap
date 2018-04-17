@@ -6,7 +6,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class FreeForAll extends GameState {
 	
-	public FreeForAll(String id) {
+	public FreeForAll(String id, int map_number) {
 		super(id);
 	}
 

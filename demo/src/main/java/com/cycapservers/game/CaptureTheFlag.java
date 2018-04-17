@@ -13,8 +13,8 @@ import org.springframework.web.socket.WebSocketSession;
 public class CaptureTheFlag extends GameState {
 	
 	//////PLAYERS//////
-	protected int playersOnTeam1;
-	protected int playersOnTeam2;
+	protected volatile int playersOnTeam1;
+	protected volatile int playersOnTeam2;
 	///////////////////
 	
 	//////CTF STUFF//////
@@ -24,7 +24,7 @@ public class CaptureTheFlag extends GameState {
 	protected Flag team2_flag;
 	/////////////////////
 	
-	public CaptureTheFlag(String id, int map) {
+	public CaptureTheFlag(String id, int map_number) {
 		super(id);
 		this.max_players = 8;
 		this.playersOnTeam1 = 0;
@@ -34,22 +34,31 @@ public class CaptureTheFlag extends GameState {
 		
 		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
 		
-		MapLoader.loadPredefinedMap(map, this);//load up the map
+		MapLoader.loadPredefinedMap(map_number, this);//load up the map
 		
 		// generate the map when player is constructed
 		this.map = Utils.generate_node_array(this);
 		//this.add_AI_player(1, "recruit");
 		//this.add_AI_player(2, "recruit");
+		
+
+		friendlyFire = false;
+		respawnTime = 10000; //10 seconds respawn time
+		time_limit = 5 * 60 * 1000; //5 minutes to ms
+		score_limit = 5; //5 flag captures
 	}
 
 	public void updateGameState() {
-		
 		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
-		/*
-		 * if(yes){
-		 *     endGame();
-		 * }
-		 */
+		if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
+			if(team_scores.get(1) >= score_limit) {
+				this.winner = 1;
+			}
+			else if(team_scores.get(2) >= score_limit) {
+				this.winner = 2;
+			}
+			endGame();
+		}
 		
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
 		this.lastGSMessage = System.currentTimeMillis();
@@ -126,16 +135,6 @@ public class CaptureTheFlag extends GameState {
 		}
 		
 		pu_handler.update(this); //update the powerups
-		
-		for(Player p : players) {
-			p.setLastUnsentGameState(this.toDataString(p));
-		}
-		
-		this.current_item_list = getItemList();
-		
-		//////CLEAR LISTS/////
-		this.new_sounds.clear();
-		this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 	}
 	
 	public List<Item> getItemList(){
@@ -256,7 +255,11 @@ public class CaptureTheFlag extends GameState {
 	public void setUpGame() {
 		for(Player p : this.players) {
 			p.stats.setGameType(this.getClass());
+			//TODO: set each player's role in DB
+			//TOOD: download current level and xp from database
 		}
+		this.start_time = System.currentTimeMillis();//TODO: start game timer
+		this.started = true;
 	}
 	
 	public void endGame() {
