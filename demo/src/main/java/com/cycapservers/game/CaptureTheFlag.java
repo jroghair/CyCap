@@ -3,54 +3,18 @@ package com.cycapservers.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.TimerTask;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import com.cycapservers.account.ProfileDataUpdate;
-
-public class GameState extends TimerTask {
-	protected String game_id;
-	protected String game_type;
-	protected List<String> usedEntityIds;
-	protected int entity_id_len;
-	protected List<String> userPasswords;
-	private List<InputSnapshot> unhandledInputs;
+public class CaptureTheFlag extends GameState {
 
 	////// PLAYERS//////
-	protected int max_players;
-	protected List<AI_player> AI_players;
-	protected List<Player> players;
-	protected int playersOnTeam1;
-	protected int playersOnTeam2;
-	protected boolean friendlyFire;
-	protected long respawnTime; // the amount of time to respawn after death in
-								// ms
-	boolean started;;
-	// TODO: spawn nodes
+	protected volatile int playersOnTeam1;
+	protected volatile int playersOnTeam2;
 	///////////////////
-
-	////// ITEMS//////
-	protected List<Item> current_item_list;
-	protected PowerUpHandler pu_handler;
-	////////////////
-
-	protected List<String> new_sounds;
-
-	// stuff for AI
-	protected ArrayList<ArrayList<mapNode>> map;
-
-	protected List<Bullet> bullets;
-
-	// Map Related Stuff
-	protected List<Wall> walls;
-	protected int mapGridWidth;
-	protected int mapGridHeight;
-	protected List<SpawnNode> spawns;
 
 	////// CTF STUFF//////
 	protected GridLockedNode team1_base;
@@ -59,65 +23,37 @@ public class GameState extends TimerTask {
 	protected Flag team2_flag;
 	/////////////////////
 
-	private long lastGSMessage;
-	protected double currentDeltaTime; // the time since the last game state
-										// update in seconds
-
-	protected HashMap<Integer, Integer> team_scores;
-	protected long start_time;
-	protected int time_limit;
-	protected int winner;
-	protected int score_limit;
-
-	/// LOBBY ITEMS
-	protected int maxPlayers;
-
-	public GameState() {
-		this.usedEntityIds = new ArrayList<String>();
-		entity_id_len = 6;
-		this.userPasswords = new ArrayList<String>();
-
+	public CaptureTheFlag(String id, int map_number) {
+		super(id);
 		this.max_players = 8;
-		this.players = new ArrayList<Player>();
-		this.bullets = new ArrayList<Bullet>();
-		this.walls = new ArrayList<Wall>();
-		this.spawns = new ArrayList<SpawnNode>();
-		this.new_sounds = new ArrayList<String>();
-		this.current_item_list = new ArrayList<Item>();
-
-		this.unhandledInputs = new ArrayList<InputSnapshot>();
-		this.lastGSMessage = System.currentTimeMillis();
-
 		this.playersOnTeam1 = 0;
 		this.playersOnTeam2 = 0;
-		this.team_scores = new HashMap<Integer, Integer>();
 		this.team_scores.put(1, 0); // for TDM and CTF only
 		this.team_scores.put(2, 0);
 
-		friendlyFire = false;
-		respawnTime = 10000; // 10 seconds respawn time
 		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
 
-		MapLoader.loadPredefinedMap(0, this);// load up the map
+		MapLoader.loadPredefinedMap(map_number, this);// load up the map
 
-		this.AI_players = new ArrayList<AI_player>();
 		// generate the map when player is constructed
-		this.map = Utils.generate_node_array(this);
-		// this.add_AI_player(1, "recruit");
-		// this.add_AI_player(2, "recruit");
-	}
+		this.ai_map = Utils.generate_node_array(this);
 
-	public abstract void setUpGame();
-
-	public void endGame(int winner) {
-		started = false;
-		for (Player p : this.players) {
-			p.stats.updateScore(winner);
-			ProfileDataUpdate.dbSaveData(p.stats);
-		}
+		friendlyFire = false;
+		respawnTime = 10000; // 10 seconds respawn time
+		time_limit = 1 * 60 * 1000; // 5 minutes to ms
+		score_limit = 5; // 5 flag captures
 	}
 
 	public void updateGameState() {
+
+		if (((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit)
+				|| (team_scores.get(2) >= score_limit)) {
+			// TODO: set winning team correctly by comparing flag captures first
+			// and then kills
+			winner = 1;
+			endGame(winner);
+		}
+
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage) / 1000.0;
 		this.lastGSMessage = System.currentTimeMillis();
 
@@ -136,18 +72,29 @@ public class GameState extends TimerTask {
 
 		///////// UPDATE GAME OBJECTS///////////
 		// move all of the bullets first
-		ListIterator<Bullet> iter = this.bullets.listIterator();
-		while (iter.hasNext()) {
-			Bullet temp = iter.next();
+		ListIterator<Bullet> bullet_iter = this.bullets.listIterator();
+		while (bullet_iter.hasNext()) {
+			Bullet temp = bullet_iter.next();
 			if (temp.update(this)) {
 				this.usedEntityIds.remove(temp.entity_id);
-				iter.remove(); // remove the bullet from the list if it is done
-								// (animation done/hit a wall/etc)
+				bullet_iter.remove(); // remove the bullet from the list if it
+										// is done (animation done/hit a
+										// wall/etc)
 			}
 		}
 		// UPDATE the flags
 		this.team1_flag.update();
 		this.team2_flag.update();
+		//// UPDATE PARTICLE EFFECTS////
+		ListIterator<Particle> part_iter = this.particles.listIterator();
+		while (part_iter.hasNext()) {
+			Particle temp = part_iter.next();
+			if (temp.update()) {
+				this.usedEntityIds.remove(temp.entity_id);
+				part_iter.remove(); // remove the bullet from the list if it is
+									// done (animation done/hit a wall/etc)
+			}
+		}
 
 		////// APPLY INPUT SNAPSHOTS//////
 		for (int i = 0; i < this.unhandledInputs.size(); i++) {
@@ -171,8 +118,9 @@ public class GameState extends TimerTask {
 		if (!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
 			this.team_scores.put(2, this.team_scores.get(2) + 1); // +1 to team
 																	// 2
-			// ((CTF_PlayerStats) this.team1_flag.grabber.stats).addFlagCap();
-			// //give the proper player a flag capture
+			this.team1_flag.grabber.stats.addFlagCapture(); // give the proper
+															// player a flag
+															// capture
 			this.team1_flag.returnToBase(); // return the flag to base
 			if (Utils.DEBUG)
 				System.out.println("FLAG 1 CAPTURED!!");
@@ -180,24 +128,15 @@ public class GameState extends TimerTask {
 				&& Utils.isColliding(this.team2_flag, team1_base)) {
 			this.team_scores.put(1, this.team_scores.get(1) + 1); // +1 to team
 																	// 1
-			// ((CTF_PlayerStats) this.team2_flag.grabber.stats).addFlagCap();
-			// //give the proper player a flag capture
+			this.team2_flag.grabber.stats.addFlagCapture(); // give the proper
+															// player a flag
+															// capture
 			this.team2_flag.returnToBase(); // return the flag to base
 			if (Utils.DEBUG)
 				System.out.println("FLAG 2 CAPTURED!!");
 		}
 
 		pu_handler.update(this); // update the powerups
-
-		this.unhandledInputs.clear(); // empty the queue of unhandled inputs
-
-		for (Player p : players) {
-			p.setLastUnsentGameState(this.toDataString(p));
-		}
-
-		this.current_item_list = getItemList();
-
-		this.new_sounds.clear();
 	}
 
 	public List<Item> getItemList() {
@@ -212,11 +151,12 @@ public class GameState extends TimerTask {
 		String output = "";
 
 		// add game score data
-		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + ":";
+		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + ","
+				+ (time_limit - System.currentTimeMillis() + start_time) + ":";
 
 		////// ADD NEW SOUNDS TO PLAY//////
 		for (int i = 0; i < new_sounds.size(); i++) {
-			output += new_sounds.get(i) + ":";
+			output += "002," + new_sounds.get(i) + ":";
 		}
 
 		////// ADD PLAYER MESSAGES///////
@@ -240,6 +180,11 @@ public class GameState extends TimerTask {
 			output += i.toDataString(p.entity_id) + ":";
 		}
 
+		////// ADD PARTICLES//////
+		for (Particle parts : particles) {
+			output += parts.toDataString(p.entity_id) + ":";
+		}
+
 		////// ADD BULLET MESSAGES//////
 		for (int i = 0; i < bullets.size(); i++) {
 			output += bullets.get(i).toDataString(p.entity_id);
@@ -250,41 +195,29 @@ public class GameState extends TimerTask {
 		return output; // RETURN THE MESSAGE
 	}
 
-	public void addInputSnap(InputSnapshot s) {
-		for (Player p : this.players) {
-			if (s.password.equals(p.getPassword())) {
-				s.setClient(p);
-				unhandledInputs.add(s);
-				if (p.getLastUnsentGameState() != null) {
-					try {
-						p.session.sendMessage(new TextMessage(p.getLastUnsentGameState()));
-						p.setLastUnsentGameState(null);
-					} catch (IOException e) {
-						System.out.println("Error when sending game state");
-						e.printStackTrace();
-					}
-				}
-				break;
-			}
-		}
-	}
-
 	public void playerJoin(String client_id, WebSocketSession session, String role) {
 		int team;
-		if (this.playersOnTeam1 > this.playersOnTeam2) {
+		// synchronized {
+		if (this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
+			team = Utils.RANDOM.nextInt(2) + 1;
+		} else if (this.playersOnTeam1 > this.playersOnTeam2) {
 			team = 2;
 			this.playersOnTeam2++;
 		} else {
 			team = 1;
 			this.playersOnTeam1++;
 		}
+		// }
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role,
-				client_id, pass, session));
+		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id,
+				pass, session);
+		this.players.add(p);
+		p.stats.setGameType(this.getClass());
 		this.userPasswords.add(pass);
 		try {
-			String message = "join:" + pass;
+
+			String message = "join:" + pass + ":" + this.game_id + ":" + "CTF:" + role;
 			for (Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);
 			}
@@ -316,6 +249,7 @@ public class GameState extends TimerTask {
 				} else {
 					this.playersOnTeam2--;
 				}
+				temp.leaveGame(); // drops items, et cetera
 				this.usedEntityIds.remove(temp.entity_id);
 				this.userPasswords.remove(temp.password);
 				iter.remove();
@@ -324,8 +258,16 @@ public class GameState extends TimerTask {
 		}
 	}
 
-	@Override
-	public void run() {
-		updateGameState();
+	public void setUpGame() {
+		if (Utils.DEBUG)
+			System.out.println("Num of Players @ setup: " + players.size());
+		for (Player p : players) {
+			p.stats.setLevelAndXP();
+		}
+		// for(int i = 0; i < (max_players - players.size()); i++){
+		// addAI_player();
+		// }
+		this.start_time = System.currentTimeMillis();
+		this.started = true;
 	}
 }
