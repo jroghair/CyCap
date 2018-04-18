@@ -42,8 +42,10 @@ public class GameManager {
 		timer = new Timer(true);
 		games = new ArrayList<GameState>();
 		lobbies = new ArrayList<Lobby>();
+		
+		//////MAKE THE GUEST GAME//////
 		String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
-		games.add(new CaptureTheFlag(id, 0));
+		games.add(new GuestCaptureTheFlag(id));
 		game_ids.add(id);
 		timer.scheduleAtFixedRate(games.get(0), 500, 100);
 	}
@@ -63,8 +65,8 @@ public class GameManager {
 			}
 		}
 		else if(arr[0].equals("join")) {
-			for(GameState s: games){
-				found = s.findIncomingPlayer(arr[1], session); //TODO: the client should not send role, this should be determined already
+			for(GameState gs: games){
+				found = gs.findIncomingPlayer(arr[1], session); //TODO: the client should not send role, this should be determined already
 				if(found){
 					break;
 				}
@@ -88,6 +90,7 @@ public class GameManager {
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
+									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -103,7 +106,6 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
-						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
 					}
 				}
 				else if(arr[2].equals("Capture")){
@@ -114,6 +116,7 @@ public class GameManager {
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
+									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -128,8 +131,6 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
-						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
-						
 					}
 				}
 				else if(arr[2].equals("FFA")){
@@ -140,6 +141,7 @@ public class GameManager {
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
+									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -154,8 +156,6 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
-						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
-						
 					}
 				}
 				else{

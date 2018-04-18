@@ -29,10 +29,7 @@ public class TeamDeathMatch extends GameState {
 		MapLoader.loadPredefinedMap(map_number, this);//load up the map
 		
 		// generate the map when player is constructed
-		this.map = Utils.generate_node_array(this);
-		//this.add_AI_player(1, "recruit");
-		//this.add_AI_player(2, "recruit");
-				
+		this.ai_map = Utils.generate_node_array(this);
 
 		friendlyFire = false;
 		respawnTime = 5000; //10 seconds respawn time TODO: fix this on the client side
@@ -42,80 +39,80 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void updateGameState() {
-	//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
-			if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
-				if(team_scores.get(1) >= score_limit) {
-					this.winner = 1;
-				}
-				else if(team_scores.get(2) >= score_limit) {
-					this.winner = 2;
-				}
-				endGame();
+		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
+		if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
+			//TODO: set the winner correctly
+			if(team_scores.get(1) >= score_limit) {
+				this.winner = 1;
 			}
-			
-			this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
-			this.lastGSMessage = System.currentTimeMillis();
-			
-			//////DEV STUFF//////
-			if(Utils.DEBUG) {
-				int error = (int) (this.currentDeltaTime * 1000 - 100);
-				if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
-					System.out.println("Time error in Gamestate sending: " + error);
-				}
-				if(this.bullets.size() >= GameManager.ADVANCED_BULLET_WARNING_LEVEL) {
-					System.out.println("ADVANCED WARNING!! TOO MANY BULLETS");
-				}
-				else if(this.bullets.size() >= GameManager.BULLET_WARNING_LEVEL) {
-					System.out.println("Warning! High number of bullets");
-				}
+			else if(team_scores.get(2) >= score_limit) {
+				this.winner = 2;
 			}
+			endGame(winner);
+		}
 			
-			/////////UPDATE GAME OBJECTS///////////
-			//move all of the bullets first
-			ListIterator<Bullet> bullet_iter = this.bullets.listIterator();
-			while(bullet_iter.hasNext()){
-				Bullet temp = bullet_iter.next();
-			    if(temp.update(this)) {
-			    	this.usedEntityIds.remove(temp.entity_id);
-			    	bullet_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
-			    }
-			}
-			
-			////UPDATE PARTICLE EFFECTS////
-			ListIterator<Particle> part_iter = this.particles.listIterator();
-			while(part_iter.hasNext()){
-				Particle temp = part_iter.next();
-			    if(temp.update()) {
-			    	this.usedEntityIds.remove(temp.entity_id);
-			    	part_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
-			    }
-			}
-			
-			
-			//////APPLY INPUT SNAPSHOTS//////
-			for(int i = 0; i < this.unhandledInputs.size(); i++) {
-				try {
-					Player p = this.unhandledInputs.get(i).client;
-					p.update(this, this.unhandledInputs.get(i));
-				}
-				catch(ConcurrentModificationException e) {
-					System.out.println("unhandled input " + i + ": " + e);
-				}
-				catch(NullPointerException e) {
-					System.out.println("Null pointer Exception when getting index " + i + " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
-				}
-			}
-			
-			/*/ updating AI players
-			for (AI_player ai : AI_players) {
-					ai.update(this, null);
-			}*/
-			
-			//////TODO: Check For other team kills?//////
-			
-			
-			pu_handler.update(this); //update the powerups
+		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
+		this.lastGSMessage = System.currentTimeMillis();
 		
+		//////DEV STUFF//////
+		if(Utils.DEBUG) {
+			int error = (int) (this.currentDeltaTime * 1000 - 100);
+			if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
+				System.out.println("Time error in Gamestate sending: " + error);
+			}
+			if(this.bullets.size() >= GameManager.ADVANCED_BULLET_WARNING_LEVEL) {
+				System.out.println("ADVANCED WARNING!! TOO MANY BULLETS");
+			}
+			else if(this.bullets.size() >= GameManager.BULLET_WARNING_LEVEL) {
+				System.out.println("Warning! High number of bullets");
+			}
+		}
+		
+		/////////UPDATE GAME OBJECTS///////////
+		//move all of the bullets first
+		ListIterator<Bullet> bullet_iter = this.bullets.listIterator();
+		while(bullet_iter.hasNext()){
+			Bullet temp = bullet_iter.next();
+		    if(temp.update(this)) {
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	bullet_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
+		    }
+		}
+		
+		////UPDATE PARTICLE EFFECTS////
+		ListIterator<Particle> part_iter = this.particles.listIterator();
+		while(part_iter.hasNext()){
+			Particle temp = part_iter.next();
+		    if(temp.update()) {
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	part_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
+		    }
+		}
+		
+		
+		//////APPLY INPUT SNAPSHOTS//////
+		for(int i = 0; i < this.unhandledInputs.size(); i++) {
+			try {
+				Player p = this.unhandledInputs.get(i).client;
+				p.update(this, this.unhandledInputs.get(i));
+			}
+			catch(ConcurrentModificationException e) {
+				System.out.println("unhandled input " + i + ": " + e);
+			}
+			catch(NullPointerException e) {
+				System.out.println("Null pointer Exception when getting index " + i + " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
+			}
+		}
+		
+		/*/ updating AI players
+		for (AI_player ai : AI_players) {
+				ai.update(this, null);
+		}*/
+		
+		//////TODO: Check For other team kills?//////
+		
+		
+		pu_handler.update(this); //update the powerups
 	}
 
 	@Override
@@ -187,7 +184,9 @@ public class TeamDeathMatch extends GameState {
 		//}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);
+		this.players.add(p);
+		p.stats.setGameType(this.getClass());
 		this.userPasswords.add(pass);
 		try {
 			
@@ -234,12 +233,13 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void setUpGame() {
-		for(Player p : this.players) {
-			p.stats.setGameType(this.getClass());
-			//TODO: set each player's role in DB
-			//TOOD: download current level and xp from database
+		for(Player p : players) {
+			p.stats.setLevelAndXP();
 		}
-		this.start_time = System.currentTimeMillis(); //TODO: start game timer, not sure if this does the trick
+		//for(int i = 0; i < (max_players - players.size()); i++){
+		//	addAI_player();
+		//}
+		this.start_time = System.currentTimeMillis();//TODO: start game timer
 		this.started = true;
 	}
 }

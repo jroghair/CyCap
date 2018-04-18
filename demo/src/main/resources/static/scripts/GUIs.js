@@ -188,6 +188,7 @@ function GameScoreGUI(x, y, type){
 		let data = txt.split(",");
 		if(this.game_type == "CTF"){
 			this.txt = "Red: " + data[1] + "  |  Blue: " + data[2];
+			this.txt += " Time Left: " + (data[3]/1000.0);
 		}
 	}
 	

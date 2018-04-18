@@ -13,6 +13,7 @@ public class PlayerStats {
 	protected String champion; 
 	protected int experience;
 	protected int level;
+	protected int team;
 	
 	//////BASIC GAME STATS//////
 	protected int kills;
@@ -40,6 +41,7 @@ public class PlayerStats {
 	public PlayerStats(GameCharacter player){
 		this.userID = player.entity_id; //need to add this in later
 		this.champion = player.role; //need to ensure role was already assigned
+		this.team = player.team;
 		this.kills = 0;
 		this.deaths = 0; 
 		this.wins = 0; 
@@ -51,8 +53,7 @@ public class PlayerStats {
 		this.game_type=null;
 		this.gamesplayed=0;
 		this.gamelosses=0;
-		this.gamewins=0; 
-
+		this.gamewins=0;
 	}
 	
 	public void addKill(){
@@ -165,17 +166,30 @@ public class PlayerStats {
 		this.gamelosses = gamelosses;
 	}
 
+	public void setLevelAndXP() {
+		Point p = ProfileDataUpdate.dbGetLevel(userID, champion);
+		this.level = p.x;
+		this.experience = p.y;
+		if(Utils.DEBUG) System.out.println("Start - Client: " + userID + " Level: " + level + " Exp: " + experience);
+	}
 	
-	public void updateScore(){ //could have this take in winning team to double scores potentially
+	public void updateScore(int winner){ //could have this take in winning team to double scores potentially
 		if(this.game_type==null){
 			throw new IllegalStateException("Cannot update xp when game type has not been set!");
 		}
 		if(this.game_type.equals(CaptureTheFlag.class)){
-			this.experience+=this.kills*10;
-			this.experience+=this.flag_grabs*25;
-			this.experience+=this.flag_captures*100;
-			this.experience+=this.flag_returns*35;
-			//somehow double if team won
+			int new_xp = this.kills*10;
+			new_xp += this.flag_grabs*25;
+			new_xp += this.flag_captures*100;
+			new_xp += this.flag_returns*35;
+			if(team == winner) {
+				new_xp *= 2;
+				wins++;
+			}
+			else {
+				losses++;
+			}
+			this.experience += new_xp;
 			
 			//call util class to calculate level and experience it takes in level and experience
 			Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience)); //so util returns a pair

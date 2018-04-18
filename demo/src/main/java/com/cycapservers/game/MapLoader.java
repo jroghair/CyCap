@@ -58,7 +58,7 @@ public final class MapLoader {
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
 		
-		if(g.getClass().equals(CaptureTheFlag.class)) {
+		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(GuestCaptureTheFlag.class)) {
 			loadMap0_CTFElements((CaptureTheFlag) g);
 		}
 		else if(g.getClass().equals(FreeForAll.class)) {

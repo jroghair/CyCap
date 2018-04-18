@@ -48,8 +48,14 @@ public class FreeForAll extends GameState {
 
 	@Override
 	public void setUpGame() {
-		// TODO Auto-generated method stub
-		
+		for(Player p : players) {
+			p.stats.setLevelAndXP();
+		}
+		//for(int i = 0; i < (max_players - players.size()); i++){
+		//	addAI_player();
+		//}
+		this.start_time = System.currentTimeMillis();//TODO: start game timer
+		this.started = true;
 	}
 
 }

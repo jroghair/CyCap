@@ -10,10 +10,12 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\TeamDeathM
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\Friends.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ProfileDataUpdate.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatMessage.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\SpeedBuff.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Entity.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Particle.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\ParticleEffect.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GameManager.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Buff.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Utils.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\HealthPack.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Player.java
@@ -22,6 +24,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\SpeedPotio
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Flag.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GridLockedNode.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\Pistol.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\DamageBuff.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\CaptureTheFlag.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\AutomaticGun.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\PlayerStats.java
@@ -37,6 +40,7 @@ C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\InputSnaps
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\FreeForAll.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ProfilesRepository.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatController.java
+C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\GuestCaptureTheFlag.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\account\ChatWebsocketConfig.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MapLoader.java
 C:\Users\bryanf\Desktop\SD_1\demo\src\main\java\com\cycapservers\game\MortarWeapon.java

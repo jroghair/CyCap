@@ -10,6 +10,8 @@ import java.util.ListIterator;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.cycapservers.account.ProfileDataUpdate;
+
 public class CaptureTheFlag extends GameState {
 	
 	//////PLAYERS//////
@@ -37,27 +39,20 @@ public class CaptureTheFlag extends GameState {
 		MapLoader.loadPredefinedMap(map_number, this);//load up the map
 		
 		// generate the map when player is constructed
-		this.map = Utils.generate_node_array(this);
-		//this.add_AI_player(1, "recruit");
-		//this.add_AI_player(2, "recruit");
-		
+		this.ai_map = Utils.generate_node_array(this);
 
 		friendlyFire = false;
 		respawnTime = 10000; //10 seconds respawn time
-		time_limit = 5 * 60 * 1000; //5 minutes to ms
+		time_limit = 1 * 60 * 1000; //5 minutes to ms
 		score_limit = 5; //5 flag captures
 	}
 
 	public void updateGameState() {
 		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
 		if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
-			if(team_scores.get(1) >= score_limit) {
-				this.winner = 1;
-			}
-			else if(team_scores.get(2) >= score_limit) {
-				this.winner = 2;
-			}
-			endGame();
+			//TODO: set winning team correctly by comparing flag captures first and then kills
+			winner = 1;
+			endGame(winner);
 		}
 		
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
@@ -149,7 +144,7 @@ public class CaptureTheFlag extends GameState {
 		String output = "";
 		
 		//add game score data
-		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + ":";
+		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + "," + (time_limit - System.currentTimeMillis() + start_time) + ":";
 		
 		//////ADD NEW SOUNDS TO PLAY//////
 		for(int i = 0; i < new_sounds.size(); i++){
@@ -206,12 +201,13 @@ public class CaptureTheFlag extends GameState {
 		//}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session));
+		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);
+		this.players.add(p);
+		p.stats.setGameType(this.getClass());
 		this.userPasswords.add(pass);
 		try {
 			
 			String message = "join:" + pass + ":" + this.game_id + ":" + "CTF:" + role;
-			if(Utils.DEBUG) System.out.println(message);
 			for(Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);
 			}
@@ -253,25 +249,14 @@ public class CaptureTheFlag extends GameState {
 	}
 	
 	public void setUpGame() {
-		for(Player p : this.players) {
-			p.stats.setGameType(this.getClass());
-			//TODO: set each player's role in DB
-			//TOOD: download current level and xp from database
+		if(Utils.DEBUG) System.out.println("Num of Players @ setup: " + players.size());
+		for(Player p : players) {
+			p.stats.setLevelAndXP();
 		}
-		this.start_time = System.currentTimeMillis();//TODO: start game timer
+		//for(int i = 0; i < (max_players - players.size()); i++){
+		//	addAI_player();
+		//}
+		this.start_time = System.currentTimeMillis();
 		this.started = true;
 	}
-	
-	public void endGame() {
-		for(Player p : this.players) {
-			p.stats.updateScore();
-			//TODO: ProfileRepo.update(p)
-		}
-	}
-
-	@Override
-	public void run() {
-		updateGameState();
-	}
-
 }

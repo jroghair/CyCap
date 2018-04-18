@@ -36,7 +36,7 @@ public class Lobby {
 	/**
 	 * How many people below the max before the game starts.
 	 */
-	private final int startGap = 4;
+	private final int startGap = 6;
 	
 	/**
 	 * Takes in the game mode that the lobby is going to represent.
@@ -174,5 +174,12 @@ public class Lobby {
 		return maxSize-curSize + startGap; 
 	}
 	
-	
+	public void updatedIncomingPlayerRole(String userId, String role) {
+		for(IncomingPlayer i : players) {
+			if(i.client_id.equals(userId)) {
+				i.role = role;
+				return;
+			}
+		}
+	}
 }

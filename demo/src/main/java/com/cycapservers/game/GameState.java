@@ -9,6 +9,8 @@ import java.util.TimerTask;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.cycapservers.account.ProfileDataUpdate;
+
 public abstract class GameState extends TimerTask
 {
 	//////NITTY GRITTY STUFF//////
@@ -39,7 +41,7 @@ public abstract class GameState extends TimerTask
 	protected List<String> new_sounds;
 	
 	// stuff for AI
-	protected ArrayList<ArrayList<mapNode>> map;
+	protected ArrayList<ArrayList<mapNode>> ai_map;
 	
 	protected List<Bullet> bullets;
 	
@@ -121,15 +123,6 @@ public abstract class GameState extends TimerTask
 		this.incomingPlayers.add(p);
 	}
 	
-	public void updatedIncomingPlayerRole(String userId, String role) {
-		for(IncomingPlayer i : incomingPlayers) {
-			if(i.client_id.equals(userId)) {
-				i.role = role;
-				return;
-			}
-		}
-	}
-	
 	/**
 	 * Checks to see if the given userId is in the incoming players list and if they are adds them to the game.
 	 * @param userId
@@ -159,10 +152,11 @@ public abstract class GameState extends TimerTask
 	
 	public abstract void setUpGame();
 	
-	public void endGame() {
+	public void endGame(int winner) {
+		started = false;
 		for(Player p : this.players) {
-			p.stats.updateScore();
-			//TODO: ProfileRepo.update(p)
+			p.stats.updateScore(winner);
+			ProfileDataUpdate.dbSaveData(p.stats);
 		}
 	}
 
@@ -183,6 +177,11 @@ public abstract class GameState extends TimerTask
 			//////CLEAR LISTS/////
 			this.new_sounds.clear();
 			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
+		}
+		else {
+			if(players.size() == incomingPlayers.size()) {
+				setUpGame();
+			}
 		}
 	}
 }

@@ -193,7 +193,7 @@ function sendMessageToServer(msg){
 function message_handler(msg){
 	let temp = msg.data.split(":");
 	if(temp[0] == "join"){
-		console.log(temp);
+		//console.log(temp);
 		setup(temp);
 		requestAnimationFrame(run); //more synchronized method similar to setInterval
 	}

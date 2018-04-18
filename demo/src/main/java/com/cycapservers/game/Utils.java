@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 public final class Utils{
-	public final static boolean DEBUG = false;
+	public final static boolean DEBUG = true;
 	public final static float GRAVITY = (float) 9.81;
 	public final static int GRID_LENGTH = 32;
 	public final static int UP    = 0b1000;
@@ -314,52 +314,52 @@ public final class Utils{
 		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		short i = 0, j = 0;
-		while (g.map.get(i).get(j).y != y) {
+		while (g.ai_map.get(i).get(j).y != y) {
 			j++;
 		}
-		while (g.map.get(i).get(j).x != x) {
+		while (g.ai_map.get(i).get(j).x != x) {
 			i++;
 		}
-		if (g.map.get(i).get(j).node_trav != false) {
+		if (g.ai_map.get(i).get(j).node_trav != false) {
 			return new Point(i, j);
 		} else {
 			x = (int) (Math.floor(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 			y = (int) (Math.floor(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 			i = 0;
 			j = 0;
-			while (g.map.get(i).get(j).y != y) {
+			while (g.ai_map.get(i).get(j).y != y) {
 				j++;
 			}
-			while (g.map.get(i).get(j).x != x) {
+			while (g.ai_map.get(i).get(j).x != x) {
 				i++;
 			}
-			if (g.map.get(i).get(j).node_trav != false) {
+			if (g.ai_map.get(i).get(j).node_trav != false) {
 				return new Point(i, j);
 			} else {
 				x = (int) (Math.floor(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 				y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 				i = 0;
 				j = 0;
-				while (g.map.get(i).get(j).y != y) {
+				while (g.ai_map.get(i).get(j).y != y) {
 					j++;
 				}
-				while (g.map.get(i).get(j).x != x) {
+				while (g.ai_map.get(i).get(j).x != x) {
 					i++;
 				}
-				if (g.map.get(i).get(j).node_trav != false) {
+				if (g.ai_map.get(i).get(j).node_trav != false) {
 					return new Point(i, j);
 				} else {
 					x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 					y = (int) (Math.floor(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 					i = 0;
 					j = 0;
-					while (g.map.get(i).get(j).y != y) {
+					while (g.ai_map.get(i).get(j).y != y) {
 						j++;
 					}
-					while (g.map.get(i).get(j).x != x) {
+					while (g.ai_map.get(i).get(j).x != x) {
 						i++;
 					}
-					if (g.map.get(i).get(j).node_trav != false) {
+					if (g.ai_map.get(i).get(j).node_trav != false) {
 						return new Point(i, j);
 					} else {
 						System.out.println("Couldn't find a traversable node near entity");
@@ -397,32 +397,32 @@ public final class Utils{
 	
 	public static ArrayList<mapNode> get_neighbors(GameState g, mapNode node, ArrayList<mapNode> closed_list, ArrayList<mapNode> open_list) {
 		ArrayList<mapNode> neighbors = new ArrayList<mapNode>();
-		if (g.map.get(node.gridX - 1).get(node.gridY - 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY - 1));
+		if (g.ai_map.get(node.gridX - 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX - 1).get(node.gridY - 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 						&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = true;
 		}
-		if (g.map.get(node.gridX - 1).get(node.gridY).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY));
+		if (g.ai_map.get(node.gridX - 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX - 1).get(node.gridY));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = false;
 		}
-		if (g.map.get(node.gridX - 1).get(node.gridY + 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX - 1).get(node.gridY + 1));
+		if (g.ai_map.get(node.gridX - 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX - 1).get(node.gridY + 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = true;
 		}
-		if (g.map.get(node.gridX).get(node.gridY + 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX).get(node.gridY + 1));
+		if (g.ai_map.get(node.gridX).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX).get(node.gridY + 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
@@ -430,32 +430,32 @@ public final class Utils{
 			neighbors.get(neighbors.size() - 1).corner = false;
 		}
 		// neighbor number 5
-		if (g.map.get(node.gridX + 1).get(node.gridY + 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY + 1));
+		if (g.ai_map.get(node.gridX + 1).get(node.gridY + 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX + 1).get(node.gridY + 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = true;
 		}
-		if (g.map.get(node.gridX + 1).get(node.gridY).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY));
+		if (g.ai_map.get(node.gridX + 1).get(node.gridY).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX + 1).get(node.gridY));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = false;
 		}
-		if (g.map.get(node.gridX + 1).get(node.gridY - 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX + 1).get(node.gridY - 1));
+		if (g.ai_map.get(node.gridX + 1).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX + 1).get(node.gridY - 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.414 * AI_NODE_PIXEL_DISTANCE);
 			}
 			neighbors.get(neighbors.size() - 1).corner = true;
 		}
-		if (g.map.get(node.gridX).get(node.gridY - 1).node_trav == true) {
-			neighbors.add(g.map.get(node.gridX).get(node.gridY - 1));
+		if (g.ai_map.get(node.gridX).get(node.gridY - 1).node_trav == true) {
+			neighbors.add(g.ai_map.get(node.gridX).get(node.gridY - 1));
 			if (closed_list.contains(neighbors.get(neighbors.size() - 1)) == false
 					&& open_list.contains(neighbors.get(neighbors.size() - 1)) == false) {
 				neighbors.get(neighbors.size() - 1).g = node.g + (1.0 * AI_NODE_PIXEL_DISTANCE);

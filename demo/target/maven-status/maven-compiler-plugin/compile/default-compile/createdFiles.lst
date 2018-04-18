@@ -6,6 +6,7 @@ com\cycapservers\game\Weapon.class
 com\cycapservers\game\SpawnNode.class
 com\cycapservers\game\WebSocketConfig.class
 com\cycapservers\game\AutomaticGun.class
+com\cycapservers\game\SpeedBuff.class
 com\cycapservers\game\Pistol.class
 com\cycapservers\CyCapApplication.class
 com\cycapservers\game\Lobby.class
@@ -35,8 +36,10 @@ com\cycapservers\account\Friends.class
 com\cycapservers\game\GameCharacter.class
 com\cycapservers\account\WebSocketEventListener.class
 com\cycapservers\account\ProfileDataUpdate.class
+com\cycapservers\game\GuestCaptureTheFlag.class
 com\cycapservers\game\CaptureTheFlag.class
 com\cycapservers\account\Profiles.class
+com\cycapservers\game\Buff.class
 com\cycapservers\game\Player.class
 com\cycapservers\game\GameManager.class
 com\cycapservers\account\PlayerLBDataList.class
@@ -57,6 +60,7 @@ com\cycapservers\game\Node.class
 com\cycapservers\game\MortarWeapon.class
 com\cycapservers\account\Friend.class
 com\cycapservers\account\AccountRepository.class
+com\cycapservers\game\DamageBuff.class
 com\cycapservers\game\ParticleEffect.class
 com\cycapservers\game\HealthPack.class
 com\cycapservers\game\AnimatedEntity.class
