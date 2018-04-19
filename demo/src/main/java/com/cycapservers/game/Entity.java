@@ -12,9 +12,9 @@ public class Entity {
 	
 	protected double y;
 	
-	protected double drawWidth;
+	private double drawWidth;
 	
-	protected double drawHeight;
+	private double drawHeight;
 	
 	protected double collision_radius;
 	

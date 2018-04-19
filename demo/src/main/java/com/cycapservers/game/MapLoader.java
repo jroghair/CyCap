@@ -58,6 +58,18 @@ public final class MapLoader {
 		g.mapGridHeight = 30;
 		g.mapGridWidth = 41;
 		
+		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(GuestCaptureTheFlag.class)) {
+			loadMap0_CTFElements((CaptureTheFlag) g);
+		}
+		else if(g.getClass().equals(FreeForAll.class)) {
+			loadMap0_FFAElements((FreeForAll) g);
+		}
+		else if(g.getClass().equals(TeamDeathMatch.class)) {
+			loadMap0_TDMElements((TeamDeathMatch) g);
+		}
+	}
+	
+	private static void loadMap0_CTFElements(CaptureTheFlag g) {
 		//make a list of nodes
 		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
 		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
@@ -84,5 +96,45 @@ public final class MapLoader {
 		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
 		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
 	}
-
+	
+	private static void loadMap0_FFAElements(FreeForAll g) {
+		//make a list of nodes
+		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
+		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
+		pu_nodes.add(new PowerUpNode((short) 13, (short) 20));
+		pu_nodes.add(new PowerUpNode((short) 27, (short) 25));
+		pu_nodes.add(new PowerUpNode((short) 33, (short) 6));
+		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
+		g.pu_handler.setNodeList(pu_nodes);
+		
+		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
+		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 20, 2));
+		g.spawns.add(new SpawnNode((short) 6, (short) 28, 3));
+		g.spawns.add(new SpawnNode((short) 38, (short) 1, 4));
+		g.spawns.add(new SpawnNode((short) 35, (short) 4, 5));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 6));
+		g.spawns.add(new SpawnNode((short) 35, (short) 4, 7));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 8));
+	}
+	
+	private static void loadMap0_TDMElements(TeamDeathMatch g) {
+		//TODO: change up the powerup and spawn nodes
+		//make a list of nodes
+		List<PowerUpNode> pu_nodes = new ArrayList<PowerUpNode>();
+		pu_nodes.add(new PowerUpNode((short) 7, (short) 8));
+		pu_nodes.add(new PowerUpNode((short) 13, (short) 20));
+		pu_nodes.add(new PowerUpNode((short) 27, (short) 25));
+		pu_nodes.add(new PowerUpNode((short) 33, (short) 6));
+		pu_nodes.add(new PowerUpNode((short) 37, (short) 27));
+		g.pu_handler.setNodeList(pu_nodes);
+		
+		//TODO sometimes, for some reason, spawning in a corner keeps the player from moving, idk
+		g.spawns.add(new SpawnNode((short) 2, (short) 16, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 20, 1));
+		g.spawns.add(new SpawnNode((short) 6, (short) 28, 1));
+		g.spawns.add(new SpawnNode((short) 38, (short) 1, 2));
+		g.spawns.add(new SpawnNode((short) 35, (short) 4, 2));
+		g.spawns.add(new SpawnNode((short) 39, (short) 10, 2));
+	}
 }

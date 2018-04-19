@@ -174,12 +174,11 @@ function toDegrees(angle) {
   return (angle * (180.0 / Math.PI));
 }
 
-function connectToServer(role){
+function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		//do some initial handshaking, sending back and forth information like the password and starting game state, etc
-		sendMessageToServer("join:" + gameState.player.client_id + ":" + role);
-		requestAnimationFrame(run); //more synchronized method similar to setInterval
+		sendMessageToServer("join:" + client_id);
 	};
 
 	serverSocket.onmessage = message_handler;
@@ -194,9 +193,9 @@ function sendMessageToServer(msg){
 function message_handler(msg){
 	let temp = msg.data.split(":");
 	if(temp[0] == "join"){
-		gameState.pw = temp[1];
-		temp.splice(0, 2)
-		gameState.addWalls(temp);
+		//console.log(temp);
+		setup(temp);
+		requestAnimationFrame(run); //more synchronized method similar to setInterval
 	}
 	else{
 		gameState.receiveGameState(msg.data);

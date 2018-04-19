@@ -41,8 +41,8 @@ public class AI_path_generator {
 	private ArrayList<mapNode> A_Star_Path(Point a, Point b) {
 		closed_list.clear();
 		open_list.clear();
-		mapNode start_node = g.map.get(a.x).get(a.y);
-		mapNode goal_node = g.map.get(b.x).get(b.y);
+		mapNode start_node = g.ai_map.get(a.x).get(a.y);
+		mapNode goal_node = g.ai_map.get(b.x).get(b.y);
 		mapNode current_node;
 
 		start_node.g = 0;

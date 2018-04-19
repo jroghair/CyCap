@@ -198,11 +198,5 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 			this.dWidth = this.start_width * temp_multiplier;
 			this.dHeight = this.start_height * temp_multiplier;
 		}
-		else{
-			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor(this.end_x/grid_length), Math.floor(this.end_y/grid_length), 3, 1));
-			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
-			//TODO: deal damage
-		}
 	}
 }
