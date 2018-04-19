@@ -27,7 +27,6 @@ const RIGHT = 0b0001;
 let gameState;
 let part_fx = [];
 let map;
-let masks = [];
 
 //NON-SERVER-BASED ITEMS
 let canvas_box;
@@ -78,6 +77,9 @@ function GameState(role, pw, type){
 		for(let i = 0; i < this.part_fx.length; i++){
 			this.part_fx[i].updated = false;
 		}
+		for(let i = 0; i < this.masks.length; i++){
+			this.masks[i].updated = false;
+		}
 		
 		for(let i = 0; i < objects.length; i++){
 			let obj = objects[i].split(",");
@@ -124,13 +126,27 @@ function GameState(role, pw, type){
 				for(let i = 0; i < this.part_fx.length; i++){
 					if(this.part_fx[i].entity_id == obj[1]){
 						found = true;
-						this.part_fx[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]), this.currentServerTimeStep);
+						this.part_fx[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9]), this.currentServerTimeStep);
 						this.part_fx[i].updated = true;
 						break;
 					}
 				}
 				if(!found){
-					this.part_fx.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9])));
+					this.part_fx.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9])));
+				}
+			}
+			else if(obj[0] == "010"){
+				let found = false;
+				for(let i = 0; i < this.masks.length; i++){
+					if(this.masks[i].entity_id == obj[1]){
+						found = true;
+						this.masks[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9]), this.currentServerTimeStep);
+						this.masks[i].updated = true;
+						break;
+					}
+				}
+				if(!found){
+					this.masks.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9])));
 				}
 			}
 			else if(obj[0] == "012"){
@@ -146,13 +162,13 @@ function GameState(role, pw, type){
 				for(let i = 0; i < this.intp_entities.length; i++){
 					if(this.intp_entities[i].entity_id == obj[1]){
 						found = true;
-						this.intp_entities[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9]), this.currentServerTimeStep);
+						this.intp_entities[i].updateNewEntity(new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9]), this.currentServerTimeStep);
 						this.intp_entities[i].updated = true;
 						break;
 					}
 				}
 				if(!found){
-					this.intp_entities.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], obj[9])));
+					this.intp_entities.push(new InterpolatingEntity(obj[1], new Entity(findImageFromCode(+obj[2]), +obj[3], +obj[4], +obj[5], +obj[6], +obj[7], +obj[8], +obj[9])));
 				}
 			}
 		}
@@ -166,6 +182,11 @@ function GameState(role, pw, type){
 		for(let i = this.part_fx.length - 1; i >= 0; i--){
 			if(this.part_fx[i].updated == false){
 				this.part_fx.splice(i, 1);
+			}
+		}
+		for(let i = this.masks.length - 1; i >= 0; i--){
+			if(this.masks[i].updated == false){
+				this.masks.splice(i, 1);
 			}
 		}
 		
@@ -201,16 +222,23 @@ function GameState(role, pw, type){
 			this.intp_entities[i].update();
 		}
 		for(let i = 0; i < this.part_fx.length; i++){
+			if(this.part_fx[i].d_sprIdx < 0){
+				this.part_fx[i].d_sprIdx = 0;
+			}
 			this.part_fx[i].update();
+		}
+		for(let i = 0; i < this.masks.length; i++){
+			this.masks[i].update();
 		}
 	}
 	
 	this.drawGameState = function(){
 		/*
 		this.map.draw();
+		*/
 		for(let i = 0; i < this.masks.length; i++){
 			this.masks[i].draw();
-		}*/
+		}
 		for(let i = 0; i < this.walls.length; i++){
 			this.walls[i].draw();
 		}
@@ -333,9 +361,6 @@ function run() {
 	canvas_box.x = gameState.player.x; //update the canvas_box position
 	canvas_box.y = gameState.player.y;
 
-	for(let i = masks.length - 1; i >= 0; i--){
-		masks[i].update(); //we go through this backwards so that if one is removed, it still checks the others
-	}
 	for(let i = part_fx.length - 1; i >= 0; i--){
 		part_fx[i].update(); //we go through this backwards so that if one is removed, it still checks the others
 	}
@@ -356,9 +381,6 @@ function run() {
 	
 	//////DRAW EVERYTHING///////
 	map.draw();
-	for(let i = 0; i < masks.length; i++){
-		masks[i].draw();
-	}
 	
 	gameState.drawGameState(); //draws the player and the bullets
 	
@@ -454,10 +476,6 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	
 	this.draw = function(){
 		if(isColliding(this, canvas_box)){ //this keeps things from drawing if they are outside of the canvas
-			//console.log(Math.floor(this.sprIdx));
-			if(this.sprIdx >= this.image.sprites.length){
-				this.sprIdx = this.image.sprites.length - 1;
-			}
 			this.sprite = this.image.sprites[Math.floor(this.sprIdx)]; //make sure the correct sprite is being displayed
 			context.setTransform(gt1, gt2, gt3, gt4, Math.round(gt5 + (this.x * gt1)), Math.round(gt6 + (this.y * gt4))); //we must round the X & Y positions so that it doesn't break the textures
 			//context.transform(1, 0, 0, 1, this.x, this.y); //set draw position
@@ -489,6 +507,9 @@ function InterpolatingEntity(entity_id, ent){
 			if(this.last_ent.sprIdx >= this.last_ent.image.sprites.length){
 				this.last_ent.sprIdx = this.last_ent.image.sprites.length - 1;
 			}
+			else if(this.last_ent.sprIdx < 0){
+				this.last_ent.sprIdx = 0;
+			}
 			this.last_ent.sprite = this.last_ent.image.sprites[Math.floor(this.last_ent.sprIdx)];
 			this.last_ent.x += (this.d_x * global_delta_t);
 			this.last_ent.y += (this.d_y * global_delta_t);
@@ -497,11 +518,19 @@ function InterpolatingEntity(entity_id, ent){
 			this.last_ent.updateCollisionRadius();
 			this.last_ent.r += (this.d_r * global_delta_t);
 			this.last_ent.a += (this.d_a * global_delta_t);
+			if(this.last_ent.a > 1.0){
+				this.last_ent.a = 1.0;
+			}
+			else if(this.last_ent.a < 0.0){
+				this.last_ent.a = 0;
+			}
 		}
 	}
 	
 	this.updateNewEntity = function(ent2, time){
-		this.last_ent = this.new_ent;
+		if(this.last_ent == null){
+			this.last_ent = this.new_ent;
+		}
 		this.new_ent = ent2;
 		
 		this.last_ent.image = this.new_ent.image;
@@ -785,32 +814,6 @@ function Wall(img, grid_x, grid_y){
 	this.base = Entity;
 	//we will use wall sprite 0, rotate 0, trans 1
 	this.base(img, 0, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length, grid_length, 0, 1);
-}
-
-//takes in the mask image, the grid coordinates of the center, and the size in grid_lengths
-//this should also take in a starting A_value and a fade time in seconds (-1 means never fade)
-function GroundMask(img, center_x, center_y, size, starting_a){
-	this.start_time = Date.now();
-	this.life_time = 10; //in seconds
-	this.grid_x = center_x;
-	this.grid_y = center_y;
-	this.base = Entity;
-	//sprIdx 0 from groundMasks, 0 rotate
-	this.base(img, 0, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length * size, grid_length * size, 0, starting_a);
-
-	this.update = function(){
-		var age = (Date.now() - this.start_time)/1000; //in seconds
-		if(age > this.life_time){
-			let temp_index = masks.indexOf(this);
-			masks.splice(temp_index, 1);
-		}
-		else if(age > this.life_time/2){
-			this.a = 1 - (2/this.life_time)*(age-this.life_time/2)
-		}
-		else{
-			this.a = 1.0;
-		}
-	}
 }
 
 function ParticleEffect(img, x, y, width, height, num_frames, life_time){

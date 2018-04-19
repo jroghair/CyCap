@@ -88,6 +88,15 @@ public class TeamDeathMatch extends GameState {
 		    	part_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
 		    }
 		}
+		////UPDATE GROUND MASKS////
+		ListIterator<GroundMask> mask_iter = this.ground_masks.listIterator();
+		while(mask_iter.hasNext()){
+			GroundMask temp = mask_iter.next();
+		    if(temp.update()) {
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	mask_iter.remove();
+		    }
+		}
 		
 		
 		//////APPLY INPUT SNAPSHOTS//////
@@ -156,6 +165,11 @@ public class TeamDeathMatch extends GameState {
 		//////ADD PARTICLES//////
 		for(Particle parts : particles) {
 			output += parts.toDataString(p.entity_id) + ":";
+		}
+		
+		//////ADD GROUND MASKS//////
+		for(GroundMask gm : ground_masks) {
+			output += gm.toDataString(p.entity_id) + ":";
 		}
 		
 		//////ADD BULLET MESSAGES//////

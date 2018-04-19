@@ -43,7 +43,7 @@ public class CaptureTheFlag extends GameState {
 
 		friendlyFire = false;
 		respawnTime = 10000; //10 seconds respawn time
-		time_limit = 1 * 60 * 1000; //5 minutes to ms
+		time_limit = 2 * 60 * 1000; //5 minutes to ms
 		score_limit = 5; //5 flag captures
 	}
 
@@ -91,7 +91,16 @@ public class CaptureTheFlag extends GameState {
 			Particle temp = part_iter.next();
 		    if(temp.update()) {
 		    	this.usedEntityIds.remove(temp.entity_id);
-		    	part_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
+		    	part_iter.remove();
+		    }
+		}
+		////UPDATE GROUND MASKS////
+		ListIterator<GroundMask> mask_iter = this.ground_masks.listIterator();
+		while(mask_iter.hasNext()){
+			GroundMask temp = mask_iter.next();
+		    if(temp.update()) {
+		    	this.usedEntityIds.remove(temp.entity_id);
+		    	mask_iter.remove();
 		    }
 		}
 		
@@ -173,6 +182,11 @@ public class CaptureTheFlag extends GameState {
 		//////ADD PARTICLES//////
 		for(Particle parts : particles) {
 			output += parts.toDataString(p.entity_id) + ":";
+		}
+		
+		//////ADD GROUND MASKS//////
+		for(GroundMask gm : ground_masks) {
+			output += gm.toDataString(p.entity_id) + ":";
 		}
 		
 		//////ADD BULLET MESSAGES//////

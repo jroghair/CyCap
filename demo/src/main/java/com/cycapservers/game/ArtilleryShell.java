@@ -62,9 +62,12 @@ public class ArtilleryShell extends Bullet{
 		double total_time = (double) (System.currentTimeMillis() - this.birthTime) / 1000.0;
 		if((total_time*1000) > this.lifeSpan){
 			String id = Utils.getGoodRandomString(game.usedEntityIds, game.entity_id_len);
-			game.particles.add(new Particle(7, 0, this.endX, this.endY, 3*Utils.GRID_LENGTH, 3*Utils.GRID_LENGTH, 0, 1.0, id, 74, 2500, false, 0, 0, 0, 0, 0, 0));
+			game.particles.add(new Particle(7, 0, this.endX, this.endY, 2*Utils.GRID_LENGTH, 2*Utils.GRID_LENGTH, 0, 1.0, id, 74, 2500, false, 0, 0, 0, 0, 0, 0));
 			game.usedEntityIds.add(id);
-			//TODO: add sound & explosion ground mask
+			id = Utils.getGoodRandomString(game.usedEntityIds, game.entity_id_len);
+			game.ground_masks.add(new GroundMask(8, 0, this.endX, this.endY, 3*Utils.GRID_LENGTH, 3*Utils.GRID_LENGTH, 0, id, 15000, 5000));
+			game.usedEntityIds.add(id);
+			//TODO: add sound
 			for(Player p : game.players) {
 				if(Utils.distanceBetween(this, p) <= this.damage_range) {
 					if(game.friendlyFire || (p.team != this.team) || p.equals(this.owner)) {

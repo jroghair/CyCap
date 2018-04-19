@@ -6,7 +6,7 @@ public class GuestCaptureTheFlag extends CaptureTheFlag {
 	
 	public GuestCaptureTheFlag(String id) {
 		super(id, 0);
-		this.max_players = 16;
+		this.max_players = 16; //TODO: disallow player if they join and the game is full
 		time_limit = 2 * 60 * 1000; //2 minutes to ms
 	}
 	

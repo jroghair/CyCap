@@ -1,8 +1,5 @@
 package com.cycapservers.account;
 
-
-import java.util.List;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -128,6 +125,7 @@ public class Profiles {
     	this.flagreturns=flagreturns; 
     	this.flagcaptures=flagcaptures; 
     	this.experience=experience; 
+    	this.level = level;
     }
     
     /**Getter method for userid

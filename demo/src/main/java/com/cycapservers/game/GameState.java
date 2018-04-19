@@ -54,6 +54,7 @@ public abstract class GameState extends TimerTask
 	//////GRAPHICAL OBJECTS//////
 	protected List<Particle> particles;
 	protected List<ParticleEffect> effects;
+	protected List<GroundMask> ground_masks;
 	
 	//////SCORES AND TIME//////
 	protected HashMap<Integer, Integer> team_scores;
@@ -83,6 +84,7 @@ public abstract class GameState extends TimerTask
 		this.current_item_list = new ArrayList<Item>();
 		this.particles = new ArrayList<Particle>();
 		this.effects = new ArrayList<ParticleEffect>();
+		this.ground_masks = new ArrayList<GroundMask>();
 		
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
