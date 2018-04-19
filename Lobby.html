@@ -6,6 +6,11 @@
 <body>
 <button onclick = "death()">Team Death Match</button>
 <button onclick = "capture()">Capture The Flag</button>
+<button onclick = "">Free For All</button></br>
+<table>
+<input id = "game", type = "text"></br>
+<input  type = "button" onclick = "gameId()" value = "submit">
+</table>
 </body>
 <script>
 function death(){
@@ -17,7 +22,7 @@ sessionStorage.setItem("type", "Capture");
 window.location.href = "LobbyScreen";
 }
 function givenId(){
-//sessionStorage.setItem("type", document.getElementById("box").value);
+sessionStorage.setItem("type", document.getElementById("game").value);
 window.location.href = "LobbyScreen";
 }
 </script>

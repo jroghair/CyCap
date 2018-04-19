@@ -1,12 +1,10 @@
 var serverSocket;
 document.getElementById("name").innerHTML = sessionStorage.getItem("type");
 connectToServer();
-let role = "";
 var gameId = "";
 var gameType = sessionStorage.getItem("type");
-var players = 1;
-
-role = prompt("Please Enter Username"); 
+var players = 1; 
+var x;
 
 function refresh(){
 	players = 0;
@@ -15,15 +13,36 @@ function refresh(){
 
 
 function recruit(){
-sessionStorage.setItem("class", "recruit");
+sendMessageToServer("lobby:role:" + gameId + ":" + client_id + ":recruit");
 }
 
 function infantry(){
-sessionStorage.setItem("class", "infantry");
+sendMessageToServer("lobby:role:" + gameId + ":" + client_id + ":infantry");
 }
 
 function scout(){
-sessionStorage.setItem("class", "scout");
+sendMessageToServer("lobby:role:" + gameId + ":" + client_id + ":scout");
+}
+
+function artillery(){
+
+}
+
+function changeTimer(ms){
+	clearInterval(x);
+	x = setInterval(function() {
+	 ms = ms - 1000;
+
+  var minutes = Math.floor(ms / 60000);
+  var seconds = Math.floor((ms % 60000) / 1000);
+  if(seconds < 10){
+  	document.getElementById("time").innerHTML = minutes + ":0" + seconds;  
+  }
+	else{
+  // Display the result in the element with id="demo"
+  document.getElementById("time").innerHTML = minutes + ":" + seconds;
+  }
+	}, 1000);
 }
 
 function myFunction(name) {
@@ -39,7 +58,7 @@ function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		//do some initial handshaking, sending back and forth information like the password and starting game state, etc
-		sendMessageToServer("lobby:join:" + gameType + ":" + role);
+		sendMessageToServer("lobby:join:" + gameType + ":" + client_id);
 	};
 
 	serverSocket.onmessage = message_handler;
@@ -65,5 +84,17 @@ function message_handler(msg){
 	}
 	else if(temp[0] == "clean"){
 		document.getElementById("play").innerHTML = "";
+		players = 0;
+	}
+	else if(temp[0] == "play"){
+	window.location.href = "play";
+	}
+	else if(temp[0] == "role"){
+		if(temp[1] != "no"){
+			document.getElementById("role").innerHTML = "Role: " + temp[1];
+		}
+	}
+	else if(temp[0] == "time"){
+		changeTimer(parseInt(temp[1]));
 	}
 }
