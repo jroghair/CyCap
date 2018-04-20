@@ -38,14 +38,18 @@ let shield_potion = new Image();
 shield_potion.src = "res/images/shield_potion.png";
 shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
-let health_gui = new Image();
-health_gui.src = "res/images/new_health.png";
-health_gui.sprites = [{x:0, y:0, h:16, w:16}];
-/*
-health_gui.src = "res/images/health_bar_good.png";
-health_gui.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:128, y:0, w:64, h:64}, {x:192, y:0, w:64, h:64},
-					  {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}, {x:128, y:64, w:64, h:64}, {x:192, y:64, w:64, h:64}];
-					  */
+let ammo_pack = new Image();
+ammo_pack.src = "res/images/ammo_box.png";
+ammo_pack.sprites = [{x:0, y:0, w:128, h:128}];
+
+let health_pack = new Image();
+health_pack.src = "res/images/health_pack.png";
+health_pack.sprites = [{x:0, y:0, w:128, h:128}];
+
+let color_boxes = new Image();
+color_boxes.src = "res/images/colors.png";
+color_boxes.sprites = [];
+generateSpriteSheetData(4, 4, 4, 2, color_boxes);
 					  
 let item_frame = new Image();
 item_frame.src = "res/images/item_slot_frame.png";
@@ -61,8 +65,16 @@ weapon_selection_ring.src = "res/images/gui_selection_ring.png";
 weapon_selection_ring.sprites = [{x:0, y:0, h:128, w:128}];
 
 let ar_icon = new Image();
+ar_icon.src = "res/images/assault_rifle_icon.png";
+ar_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
 let smg_icon = new Image();
+smg_icon.src = "res/images/smg_icon.png";
+smg_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+let mg_icon = new Image();
+mg_icon.src = "res/images/machine_gun_icon.png";
+mg_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
 let shotgun_icon = new Image();
 shotgun_icon.src = "res/images/shotgun_icon.png";
@@ -118,12 +130,8 @@ flags_ss.src = "res/images/flags.png";
 flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
                     {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
 					
-let font_ss = new Image();
-font_ss.src = "res/images/font_ss.png";
-font_ss.sprites = [];
-generateSpriteSheetData(32, 32, 16, 16, font_ss);
-					
-let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}];
+let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code:3, img:speed_potion_ss},
+				   {code:4, img:flags_ss}, {code:5, img:ammo_pack}, {code:6, img:health_pack}, {code:7, img:boom_ss}];
 
 function findImageFromCode(code){
 	for(let i = 0; i < image_codes.length; i++){
@@ -134,6 +142,7 @@ function findImageFromCode(code){
 }
 
 function generateSpriteSheetData(pHeight, pWidth, cols, rows, img){
+	img.sprites = [];
 	for(let i = 0; i < rows; i++){
 		for(let j = 0; j < cols; j++){
 			img.sprites.push({x:(pWidth*j), y:(pHeight*i), w:pWidth, h:pHeight});

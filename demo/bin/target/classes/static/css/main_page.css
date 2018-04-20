@@ -1,0 +1,88 @@
+*{
+	font-family: sans-serif;
+}
+
+html{
+	height: 100%;
+}
+
+body {
+	margin: 0.0;
+	background-color: #141414;
+	background-image: url("../res/webpage/gameplay_test.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 100%;
+}
+
+.topnav {
+	overflow: hidden;
+	background-color: #333;
+}
+
+.topnav h1{
+	color: #C8102E;
+	padding-left: 10px;
+}
+
+.topnav a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+}
+
+.topnav a:hover {
+	background-color: #ddd;
+	color: black;
+}
+
+.topnav a.active {
+	background-color: #4CAF50;
+	color: white;
+}
+
+.topnav img{
+	display: inline;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#logo:hover{
+	background-color: inherit;
+}
+
+.section2 {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: calc(100% - 128px);
+	justify-content: center;
+}
+
+.section2 button{
+	display: block;
+	text-align: center;
+	background-color: #C8102E;
+	border-color: #c8102e;
+	position: relative;
+	top: -10px;
+	font-size: 200%;
+	margin-bottom: 40px;
+}
+
+.section2 a{
+	color: #f2f2f2;
+	text-decoration: none;
+}
+
+h2{
+	color: LightSlateGray;
+}
+
+p{
+	color: #f2f2f2;
+}

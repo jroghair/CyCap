@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<ul>
+  <li><a class="active" href="/accounts/chat">Chat</a></li>
+  <li><a href="/game_list">Available Games</a></li>
+  <li><a href="/accounts/profile">Profile</a></li>
+</ul>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+</head>
+
+<h1> CyCap LeaderBoards</h1>
+
+<style>
+#myInput {
+  background-image: url(https://www.w3schools.com/css/searchicon.png);
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 10%;
+  height: 10%
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.button {
+
+    background-color: #4CAF50; /* Green  #4CAF50;*/
+    border: 1px solid #ddd;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    
+}
+.button1:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+#stats {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#stats td, #stats th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#stats tr:nth-child(even){background-color: #f2f2f2;}
+
+#cstats tr:hover {background-color: #ddd;}
+
+#stats th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+
+<!-- 
+<input type='text' id='filter' />
+<button id='btnFilter'>Go</button> 
+ -->
+ <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/> 
+ <input type="button" class="button button1" id="Infantry" th:onclick= "'javascript:infantry(\''+'infantry'+'\');'" value="Infantry Rankings"/> 
+ <input type="button" class="button button1" id="recruit" th:onclick= "'javascript:recruit(\''+'recruit'+'\');'" value="Recruit Rankings"/>
+ <input type="button"  class="button button1" id="scout" th:onclick= "'javascript:scout(\''+'scout'+'\');'" value="Scout Rankings"/>
+  
+<script th:inline="javascript">
+	function playerSearch(){
+    /*<![CDATA[*/
+    var input = document.getElementById("myInput");
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[0];
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+
+<script th:inline="javascript">
+	function infantry(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+<script th:inline="javascript">
+	function recruit(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+
+<script th:inline="javascript">
+	function scout(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
+
+<script>
+function sortTableString(n) {
+    /*<![CDATA[*/
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("stats");
+  switching = true;
+  dir = "asc"; 
+  while (switching) {
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;      
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+  /*]]>*/
+}
+</script>
+
+<script>
+function sortTableNumeric(n) {
+    /*<![CDATA[*/
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("stats");
+  switching = true;
+  dir = "asc"; 
+  while (switching) {
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      x=parseFloat(x.innerHTML);
+      console.log(parseFloat(x.innerHTML));
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      y=parseFloat(y.innerHTML);
+      if (dir == "asc") {
+        if (x> y) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x < y) {
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;      
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+  /*]]>*/
+}
+</script>
+
+
+
+<body>
+ <table id="stats">
+    <thead>
+      <tr>
+      	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
+      	<th th:onclick="'javascript:sortTableString(1);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Character Class</th>
+      	<th th:onclick="'javascript:sortTableNumeric(2);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Level</th>
+        <th th:onclick="'javascript:sortTableNumeric(3);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Kills</th>
+        <th th:onclick="'javascript:sortTableNumeric(4);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Deaths</th>
+        <th th:onclick="'javascript:sortTableNumeric(5);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Kill/Death Ratio</th>
+        <th th:onclick="'javascript:sortTableNumeric(6);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Games Played</th>
+        <th th:onclick="'javascript:sortTableNumeric(7);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Game Average Kills</th>      
+        <th th:onclick="'javascript:sortTableNumeric(8);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Game Win Ratio</th>  
+      </tr>
+    </thead>
+    <tbody>
+		<th:block th:each="playerLBDataList : ${playerLBDataList}">
+     	 	<tr>
+     	 		<td th:text="${playerLBDataList.userID}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.role}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.level}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.kills}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.deaths}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.kdratio}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.gamesplayed}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.averagekills}" class="user">...</td>
+     	 		<td th:text="${playerLBDataList.winrate}" class="user">...</td>	 		
+      		</tr>
+   		</th:block>
+    </tbody>
+  </table>
+</body>
+
+</html>

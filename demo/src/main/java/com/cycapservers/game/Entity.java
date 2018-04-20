@@ -2,6 +2,8 @@ package com.cycapservers.game;
 
 public class Entity {
 	
+	protected String entity_id;
+	
 	protected int imageId;
 	
 	protected int spriteIndex;
@@ -10,9 +12,9 @@ public class Entity {
 	
 	protected double y;
 	
-	protected double drawWidth;
+	private double drawWidth;
 	
-	protected double drawHeight;
+	private double drawHeight;
 	
 	protected double collision_radius;
 	
@@ -20,7 +22,7 @@ public class Entity {
 	
 	protected double alpha;
 	
-	public Entity(int id, int sprIdx, double x, double y, double w, double h, double r, double a){
+	public Entity(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id){
 		this.imageId = id;
 		this.spriteIndex = sprIdx;
 		this.x = x;
@@ -29,11 +31,22 @@ public class Entity {
 		this.drawHeight = h;
 		this.rotation = r;
 		this.alpha = a;
+		this.entity_id = entity_id;
 		updateCollision_radius();
 	}
 	
-	public String toString(){
-		return imageId + "," + spriteIndex + "," + x + "," + y + "," + drawWidth + "," + drawHeight + "," + rotation + "," + alpha;
+	public String toDataString(String client_id){
+		String output = "";
+		output += entity_id + ",";
+		output += imageId + ",";
+		output += spriteIndex + ",";
+		output += (int) x + ",";
+		output += (int) y + ",";
+		output += drawWidth + ",";
+		output += drawHeight + ",";
+		output += rotation + ",";
+		output += alpha;
+		return output;
 	}
 
 	public int getImageId() {

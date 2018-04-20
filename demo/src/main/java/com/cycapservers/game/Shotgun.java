@@ -36,11 +36,12 @@ public class Shotgun extends Weapon {
 	@Override
 	public void fire(Player p, InputSnapshot s, GameState g) {
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//TODO: make bullet sound
-		//get a random number of buckshot pellets between like 5 and 10 or something
+		g.new_sounds.add(p.x + "," + p.y + "," + this.shot_sound); //make bullet sound
 		int num_of_pellets = 5;
 		for(int i = 0; i < num_of_pellets; i++){
-			g.bullets.add(new Bullet(this.bullet_type, p.x, p.y, s.mapX, s.mapY, Utils.GRID_LENGTH * 0.125, Utils.GRID_LENGTH * 0.125, 0, 1.0, this.bullet_speed, this.damage/num_of_pellets, this.shot_variation, p));
+			String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
+			g.bullets.add(new Bullet(this.bullet_type, p.x, p.y, s.mapX, s.mapY, Utils.GRID_LENGTH * 0.125, Utils.GRID_LENGTH * 0.125, 0, 1.0, this.bullet_speed, this.damage/num_of_pellets, this.shot_variation, p, id));
+			g.usedEntityIds.add(id);
 		}
 	}
 }

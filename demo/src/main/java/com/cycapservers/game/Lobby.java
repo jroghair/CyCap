@@ -2,31 +2,32 @@ package com.cycapservers.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+
 
 /**
  * Represents one instance of a lobby.
  * @author ted
  *
  */
-public class Lobby {
+public class Lobby{
 	
 	/**
 	 * Stores the GameState assosositated with the lobby.
 	 */
 	private GameState game;
 	
+	public Timer t;
+	
 	/**
 	 * Stores the usernames of all of the players in the lobby.
 	 */
-	private ArrayList<String> players = new ArrayList<String>();
-	
-	/**
-	 * Stores a list of websocketsessions that are in the lobby.
-	 */
-	private ArrayList<WebSocketSession> sessions = new ArrayList<WebSocketSession>();
+	private ArrayList<IncomingPlayer> players = new ArrayList<IncomingPlayer>();
 	
 	/**
 	 * The amount of people in the lobby.
@@ -41,27 +42,51 @@ public class Lobby {
 	/**
 	 * How many people below the max before the game starts.
 	 */
-	private final int startGap = 4;
+	private final int startGap = 6;
 	
 	/**
 	 * Takes in the game mode that the lobby is going to represent.
 	 * @param gamemode
 	 * String representing the game mode.
 	 */
-	public Lobby(String gamemode){
+	public Lobby(Class<? extends GameState> c, String id){
 		this.curSize=0;
-		if(gamemode.equals("Death")){
-			this.game = new Death();
+		this.t = new Timer();
+		if(c.equals(TeamDeathMatch.class)){
+			this.game = new TeamDeathMatch(id, 0);
 		}
-		else if(gamemode.equals("Capture")){
-			this.game = new Capture();
+		else if(c.equals(CaptureTheFlag.class)){
+			this.game = new CaptureTheFlag(id, 0);
 		}
-		else{
-			this.game = new GameState();
+		else if(c.equals(FreeForAll.class)){
+			this.game = new FreeForAll(id, 0);
 		}
-		this.maxSize = game.maxPlayers;
+		this.maxSize = game.max_players;
 		
 	}
+	
+	public TimerTask newTask(){
+		TimerTask t = new TimerTask(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				for(IncomingPlayer i : players){
+					game.addIncomingPlayer(i);
+					try {
+						i.session.sendMessage(new TextMessage("play"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		};
+		return t;
+		
+	}
+	
 	
 	/**
 	 * The current size of the lobby
@@ -78,7 +103,7 @@ public class Lobby {
 	 * @return
 	 * A string representing the user id.
 	 */
-	public String getPlayer(int num){
+	public IncomingPlayer getPlayer(int num){
 		return this.players.get(num);
 	}
 	
@@ -88,7 +113,7 @@ public class Lobby {
 	 * A String representing the game id.
 	 */
 	public String getId(){
-		return game.GameId;
+		return game.game_id;
 	}
 	
 	/**
@@ -123,9 +148,26 @@ public class Lobby {
 	public void GivePlayerList(WebSocketSession session, String id) throws IOException{
 			session.sendMessage(new TextMessage("clean"));
 			for(int i = 0; i < curSize; i++){
-				session.sendMessage(new TextMessage("player:"+ players.get(i)));
+				session.sendMessage(new TextMessage("player:"+ players.get(i).client_id));
 			}
 		return;
+	}
+	
+	public void ChangePlayerClass(WebSocketSession session, String id, String role){
+		for(IncomingPlayer p : players){
+			if(p.client_id.equals(id)){
+				//TODO add checking for player level;
+				p.role = role;
+				try {
+					session.sendMessage(new TextMessage("role:" + role));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
+			}
+		}
+		
 	}
 	
 	/**
@@ -133,25 +175,24 @@ public class Lobby {
 	 * @param p
 	 * The user id of the person joining the game.
 	 * @param s
-	 * The websocketsession of the person joing the game.
+	 * The websocketsession of the person joining the game.
 	 * @return
 	 * returns true if the game has started.
 	 * @throws IOException
-	 * @throws InterruptedException
 	 */
-	public boolean addPlayer(String p, WebSocketSession s) throws IOException, InterruptedException{
-		players.add(p);
-		sessions.add(s);
+	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
+		players.add(new IncomingPlayer(p, "recruit", s)); //TODO: this needs to use the role that was chosen on the lobby page
 		this.curSize++;
-		for(WebSocketSession se: sessions){
-			this.GivePlayerList(se, game.GameId);
+		
+		for(IncomingPlayer i : players){
+			this.GivePlayerList(i.session, game.game_id);
+			i.session.sendMessage(new TextMessage("time:" + (240000 / (curSize + startGap ))));
 		}
+		this.t.cancel();
+		this.t = new Timer();
+		//this.t.schedule(newTask(), (240000 / (curSize + startGap )));
+		this.t.schedule(newTask(), 100);
 		if((curSize + startGap) == maxSize){
-			//this.wait(10000);
-			for(int i = 0; i < sessions.size(); i++){
-				game.addIncomingPlayer(players.get(i));
-				sessions.get(i).sendMessage(new TextMessage("play"));
-			}
 			return true;
 		}
 		else{
@@ -163,17 +204,25 @@ public class Lobby {
 	 * Removes a player from the lobby.
 	 * @param p
 	 */
-	public void removePlayer(String p){
-		players.remove(p);
-		this.curSize--;
-	}
-	
-	/**
-	 * Return an ArrayList of all of the user id's in the lobby.
-	 * @return
-	 */
-	public ArrayList<String> getPlayersList(){
-		return players; 
+	public void removePlayer(WebSocketSession s){
+		for(IncomingPlayer i : players) {
+			if(i.session.equals(s)) {
+				players.remove(i);
+				this.curSize--;
+				this.t.cancel();
+				this.t = new Timer();
+				this.t.schedule(newTask(), (240000 /(curSize + startGap)));
+				for(IncomingPlayer j: players){
+					try {
+						this.GivePlayerList(j.session, game.game_id);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return;
+			}
+		}
 	}
 	
 	/**

@@ -21,10 +21,11 @@ function HealthGUI(x, y, width, height){
 	this.y = y;
 	this.health_frame = new GuiElement(item_frame, x + width/2, y - height/2, width, height, 0);
 	this.pixelsPerHP = (width - 4)/gameState.player.max_hp;
-	this.health_bar = new GuiElement(health_gui, x + width/2, y - height/2, width - 4, height - 4, 0);
+	this.health_bar = new GuiElement(color_boxes, x + width/2, y - height/2, width - 4, height - 4, 0);
 	
 	this.update = function(){
 		//only need to update the health_bar
+		this.pixelsPerHP = (width - 4)/gameState.player.max_hp;
 		let newWidth;
 		if(gameState.player.health >= 0){
 			newWidth = this.pixelsPerHP * gameState.player.health;
@@ -41,6 +42,36 @@ function HealthGUI(x, y, width, height){
 	this.draw = function(){
 		this.health_frame.draw();
 		this.health_bar.draw();
+	}
+}
+
+function AmmoGUI(x, y, height, width, barWidth){
+	this.bars = []; //in the future i think I will want fun bars for each bullet instead of a single bar
+	this.barWidth = barWidth;
+	
+	this.x = x;
+	this.y = y;
+	this.ammoFrame = new GuiElement(item_frame, x + width/2, y - height/2, width, height, 0);
+	this.pixelsPerBullet = (width - 4)/gameState.player.currentWeapon.mag_size;
+	this.ammoBar = new GuiElement(color_boxes, x + width/2, y - height/2, width - 4, height - 4, 3);
+	
+	this.update = function(){
+		this.pixelsPerBullet = (width - 4)/gameState.player.currentWeapon.mag_size;
+		let newWidth;
+		if(gameState.player.currentWeapon.ammo_in_clip >= 0){
+			newWidth = this.pixelsPerBullet * gameState.player.currentWeapon.ammo_in_clip;
+		}
+		else{
+			newWidth = 0;
+		}
+		this.ammoBar.dWidth = newWidth;
+		//update it's x position, y position does not need to be
+		this.ammoBar.x = this.x + newWidth/2 + 2;
+	}
+	
+	this.draw = function(){
+		this.ammoFrame.draw();
+		this.ammoBar.draw();
 	}
 }
 
@@ -112,8 +143,7 @@ function ItemSlotGUI(x, y){
 		}
 		else{
 			this.item_image.a = 1.0; //make visible
-			this.item_image.image = gameState.player.item_slot.image;
-			this.item_image.sprIdx = gameState.player.item_slot.sprIdx;
+			this.item_image.image = findImageFromCode(gameState.player.item_slot);
 		}
 	}
 	
@@ -121,5 +151,79 @@ function ItemSlotGUI(x, y){
 		//draw stuff
 		this.item_frame.draw();
 		this.item_image.draw();
+	}
+}
+
+function TextGUI(txt, font, x, y, a){
+	this.txt = txt;
+	this.font = font;
+	this.x = x;
+	this.y = y;
+	this.a = a;
+	this.active = true;
+	
+	this.update = function(txt){
+		this.txt = txt;
+	}
+	
+	this.draw = function(){
+		if(this.active){
+			gui_context.setTransform(1, 0, 0, 1, 0, 0); //set draw position
+			gui_context.globalAlpha = this.a;
+			gui_context.font = this.font;
+			gui_context.fillText(this.txt, this.x, this.y);
+		}
+	}
+}
+
+function GameScoreGUI(x, y, type){
+	this.base = TextGUI;
+	this.base("Red: 0  |  Blue: 0", "25px Arial", x - 100, y + 20, 1.0);
+	this.game_type = type;
+	if(this.game_type == "CTF"){
+		this.txt = "Red: 0  |  Blue: 0";
+	}
+	
+	this.update = function(txt){
+		let data = txt.split(",");
+		if(this.game_type == "CTF"){
+			this.txt = "Red: " + data[1] + "  |  Blue: " + data[2];
+		}
+	}
+	
+}
+
+function RespawnCounter(x, y, length){
+	this.base = TextGUI;
+	this.base("", "25px Arial", x - 100, y + 11, 1.0);
+	this.length = length; //this is in ms
+	this.startTime = 0;
+	this.active = false;
+	
+	this.start = function(){
+		if(!this.active){
+			this.a = 1.0
+			this.active = true;
+			this.startTime = Date.now();
+			let time = (this.length - (Date.now() - this.startTime))/1000;
+			this.txt = "Respawning In: " + time.toFixed(2);
+		}
+	}
+	
+	this.update = function(txt){
+		if((Date.now() - this.startTime) >= this.length){
+			if(this.active && gameState.player.health > 0){
+				this.stop();
+			}
+		}
+		else{
+			let time = (this.length - (Date.now() - this.startTime))/1000;
+			this.txt = "Respawning In: " + time.toFixed(2);
+		}
+	}
+	
+	this.stop = function(){
+		this.active = false;
+		this.a = 0.0;
 	}
 }
