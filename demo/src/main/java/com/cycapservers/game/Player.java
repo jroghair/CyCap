@@ -221,14 +221,28 @@ public class Player extends GameCharacter {
 	 * respawns the player into a proper respawn node, resets their weapons and health
 	 */
 	protected void respawn(GameState g) {
-		SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
-		//respawn player
-		this.x = n.getX();
-		this.y = n.getY();
-		//set isDead to false
-		this.isDead = false;
-		//reset ammo and health
-		Utils.setRole(this);
+		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(TeamDeathMatch.class)) {
+			SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
+			//respawn player
+			this.x = n.getX();
+			this.y = n.getY();
+			//set isDead to false
+			this.isDead = false;
+			//reset ammo and health
+			Utils.setRole(this);
+			return;
+		}
+		else if(g.getClass().equals(FreeForAll.class)) {
+			SpawnNode n = Utils.getRandomSpawn(g.spawns);
+			//respawn player
+			this.x = n.getX();
+			this.y = n.getY();
+			//set isDead to false
+			this.isDead = false;
+			//reset ammo and health
+			Utils.setRole(this);
+			return;
+		}
 	}
 	
 	public void leaveGame() {

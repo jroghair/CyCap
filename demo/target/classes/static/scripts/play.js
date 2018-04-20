@@ -593,6 +593,15 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				break;
 				
 			case "artillery":
+				this.mov_speed = 120;
+				this.max_hp = 85;
+				this.health = this.max_hp;
+				this.weapon1 = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
+				//this.weapon2 = new MortarWeapon(MORTAR);
+				this.weapon3 = "EMPTY";
+				this.weapon4 = "EMPTY";
+				this.currentWeapon = this.weapon1;
+				this.visibility = 6;
 				break;
 				
 			case "infantry":

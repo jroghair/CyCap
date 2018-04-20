@@ -62,6 +62,10 @@ public abstract class GameCharacter extends Entity {
 		}
 	}
 	
+	public void takeHeals(int amount) {
+		this.health = Math.min(this.max_health, this.health + amount);
+	}
+	
 	protected abstract void respawn(GameState g);
 	
 	public abstract void die();

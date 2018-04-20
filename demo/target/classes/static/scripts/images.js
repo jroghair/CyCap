@@ -29,6 +29,7 @@ let blast1_image = new Image();
 blast1_image.src = "res/images/blast1.png";
 blast1_image.sprites = [{x:0, y:0, w:128, h:128}];
 
+//////POWER UPS//////
 let speed_potion_ss = new Image();
 speed_potion_ss.src = "res/images/speed_potion.png";
 speed_potion_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128}, {x:384, y:0, w:128, h:128},
@@ -46,6 +47,7 @@ let health_pack = new Image();
 health_pack.src = "res/images/health_pack.png";
 health_pack.sprites = [{x:0, y:0, w:128, h:128}];
 
+//////ITEM AND HEALTH GUIS//////
 let color_boxes = new Image();
 color_boxes.src = "res/images/colors.png";
 color_boxes.sprites = [];
@@ -54,8 +56,12 @@ generateSpriteSheetData(4, 4, 4, 2, color_boxes);
 let item_frame = new Image();
 item_frame.src = "res/images/item_slot_frame.png";
 item_frame.sprites = [{x:0, y:0, h:64, w:64}];
+
+let ammo_symbol = new Image();
+
+let health_symbol = new Image();
 					  
-//WEAPON SELECTION GUI IMAGES
+//////WEAPON SELECTION GUI IMAGES////
 let weapon_select_frame = new Image();
 weapon_select_frame.src = "res/images/weapon_select_frame.png";
 weapon_select_frame.sprites = [{x:0, y:0, h:800, w:1600}];

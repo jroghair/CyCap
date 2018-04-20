@@ -28,11 +28,14 @@ public final class Utils{
 	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
 	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000, 6);
+	//public final static Grenade SMOKE_GRENADE = new Grenade();
+	public final static HealthGun HEAL_GUN = new HealthGun("Heal Gun", 2, 180, 100, 0, 1000, (int) (GRID_LENGTH * 1.5));
 	
 	//////THE POWERUPS//////
 	public final static SpeedPotion SPEED_POTION = new SpeedPotion(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "speed_pot_template");
 	public final static HealthPack HEALTH_PACK = new HealthPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "health_pack_template");
 	public final static AmmoPack AMMO_PACK = new AmmoPack(0, 0, GRID_LENGTH, GRID_LENGTH, 0, 1.0, "ammo_pack_template");
+	//TODO: shield potion, rage serum, and chill pill
 	
 	private Utils(){} //prevents the class from being constructed
 	
@@ -279,6 +282,15 @@ public final class Utils{
 			return;
 		}
 		else if(role.equals("artillery")) {
+			p.speed = 120;
+			p.max_health = 85;
+			p.health = p.max_health;
+			p.weapon1 = new AutomaticGun(SMG);
+			p.weapon2 = new MortarWeapon(MORTAR);
+			p.weapon3 = null;
+			p.weapon4 = null;
+			p.currentWeapon = p.weapon1;
+			p.visibility = 6;
 			return;
 		}
 		else if(role.equals("infantry")) {	

@@ -129,9 +129,6 @@ function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, re
 	}
 }
 
-//UNUSED WEAPONS
-let smg = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
-
 /////DIFFERENT TYPES OF AMMUNITION/////
 function Bullet(width, height, sprIdx, startX, startY, endX, endY, damage, speed, shot_variation) {
 	this.x_diff = endX - startX;
