@@ -1,165 +1,24 @@
 
 <html>
-<style>
-#myInput {
-  background-image: url(https://www.w3schools.com/css/searchicon.png);
-  background-position: 10px 12px;
-  background-repeat: no-repeat;
-  width: 10%;
-  height: 10%
-  font-size: 16px;
-  padding: 12px 20px 12px 40px;
-  border: 1px solid #ddd;
-  margin-bottom: 12px;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
-
-li {
-    float: left;
-}
-
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-li a:hover {
-    background-color: #111;
-}
-
-
-.button {
-    background-color: #4CAF50; /* Green  #4CAF50;*/
-    border: 1px solid #ddd;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
- 	   
-}
-
-.button1:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-}
- th,td  {border: 1px solid black;}
-
-#friends.players	 {
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    border: 1px solid black;
-}
-
-#friends.players td, #friends.players th {
-    border: 1px solid #ddd;
-    padding: 8px;
-    border: 1px solid black;
-}
-
-#friends tr:nth-child(even){background-color: #f2f2f2;}
-
-
-#friends th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-right: 120px;
-    text-align: left;
-    background-color: #4CAF50;
-    color: white;
-    border: 1px solid black;
-}
-</style>
-
-
 <head>
-<ul>
-  <li><a class="active" href="/accounts/chat">Chat</a></li>
-  <li><a href="/game_list">Available Games</a></li>
-  <li><a href="/accounts/profile">Profile</a></li>
-</ul>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
 </head>
-<h1 id="user"/> 
-
+	<h5 id="user"> </h5> 	<h2> Friends List</h2>
 
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		
-		let temp = /*[[${account.getUserID()}]]*/;
-		temp += "\'s FriendsList";
-		document.getElementById("user").innerHTML = temp;
-		
-		
+		document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';	
 		/*]]>*/
 	</script>
 	
-	
-	
-<script>function unhideDivRemove()
-{
-	 /*<![CDATA[*/
-  document.getElementById('remove').style = "display: block;";
-  document.getElementById('removebutton').style = "display: none;";
-  /*]]>*/
-  
-}
-</script>
-<script>function unhideDivAdd()
-{
-	 /*<![CDATA[*/
-  document.getElementById('add').style = "display: block;";
-  document.getElementById('addbutton').style = "display: none;";
-  /*]]>*/
-  
-}
-</script>
-<script>function hideDivAdd()
-{
-	 /*<![CDATA[*/
-  document.getElementById('add').style = "display: none;";
-  document.getElementById('addremove').style = "display: block;";
-  /*]]>*/
-  
-}
-</script>
-<script>function hideDivRemove()
-{
-	 /*<![CDATA[*/
-  document.getElementById('remove').style = "display: none;";
-  document.getElementById('addremove').style = "display: block;";
-  /*]]>*/
-  
-}
-</script>
-<button id="addbutton" class="button button1" th:onclick= "'javascript:unhideDivAdd();'">Add a Friend</button>
-<button id="removebutton" class="button button1" th:onclick= "'javascript:unhideDivRemove();'">Remove a Friend</button>
-<div style='display: none;' id='add'>
 	<form th:action="@{/accounts/friendAdd}"  method="post" th:object="${friend}">	
-	<p><input type="text" th:field="*{userID}" id="myInput" /> <input type="submit" value="Add Friend" th:onclick= "'javascript:hideDivAdd();'" class="button button1" /></p>
+	<p><input type="text" th:field="*{userID}" /> <input type="submit" value="Add Friend" /></p>
 	</form>
-</div>
-<div style='display: none;' id='remove'>	
+	
 	<form th:action="@{/accounts/friendRemove}"  method="post" th:object="${friend}">	
-	<p><input type="text" th:field="*{userID}" id="myInput" /> <input type="submit" value="Remove Friend" th:onclick= "'javascript:hideDivRemove();'"  class="button button1"/></p>
+	<p><input type="text" th:field="*{userID}" /> <input type="submit" value="Remove Friend" /></p>
 	</form>
-</div>
 	
 <body>	
   <table id="friends" class="table table-striped">
@@ -170,21 +29,20 @@ li a:hover {
     </thead>
     <tbody>
       <tr th:each="friend : ${friends.friendList}" >
-        <td th:text="${friend}" id="player"><span
+        <td th:text="${friend}"><span
           th:if="${friends.friendList == 0}">none</span></td>
           
  <form>         
-		<td><input class="button button1" value="Chat" type="submit"/></td>
+		<td><input class="msgbtn" value="Chat" type="submit"/></td>
 		</form>
 		
 <form>
-	<td> <input class="button button1" name="Invite" value="Invite" type="submit" id="remove"/>
+	<td> <input class="btn" name="Invite" value="Invite" type="submit" id="remove"/>
 	
 	
 	<!--
 	<script  th:inline="javascript">
 	function showTdSecond(_this) {
-	
 		var friend = _this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
 		document.getElementById('remove').value = friend; 
  		alert(_this.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
@@ -193,10 +51,7 @@ li a:hover {
 	-->
 	
 	</td> 
-</form>	
-
-
-		
+</form>			
     </tr>
     </tbody>
   </table>

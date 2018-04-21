@@ -1,4 +1,6 @@
-function InputHandler(){
+function InputHandler(game_id){
+	
+	this.game_id = game_id;
 	
 	this.canvasX = 0;
 	this.canvasY = 0;
@@ -67,6 +69,9 @@ function InputSnapshot(mapX, mapY, canvasX, canvasY, mouse_clicked, lmb_down, ke
 		
 		//signify that it is an input message
 		let message = "input" + ":";
+		
+		//game id
+		message += input_handler.game_id + ":";
 		
 		//password
 		message += gameState.pw + ":";

@@ -1,12 +1,9 @@
 var serverSocket;
 document.getElementById("name").innerHTML = sessionStorage.getItem("type");
 connectToServer();
-let role = "";
 var gameId = "";
 var gameType = sessionStorage.getItem("type");
-var players = 1;
-
-role = prompt("Please Enter Username"); 
+var players = 1; 
 
 function refresh(){
 	players = 0;
@@ -39,7 +36,7 @@ function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		//do some initial handshaking, sending back and forth information like the password and starting game state, etc
-		sendMessageToServer("lobby:join:" + gameType + ":" + role);
+		sendMessageToServer("lobby:join:" + gameType + ":" + client_id);
 	};
 
 	serverSocket.onmessage = message_handler;
@@ -65,5 +62,9 @@ function message_handler(msg){
 	}
 	else if(temp[0] == "clean"){
 		document.getElementById("play").innerHTML = "";
+		players = 0;
+	}
+	else if(temp[0] == "play"){
+	window.location.href = "play";
 	}
 }

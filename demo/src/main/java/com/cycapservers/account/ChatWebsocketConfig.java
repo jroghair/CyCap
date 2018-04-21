@@ -12,34 +12,21 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
-/**Websocket configuration handler for Chat functionality. 
- * @author Jeremy 
- * */
 @Configuration
 @EnableWebSocketMessageBroker
 public class ChatWebsocketConfig implements WebSocketMessageBrokerConfigurer {
     
-	/**Defines the websocket endpoints to be used for chat with Stomp
-	 * @param StompEndPointRegistry registry
-	 * */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").withSockJS();
     }
-	/**Defines the message broker registry to be used for chat
-	 * @param MessageBrokerRegistry registry
-	 * */
+    
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableSimpleBroker("/topic");
     }
 
-    ///NOT ADDING INTO API SINCE WE DO NOT USE THEM  AND ONLY INCLUDED THEM DUE TO A BUG WITH STOMP  
-    
-    
-    
-    
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> arg0) {
 		// TODO Auto-generated method stub
