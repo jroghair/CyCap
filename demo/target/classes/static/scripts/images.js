@@ -58,10 +58,14 @@ item_frame.src = "res/images/item_slot_frame.png";
 item_frame.sprites = [{x:0, y:0, h:64, w:64}];
 
 let ammo_symbol = new Image();
+ammo_symbol.src = "res/images/ammo_symbol.png";
+ammo_symbol.sprites = [{x:0, y:0, h:64, w:64}];
 
 let health_symbol = new Image();
+health_symbol.src = "res/images/health_symbol.png";
+health_symbol.sprites = [{x:0, y:0, h:64, w:64}];
 					  
-//////WEAPON SELECTION GUI IMAGES////
+//////WEAPON SELECTION GUI IMAGES//////
 let weapon_select_frame = new Image();
 weapon_select_frame.src = "res/images/weapon_select_frame.png";
 weapon_select_frame.sprites = [{x:0, y:0, h:800, w:1600}];
@@ -94,6 +98,15 @@ let pistol_icon = new Image();
 pistol_icon.src = "res/images/pistol_icon.png";
 pistol_icon.sprites = [{x:0, y:0, h:128, w:128}];
 
+let mortar_icon = new Image();
+mortar_icon.src = "res/images/mortar_icon.png";
+mortar_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+let smoke_icon = new Image();
+smoke_icon.src = "res/images/smoke_icon.png";
+smoke_icon.sprites = [{x:0, y:0, h:128, w:128}];
+
+//////PARTICLE EFFECT SPRITESHEETS//////
 let boom_ss = new Image();
 boom_ss.src = "res/images/explosion_ss.png";
 //boom_ss.src = "explosion_ss2.png";
@@ -131,6 +144,10 @@ boom_ss.sprites = [{x:0, y:0, w:114, h:114}, {x:114, y:0, w:114, h:114}, {x:227,
 				   
 				   {x:0, y:910, w:114, h:114}, {x:114, y:910, w:114, h:114}];
 				   
+let smoke_ss = new Image();
+smoke_ss.src = "res/images/smoke_cloud.png";
+smoke_ss.sprites = [{x:0, y:0, h:256, w:256}];
+				   
 let flags_ss = new Image();
 flags_ss.src = "res/images/flags.png";
 flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
@@ -138,7 +155,7 @@ flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256
 					
 let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code:3, img:speed_potion_ss},
 				   {code:4, img:flags_ss}, {code:5, img:ammo_pack}, {code:6, img:health_pack}, {code:7, img:boom_ss},
-				   {code:8, img:blast1_image}];
+				   {code:8, img:blast1_image}, {code:9, img:smoke_ss}];
 
 function findImageFromCode(code){
 	for(let i = 0; i < image_codes.length; i++){

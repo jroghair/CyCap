@@ -59,7 +59,7 @@ public class CaptureTheFlag extends GameState {
 		this.lastGSMessage = System.currentTimeMillis();
 		
 		//DEV STUFF
-		if(Utils.DEBUG) {
+		if(Utils.DEBUG && false) {
 			int error = (int) (this.currentDeltaTime * 1000 - 100);
 			if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
 				System.out.println("Time error in Gamestate sending: " + error);
@@ -89,7 +89,7 @@ public class CaptureTheFlag extends GameState {
 		ListIterator<Particle> part_iter = this.particles.listIterator();
 		while(part_iter.hasNext()){
 			Particle temp = part_iter.next();
-		    if(temp.update()) {
+		    if(temp.update(this)) {
 		    	this.usedEntityIds.remove(temp.entity_id);
 		    	part_iter.remove();
 		    }

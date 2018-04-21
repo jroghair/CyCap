@@ -93,7 +93,7 @@ public class FreeForAll extends GameState {
 		ListIterator<Particle> part_iter = this.particles.listIterator();
 		while(part_iter.hasNext()){
 			Particle temp = part_iter.next();
-		    if(temp.update()) {
+		    if(temp.update(this)) {
 		    	this.usedEntityIds.remove(temp.entity_id);
 		    	part_iter.remove();
 		    }

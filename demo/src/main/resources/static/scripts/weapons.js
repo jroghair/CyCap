@@ -77,7 +77,8 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 	this.reload = function(){
 		let bullets_to_refill = this.mag_size - this.ammo_in_clip;
 		if(this.extra_ammo == 0){
-			console.log("I cannot reload");
+			//console.log("I cannot reload");
+			//TODO: play a sound
 		}
 		else if(this.extra_ammo < bullets_to_refill){
 			this.ammo_in_clip += this.extra_ammo;
@@ -87,6 +88,24 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 			this.ammo_in_clip += bullets_to_refill;
 			this.extra_ammo -= bullets_to_refill;
 		}
+	}
+}
+
+function SmokeGrenade(rate, mag_size, extra_mags, reload_time){
+	this.base = Weapon;
+	this.base("Smoke", "single", 2, 0, rate, 0, mag_size, extra_mags, reload_time, 0, smoke_icon); 
+	
+	this.fire = function(player, snapshot){
+		this.ammo_in_clip--; //lose one bullet from the clip
+	}
+}
+
+function MortarWeapon(rate, mag_size, extra_mags, reload_time){
+	this.base = Weapon;
+	this.base("Mortar", "single", 2, 0, rate, 0, mag_size, extra_mags, reload_time, 0, mortar_icon); 
+	
+	this.fire = function(player, snapshot){
+		this.ammo_in_clip--; //lose one bullet from the clip
 	}
 }
 

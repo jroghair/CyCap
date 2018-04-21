@@ -83,7 +83,7 @@ public class TeamDeathMatch extends GameState {
 		ListIterator<Particle> part_iter = this.particles.listIterator();
 		while(part_iter.hasNext()){
 			Particle temp = part_iter.next();
-		    if(temp.update()) {
+		    if(temp.update(this)) {
 		    	this.usedEntityIds.remove(temp.entity_id);
 		    	part_iter.remove(); //remove the bullet from the list if it is done (animation done/hit a wall/etc)
 		    }

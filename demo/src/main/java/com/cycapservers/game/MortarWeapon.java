@@ -36,7 +36,7 @@ public class MortarWeapon extends ThrownWeapon {
 		Point point = Utils.mapCoordinatesToGridCoordinates(s.mapX, s.mapY);
 		int x = (int) (point.x * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2;
 		int y = (int) (point.y * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2;
-		g.bullets.add(new ArtilleryShell(this.bullet_type, p.x, p.y, x, y, Utils.GRID_LENGTH * 0.25, Utils.GRID_LENGTH * 0.25, this.damage, p, id, 0, 3));
+		g.bullets.add(new ArtilleryShell(this.bullet_type, p.x, p.y, x, y, Utils.GRID_LENGTH * 0.25, Utils.GRID_LENGTH * 0.25, this.damage, p, id, 0, this.max_height));
 		g.usedEntityIds.add(id);
 		//TODO: make bullet sound
 	}

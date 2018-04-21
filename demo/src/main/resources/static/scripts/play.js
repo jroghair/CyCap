@@ -454,7 +454,7 @@ function Entity(img, sprIdx, x, y, dWidth, dHeight, r, a){
 	this.collision_radius = distanceBetween(x, y, (x + (dWidth/2)), (y + (dHeight/2))); //TODO: update this if dWidth or dHeight ever changes!
 	this.dWidth = dWidth;
 	this.dHeight = dHeight;
-	this.r = toRadians(r);
+	this.r = r;
 	this.a = a;
 	
 	this.resetData = function(imgCode, sprIdx, x, y, dWidth, dHeight, r, a){
@@ -597,7 +597,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.max_hp = 85;
 				this.health = this.max_hp;
 				this.weapon1 = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
-				//this.weapon2 = new MortarWeapon(MORTAR);
+				this.weapon2 = new MortarWeapon(1000, 1, 9, 3000);
 				this.weapon3 = "EMPTY";
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;
@@ -609,7 +609,7 @@ function Player(width, height, img, x, y, role, team, client_id) {
 				this.max_hp = 105;
 				this.health = this.max_hp;
 				this.weapon1 = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15, mg_icon); //mg
-				this.weapon2 = "EMPTY";
+				this.weapon2 = new SmokeGrenade(1200, 1, 5, 500);
 				this.weapon3 = new Pistol(11, 100, 400, 8, 2, 200, 0.05); //m1911
 				this.weapon4 = "EMPTY";
 				this.currentWeapon = this.weapon1;

@@ -27,8 +27,8 @@ public final class Utils{
 	public final static AutomaticGun SMG = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1);
 	public final static AutomaticGun ASSAULT_RIFLE = new AutomaticGun("Assault Rifle", 7, 120, 550, 30, 3, 1200, 0.08);
 	public final static AutomaticGun MACHINE_GUN = new AutomaticGun("Machine Gun", 8, 134, 450, 100, 2, 1750, 0.15);
-	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000, 6);
-	//public final static Grenade SMOKE_GRENADE = new Grenade();
+	public final static MortarWeapon MORTAR = new MortarWeapon("Mortar Rounds", 40, 0, 1000, 1, 9, 3000, 3.0, 3000, 7);
+	public final static SmokeGrenade SMOKE_GRENADE = new SmokeGrenade("Smoke Grenade", 0, 2, 1200, 1, 5, 500, 2, 1500, 5, 5000, 1);
 	public final static HealthGun HEAL_GUN = new HealthGun("Heal Gun", 2, 180, 100, 0, 1000, (int) (GRID_LENGTH * 1.5));
 	
 	//////THE POWERUPS//////
@@ -298,7 +298,7 @@ public final class Utils{
 			p.max_health = 105;
 			p.health = p.max_health;
 			p.weapon1 = new AutomaticGun(MACHINE_GUN);
-			p.weapon2 = new MortarWeapon(MORTAR);
+			p.weapon2 = new SmokeGrenade(SMOKE_GRENADE);
 			p.weapon3 = new Pistol(M1911); //pistol
 			p.weapon4 = null;
 			p.currentWeapon = p.weapon1;
