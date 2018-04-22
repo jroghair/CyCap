@@ -570,7 +570,6 @@ public final class Utils{
 	 * @return
 	 */
 	public static Point calculateLevelAndXP(Point data) {
-		if(DEBUG) System.out.println("Before - Level: " + data.x + " Exp: " + data.y);
 		int current_level = data.x;
 		switch(current_level) {
 			case 0:
@@ -826,7 +825,6 @@ public final class Utils{
 			default:
 				break;
 		}
-		if(DEBUG) System.out.println("After - Level: " + data.x + " Exp: " + data.y);
 		return data;
 	}
 	

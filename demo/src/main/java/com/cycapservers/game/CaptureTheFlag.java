@@ -59,7 +59,7 @@ public class CaptureTheFlag extends GameState {
 		this.lastGSMessage = System.currentTimeMillis();
 		
 		//DEV STUFF
-		if(Utils.DEBUG && false) {
+		if(Utils.DEBUG) {
 			int error = (int) (this.currentDeltaTime * 1000 - 100);
 			if(error >= GameManager.TOLERABLE_UPDATE_ERROR) {
 				System.out.println("Time error in Gamestate sending: " + error);
@@ -262,6 +262,7 @@ public class CaptureTheFlag extends GameState {
 		}
 	}
 	
+	@Override
 	public void setUpGame() {
 		if(Utils.DEBUG) System.out.println("Num of Players @ setup: " + players.size());
 		for(Player p : players) {

@@ -81,8 +81,14 @@ public class HomepageController {
     }
     
     @GetMapping("game_list")
-    public String gameListPage() {
-    	return "game_list2";
+    public String gameListPage(@SessionAttribute("account") Account account) {
+    	if(account.getUserID() != null) {
+    		return "game_list2";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
     }
     
     @GetMapping("/how_to")
@@ -201,20 +207,26 @@ public class HomepageController {
     
     @RequestMapping(value = "/accounts/friends", method =  RequestMethod.GET)
     public String friends(Model model, HttpServletRequest request, @SessionAttribute("account") Account account, @ModelAttribute("friends") Friends friends){
-    	logger.info("Entered into get friends controller Layer");
-    	model.addAttribute("account", account);
-    	String s1 = account.getUserID(); 
-    	Collection<String> coll = this.friendsRepository.findByUserID(s1);
-    	List<String> list;
-    	if (coll instanceof List){
-    		list = (List<String>)coll;
+    	if(account.getUserID() != null) {
+    		logger.info("Entered into get friends controller Layer");
+        	model.addAttribute("account", account);
+        	String s1 = account.getUserID(); 
+        	Collection<String> coll = this.friendsRepository.findByUserID(s1);
+        	List<String> list;
+        	if (coll instanceof List){
+        		list = (List<String>)coll;
+        	}
+        	else{
+        	  list = new ArrayList<String>(coll);
+        	}
+        	friends.setFriendsList(list);
+        	model.addAttribute("friendsList", friends);
+        	return "accounts/friendsList";
     	}
-    	else{
-    	  list = new ArrayList<String>(coll);
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
     	}
-    	friends.setFriendsList(list);
-    	model.addAttribute("friendsList", friends);
-    	return "accounts/friendsList";
     }
     
     @ModelAttribute(value = "friend")
@@ -253,20 +265,36 @@ public class HomepageController {
 
     @RequestMapping(value = "/accounts/chat", method =  RequestMethod.GET)
     public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account){
-    	logger.info("Entered into get Chat controller Layer");
-    	//System.out.println(account.getUserID());
-    	
-    	return "accounts/chat";
+    	if(account.getUserID() != null) {
+    		logger.info("Entered into get Chat controller Layer");
+        	return "accounts/chat";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
     }
     
     @GetMapping("/Lobby")
-    public String Lobby(){
-    	return "game_list2";
+    public String Lobby(@SessionAttribute("account") Account account){
+    	if(account.getUserID() != null) {
+    		return "game_list2";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
     }
     
     @GetMapping("/LobbyScreen")
     public String LobbyScreen(@SessionAttribute("account") Account account){
-    	return "LobbyScreen";
+    	if(account.getUserID() != null) {
+    		return "LobbyScreen";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
     }
     
     /**
@@ -283,49 +311,54 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profile")
-	public String profilePage(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles) {
-		logger.info("Entered into get Profile controller Layer");
-		// model.addAttribute("account", account);]
-		System.out.println(account.getUserID());
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+	public String profilePage(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile controller Layer");
+			// model.addAttribute("account", account);]
+			System.out.println(account.getUserID());
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
 
-		int kills = infantry.getKills() + recruit.getKills() + scout.getKills();
-		int deaths = infantry.getDeaths() + recruit.getDeaths() + scout.getDeaths();
-		int gamewins = infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins();
-		int gamelosses = infantry.getGamelosses() + recruit.getGamelosses() + scout.getGamelosses();
-		int gamesplayed = infantry.getGamesplayed() + recruit.getGamesplayed() + scout.getGamesplayed();
-		int flaggrabs = infantry.getFlaggrabs() + recruit.getFlaggrabs() + scout.getFlaggrabs();
-		int flagreturns = infantry.getFlagreturns() + recruit.getFlagreturns() + scout.getFlagreturns();
-		int flagcaptures = infantry.getFlagcaptures() + recruit.getFlagcaptures() + scout.getFlagcaptures();
-		int experience = infantry.getExperience() + recruit.getExperience() + scout.getExperience();
-		// int level = ;
+			int kills = infantry.getKills() + recruit.getKills() + scout.getKills();
+			int deaths = infantry.getDeaths() + recruit.getDeaths() + scout.getDeaths();
+			int gamewins = infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins();
+			int gamelosses = infantry.getGamelosses() + recruit.getGamelosses() + scout.getGamelosses();
+			int gamesplayed = infantry.getGamesplayed() + recruit.getGamesplayed() + scout.getGamesplayed();
+			int flaggrabs = infantry.getFlaggrabs() + recruit.getFlaggrabs() + scout.getFlaggrabs();
+			int flagreturns = infantry.getFlagreturns() + recruit.getFlagreturns() + scout.getFlagreturns();
+			int flagcaptures = infantry.getFlagcaptures() + recruit.getFlagcaptures() + scout.getFlagcaptures();
+			int experience = infantry.getExperience() + recruit.getExperience() + scout.getExperience();
+			// int level = ;
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
 
-		profiles.setUserID(account.getUserID());
-		profiles.setChampion("Overall");
-		profiles.setKills(kills);
-		profiles.setDeaths(deaths);
-		profiles.setGamewins(gamewins);
-		profiles.setGamelosses(gamelosses);
-		profiles.setGamesplayed(gamesplayed);
-		profiles.setFlaggrabs(flaggrabs);
-		profiles.setFlagreturns(flagreturns);
-		profiles.setFlagcaptures(flagcaptures);
-		profiles.setExperience(experience);
+			profiles.setUserID(account.getUserID());
+			profiles.setChampion("Overall");
+			profiles.setKills(kills);
+			profiles.setDeaths(deaths);
+			profiles.setGamewins(gamewins);
+			profiles.setGamelosses(gamelosses);
+			profiles.setGamesplayed(gamesplayed);
+			profiles.setFlaggrabs(flaggrabs);
+			profiles.setFlagreturns(flagreturns);
+			profiles.setFlagcaptures(flagcaptures);
+			profiles.setExperience(experience);
 
-		if(Utils.DEBUG) System.out.println("is profiles nullFINAL?" + profiles == null);
+			if(Utils.DEBUG) System.out.println("is profiles nullFINAL?" + profiles == null);
 
-		model.addAttribute("profiles", profiles);
+			model.addAttribute("profiles", profiles);
 
-		return "accounts/profile";
+			return "accounts/profile";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/**
@@ -342,22 +375,27 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileInfantry")
-	public String profilePageInfantry(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles) {
-		logger.info("Entered into get Profile infantry controller Layer");
-		System.out.println(account.getUserID());
+	public String profilePageInfantry(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile infantry controller Layer");
+			System.out.println(account.getUserID());
 
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		profiles = infantry;
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			profiles = infantry;
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
 
-		model.addAttribute("profiles", profiles);
+			model.addAttribute("profiles", profiles);
 
-		return "accounts/profileInfantry";
+			return "accounts/profileInfantry";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/**
@@ -374,20 +412,25 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileRecruit")
-	public String profilePageRecruit(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles) {
-		logger.info("Entered into get Profile recruit controller Layer");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+	public String profilePageRecruit(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile recruit controller Layer");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		profiles = recruit;
-		model.addAttribute("profiles", profiles);
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			profiles = recruit;
+			model.addAttribute("profiles", profiles);
 
-		return "accounts/profileRecruit";
+			return "accounts/profileRecruit";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/**
@@ -404,20 +447,25 @@ public class HomepageController {
 	 * @return View returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileScout")
-	public String profilePageScout(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles) {
-		logger.info("Entered into get Profile scout controller Layer");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+	public String profilePageScout(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile scout controller Layer");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		profiles = scout;
-		model.addAttribute("profiles", profiles);
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			profiles = scout;
+			model.addAttribute("profiles", profiles);
 
-		return "accounts/profileScout";
+			return "accounts/profileScout";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/*
@@ -447,32 +495,37 @@ public class HomepageController {
 	 * @return View returns a view of account leaderboards
 	 */
 	@GetMapping("/accounts/leaderboards")
-	public String LeaderBoards(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("PlayerLBDataList") PlayerLBDataList playerLBDataList) {
-		logger.info("Entered into get leaderboards controller Layer");
-		Collection<Profiles> overall = profilesRepository.findByAllProfiles();
-		/*
-		 * List<Profiles> list; if (overall instanceof List){ list =
-		 * (List<Profiles>)overall; } else{ list = new
-		 * ArrayList<Profiles>(overall); }
-		 */
+	public String LeaderBoards(Model model, @SessionAttribute("account") Account account, @ModelAttribute("PlayerLBDataList") PlayerLBDataList playerLBDataList) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get leaderboards controller Layer");
+			Collection<Profiles> overall = profilesRepository.findByAllProfiles();
+			/*
+			 * List<Profiles> list; if (overall instanceof List){ list =
+			 * (List<Profiles>)overall; } else{ list = new
+			 * ArrayList<Profiles>(overall); }
+			 */
 
-		List<PlayerLBData> list = new ArrayList<PlayerLBData>();
-		for (Profiles x : overall) {
-			PlayerLBData p = new PlayerLBData(x.getUserID(), x.getChampion(), x.getLevel(), x.getKills(), x.getDeaths(),
-					x.getGamesplayed(), x.getGamewins());
-			list.add(p);
-		}
+			List<PlayerLBData> list = new ArrayList<PlayerLBData>();
+			for (Profiles x : overall) {
+				PlayerLBData p = new PlayerLBData(x.getUserID(), x.getChampion(), x.getLevel(), x.getKills(), x.getDeaths(),
+						x.getGamesplayed(), x.getGamewins());
+				list.add(p);
+			}
 
-		playerLBDataList.setPlayerLBDataList(list);
+			playerLBDataList.setPlayerLBDataList(list);
 
-		model.addAttribute("playerLBDataList", playerLBDataList.getPlayerLBDataList());
+			model.addAttribute("playerLBDataList", playerLBDataList.getPlayerLBDataList());
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		return "accounts/leaderboards";
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			return "accounts/leaderboards";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 }

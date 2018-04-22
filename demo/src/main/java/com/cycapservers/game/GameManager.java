@@ -31,7 +31,7 @@ public class GameManager {
 	
 	private boolean afkPlayers;
 	
-	static final int TOLERABLE_UPDATE_ERROR = 10; //IN MS
+	static final int TOLERABLE_UPDATE_ERROR = 15; //IN MS
 	static final int BULLET_WARNING_LEVEL = 250;
 	static final int ADVANCED_BULLET_WARNING_LEVEL = 500;
 	
@@ -65,8 +65,8 @@ public class GameManager {
 			}
 		}
 		else if(arr[0].equals("join")) {
-			for(GameState gs: games){
-				found = gs.findIncomingPlayer(arr[1], session); //TODO: the client should not send role, this should be determined already
+			for(GameState s: games){
+				found = s.findIncomingPlayer(arr[1], session);
 				if(found){
 					break;
 				}
@@ -80,17 +80,23 @@ public class GameManager {
 			if(arr[1].equals("playerList")){
 				GivePlayerList(session,arr[2]);
 			}
+			else if(arr[1].equals("role")){
+				for(int i  = 0; i < lobbies.size(); i++){
+					if(lobbies.get(i).getId().equals(arr[2])){
+						lobbies.get(i).ChangePlayerClass(session, arr[3], arr[4]);
+					}
+				}
+			}
 			else if(arr[1].equals("join")){
 				boolean foundGame = false;
 				if(arr[2].equals("Death")){
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(TeamDeathMatch.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3],session);
+								erase = lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
-									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -106,6 +112,7 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
+						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
 					}
 				}
 				else if(arr[2].equals("Capture")){
@@ -116,7 +123,6 @@ public class GameManager {
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
-									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -131,6 +137,7 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
+						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
 					}
 				}
 				else if(arr[2].equals("FFA")){
@@ -141,7 +148,6 @@ public class GameManager {
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
 								if(erase){
-									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 100, 100);
 									lobbies.remove(i);
 								}
 								break;
@@ -156,6 +162,7 @@ public class GameManager {
 						session.sendMessage(new TextMessage("joined:" + l.getId()));
 						lobbies.add(l);
 						games.add(l.getGame());
+						timer.scheduleAtFixedRate(l.getGame(), 0, 100);
 					}
 				}
 				else{
@@ -191,7 +198,7 @@ public class GameManager {
 			}
 		}
 		if(game != -1){
-			lobbies.get(game).GivePlayerList(session, id);
+			lobbies.get(game).GivePlayerList(session);
 			//session.sendMessage(new TextMessage("clean"));
 			//for(int i = 0; i < lobby.get(game).getCurrentSize(); i++){
 				//session.sendMessage(new TextMessage("player:"+ lobby.get(game).getPlayer(i)));
@@ -215,7 +222,15 @@ public class GameManager {
 			g.removePlayer(session);
 		}
 		for(Lobby lobby : lobbies) {
+			/*
 			lobby.removePlayer(session);
+			if(lobby.getCurrentSize() == 0){
+				lobby.t.cancel();
+				lobbies.remove(lobby);
+				lobby.getGame().cancel();
+				games.remove(lobby.getGame());
+				break;
+			}*/
 		}
 	}
 	

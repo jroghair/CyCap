@@ -23,6 +23,7 @@ public abstract class GameState extends TimerTask
 	protected int entity_id_len;
 	protected List<String> userPasswords;
 	protected List<InputSnapshot> unhandledInputs;
+	protected boolean readyToStart;
 	/////////////////////////////
 	
 	//////PLAYERS//////
@@ -90,6 +91,7 @@ public abstract class GameState extends TimerTask
 		this.lastGSMessage = System.currentTimeMillis();
 		
 		this.started = false;
+		this.readyToStart = false;
 	}
 
 	public abstract void updateGameState();
@@ -180,7 +182,7 @@ public abstract class GameState extends TimerTask
 			this.new_sounds.clear();
 			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		}
-		else {
+		else if(readyToStart){
 			if(players.size() == incomingPlayers.size()) {
 				setUpGame();
 			}

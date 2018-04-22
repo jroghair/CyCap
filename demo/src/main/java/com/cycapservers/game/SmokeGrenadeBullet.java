@@ -76,8 +76,8 @@ public class SmokeGrenadeBullet extends Bullet {
 		else if((total_time*1000) > this.lifeSpan){
 			this.alpha = 0.0; //make sure the bullet is invisible after it hits the ground
 			for(int i = 0; i < this.smoke_intensity; i++) {
-				double tempX = this.endX + ((Utils.RANDOM.nextDouble() * Utils.GRID_LENGTH * 3) - Utils.GRID_LENGTH * 1.5);
-				double tempY = this.endY + ((Utils.RANDOM.nextDouble() * Utils.GRID_LENGTH * 3) - Utils.GRID_LENGTH * 1.5);
+				double tempX = this.endX + ((Utils.RANDOM.nextDouble() * Utils.GRID_LENGTH * 5) - Utils.GRID_LENGTH * 2.5);
+				double tempY = this.endY + ((Utils.RANDOM.nextDouble() * Utils.GRID_LENGTH * 5) - Utils.GRID_LENGTH * 2.5);
 				String id = Utils.getGoodRandomString(game.usedEntityIds, game.entity_id_len);
 				game.particles.add(new Particle(this.fx_code, 0, tempX, tempY, Utils.GRID_LENGTH, Utils.GRID_LENGTH, Utils.RANDOM.nextDouble() * Math.PI * 2.0, 1.0, id, 1, 3500, false, Utils.RANDOM.nextInt(7), Utils.RANDOM.nextInt(7), 13, 13, Utils.RANDOM.nextDouble() * 0.5 - 0.25, -0.1));
 				game.usedEntityIds.add(id);

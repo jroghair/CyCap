@@ -87,10 +87,6 @@ public class PlayerStats {
 	public void playerExperienceGain(int exp){
 		this.experience+=exp; 
 	}
-	
-	public void calculatePlayerLevel(){
-		this.level= experience/100;
-	}
 
 	//getter methods for saving to DB
 	public String getUserID() {
@@ -170,13 +166,13 @@ public class PlayerStats {
 		Point p = ProfileDataUpdate.dbGetLevel(userID, champion);
 		this.level = p.x;
 		this.experience = p.y;
-		if(Utils.DEBUG) System.out.println("Start - Client: " + userID + " Level: " + level + " Exp: " + experience);
 	}
 	
 	public void updateScore(int winner){ //could have this take in winning team to double scores potentially
 		if(this.game_type==null){
 			throw new IllegalStateException("Cannot update xp when game type has not been set!");
 		}
+		this.gamesplayed++;
 		if(this.game_type.equals(CaptureTheFlag.class)){
 			int new_xp = this.kills*10;
 			new_xp += this.flag_grabs*25;
