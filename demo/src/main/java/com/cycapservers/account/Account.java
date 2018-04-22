@@ -1,6 +1,7 @@
 package com.cycapservers.account;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -83,9 +84,10 @@ public class Account {
 		this.email = email;
 	}
 
-	public Date getDateOfCreation() {
+	public String getDateOfCreation() {
 
-		return dateOfCreation;
+		// return dateOfCreation;
+		return new SimpleDateFormat("MM-dd-yyyy").format(dateOfCreation);
 	}
 
 	public void setDateOfCreation() {

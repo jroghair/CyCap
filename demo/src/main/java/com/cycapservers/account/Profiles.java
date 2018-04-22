@@ -122,8 +122,8 @@ public class Profiles {
 	private int scoutunlocked;
 
 	@NotNull
-	@Column(name = "Artillerytunlocked")
-	private int artillaryunlocked;
+	@Column(name = "Artilleryunlocked")
+	private int artilleryunlocked;
 
 	@NotNull
 	@Column(name = "Infantryunlocked")
@@ -167,7 +167,7 @@ public class Profiles {
 		this.flagcaptures = flagcaptures;
 		this.experience = experience;
 		this.scoutunlocked = scoutunlocked;
-		this.artillaryunlocked = artilleryunlocked;
+		this.artilleryunlocked = artilleryunlocked;
 		this.infantryunlocked = infantryunlocked;
 	}
 
@@ -407,12 +407,12 @@ public class Profiles {
 		this.scoutunlocked = scoutunlocked;
 	}
 
-	public int getArtillaryunlocked() {
-		return artillaryunlocked;
+	public int getArtilleryunlocked() {
+		return artilleryunlocked;
 	}
 
-	public void setArtillaryunlocked(int artillaryunlocked) {
-		this.artillaryunlocked = artillaryunlocked;
+	public void setArtilleryunlocked(int artilleryunlocked) {
+		this.artilleryunlocked = artilleryunlocked;
 	}
 
 	public int getInfantryunlocked() {

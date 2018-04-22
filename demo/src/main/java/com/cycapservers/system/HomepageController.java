@@ -293,6 +293,10 @@ public class HomepageController {
 		account = p;
 		model.addAttribute("account", account);
 
+		Profiles q = profilesRepository.findByUserID(name, "recruit");
+		profiles = q;
+		model.addAttribute("profiles", profiles);
+
 		// model.addAttribute("account", account);]
 		System.out.println(account.getUserID());
 		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");

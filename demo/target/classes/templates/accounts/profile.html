@@ -8,28 +8,111 @@
   <li><a href="/accounts/profile">Profile</a></li>
   <li><a id="admin" href="/accounts/AdminControls">Administrator Controls</a></li>
 </ul>
-
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous"/>
 </head>
-
-<h1 id="user"/> 
 
 
 <form>	
-<input type="button" class="button button1"  onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>	
-<input type="button" class="button button1" onclick="location.href='/accounts/friends'" value="Friends List"/>
+<input type="button" class="button button1 Lbutton"  onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>	
+<input type="button" class="button button1 Fbutton" onclick="location.href='/accounts/friends'" value="Friends List"/>
 </form>
+
+<span class="tab"/>
+<span class="tab"/>
+<span class="tab"/>
+
+<h1 id="user"/>
+
+<p id="date"/>
+<div id="verticalLine"> </div>
+        <div id="colorstrip"/>
+
+<span style="display:inline-block; width: 1500;"></span>
+
+
+
+ 
+ 
  
  <form>
  <!--  
 <form th:action="@{/accounts/profile}/{role}"  method="post">
 <input type="button" name="infantry" class="button button1"  value="Infantry"/> -->
 <input type="button" class="button button1" onclick="location.href='/accounts/profile'" value="Overall"/>
-<input type="button" class="button button1" onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
-<input type="button" class="button button1" onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
-<input type="button" class="button button1"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input type="button" class="button button1" onclick="location.href='/accounts/profileRecruit'" value="recruit"/>
+
+<button id="lScout" class="button button1">Scout <i class="fas fa-lock"></i></button>
+<button id="lArtillery" class="button button1">Artillery <i class="fas fa-lock"></i></button>
+<button id="lInfantry" class="button button1">Infantry <i class="fas fa-lock"></i></button>
+ 
+
+
+<!-- 
+<button class="button button1">like<i class="fas fa-lock"></i></button>
+-->
+<!-- 
+ <div class="btn-group">
+  <a class="btn" href="#"><i class="icon-align-left"></i></a>
+  <a class="btn" href="#"><i class="icon-align-center"></i></a>
+  <a class="btn" href="#"><i class="icon-align-right"></i></a>
+  <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+</div>
+  -->
+<input id="uScout" type="button" class="button button1"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input id="uArtillery" type="button" class="button button1"  onclick="location.href='/accounts/profileArtillary'" value="Artillery"/>
+<input id="uInfantry" type="button" class="button button1"  onclick="location.href='/accounts/profileArtillary'" value="Infantry"/>
 </form>
 
 <style>
+
+#lock {
+  background-image: url(https://www.w3schools.com/css/searchicon.png);
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 10%;
+  height: 10%
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.tab { 
+       display:inline-block; 
+       margin-left: 40px; 
+}
+h1 {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+p {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1.4px;
+
+}
+
+
+#colorstrip {
+	height: 20px;
+    border-bottom:solid 10px #ccc;
+    margin-left: 0px;
+}
+#verticalLine {
+    position:absolute;
+    border-left: solid 12px #ccc;
+    margin-left: 1650px;
+    height: 100%;
+    top: 180;
+}
+
+
 .button {
 
     background-color: #4CAF50; /* Green  #4CAF50;*/
@@ -44,8 +127,23 @@
     cursor: pointer;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
-    
 }
+
+.Lbutton {
+    position:fixed;
+    transition: .5s ease;
+    top: 42%;
+    left: 90%;
+}
+.Fbutton {
+    position:fixed;
+    transition: .5s ease;
+    top: 32%;
+    left: 90%;
+}
+
+
+
 .button1:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
 }
@@ -74,25 +172,26 @@ li a:hover {
     background-color: #111;
 }
 
-#stats {
+#stats, #stats2 {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    width: 70%;
 }
 
-#stats td, #stats th {
+#stats td, #stats th, #stats2 td, #stats2 th {
     border: 1px solid #ddd;
     padding: 8px;
+    text-align: center;
 }
 
-#stats tr:nth-child(even){background-color: #f2f2f2;}
+#stats tr:nth-child(even), #stats2 tr:nth-child(even){background-color: #f2f2f2;}
 
 #cstats tr:hover {background-color: #ddd;}
 
-#stats th {
+#stats th,  #stats2 th {
     padding-top: 12px;
     padding-bottom: 12px;
-    text-align: left;
+    text-align: center;
     background-color: #4CAF50;
     color: white;
 }
@@ -107,10 +206,6 @@ li a:hover {
         <th>Game Wins</th>
         <th>Game Losses</th>
         <th>Games Played</th>
-        <th>Flag Grabs</th>
-        <th>Flag Returns</th>
-        <th>Flag Captures</th>
-        <th>Experience</th>
       </tr>
     </thead>
     <tbody>
@@ -121,17 +216,42 @@ li a:hover {
          	    <td th:text="${profiles.gamewins}">...</td> 
          	    <td th:text="${profiles.gamelosses}">...</td>
          	    <td th:text="${profiles.gamesplayed}">...</td>
+      		</tr>
+   		</th:block>
+    </tbody>
+  </table>
+  <h5></h5>
+ <table id="stats2">
+    <thead>
+      <tr>
+        <th>Flag Grabs</th>
+        <th>Flag Returns</th>
+        <th>Flag Captures</th>
+        <th>Experience</th>
+        <th>Level</th>
+      </tr>
+    </thead>
+    <tbody>
+		<th:block th:each="profiles : ${profiles}">
+     	 	<tr>
          	    <td th:text="${profiles.flaggrabs}">...</td>
          	    <td th:text="${profiles.flagreturns}">...</td>
          	    <td th:text="${profiles.flagcaptures}">...</td>
          	    <td th:text="${profiles.experience}">...</td>
+         	    <td id="level" th:text="${profiles.level}">...</td>
       		</tr>
    		</th:block>
-	
-
     </tbody>
-  </table>
+  </table>  
+  
+  
 </body>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	
+	/*]]>*/
+</script>
+
 <script th:inline="javascript">
 	/*<![CDATA[*/
 	
@@ -141,6 +261,22 @@ li a:hover {
 	
 	/*]]>*/
 </script>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	let member = "Member since ";
+	let date = /*[[${account.getDateOfCreation()}]]*/;
+	console.log(date)
+	member+= date;
+	member +="."
+
+	
+	document.getElementById("date").innerHTML = member;
+	
+	/*]]>*/
+</script>
+
+
 
 <script  th:inline="javascript">
 window.onload = function() {
@@ -156,6 +292,19 @@ window.onload = function() {
 		document.getElementById('admin').style = "display:none;";
 		console.log("hid admin");
 	}
+	
+	let level = /*[[${profiles.getLevel()}]]*/;
+	console.log(level);
+	if(level>=5){
+		  document.getElementById('lScout').style = "display: none;"; 
+		  document.getElementById('lArtillery').style = "display: none;";
+		  document.getElementById('lInfantry').style = "display: none;";
+	} else {
+		  document.getElementById('uScout').style = "display: none;"; 
+		  document.getElementById('uArtillery').style = "display: none;";
+		  document.getElementById('uInfantry').style = "display: none;";
+	}
+		
 	
 	/*]]>*/
 };	

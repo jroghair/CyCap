@@ -96,7 +96,7 @@ public class ProfileDataUpdate {
 		if (champion.toLowerCase().equals("scout"))
 			return profile.getScoutunlocked() == 1;
 		else if (champion.toLowerCase().equals("artillery"))
-			return profile.getArtillaryunlocked() == 1;
+			return profile.getArtilleryunlocked() == 1;
 		else
 			return profile.getInfantryunlocked() == 1;
 	}
