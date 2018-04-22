@@ -9,6 +9,7 @@
   <li><a id="admin" href="/accounts/AdminControls">Administrator Controls</a></li>
 </ul>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous"/>
+
 </head>
 
 
@@ -21,9 +22,13 @@
 <span class="tab"/>
 <span class="tab"/>
 
-<h1 id="user"/>
+<div>
+<h1 id="user" />
 
-<p id="date"/>
+</div>
+
+<p id="level" />
+<p id="date" />
 <div id="verticalLine"> </div>
         <div id="colorstrip"/>
 
@@ -33,21 +38,24 @@
 
  
  
- 
+ <div class="btn-group">
  <form>
  <!--  
 <form th:action="@{/accounts/profile}/{role}"  method="post">
 <input type="button" name="infantry" class="button button1"  value="Infantry"/> -->
-<input type="button" class="button button1" onclick="location.href='/accounts/profile'" value="Overall"/>
-<input type="button" class="button button1" onclick="location.href='/accounts/profileRecruit'" value="recruit"/>
+<!--  <input type="button" class="button button1 big-btn " onclick="location.href='/accounts/profile'" value="Overall"/> -->
 
-<button id="lScout" class="button button1">Scout <i class="fas fa-lock"></i></button>
-<button id="lArtillery" class="button button1">Artillery <i class="fas fa-lock"></i></button>
-<button id="lInfantry" class="button button1">Infantry <i class="fas fa-lock"></i></button>
+<!-- <input type="button" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'" value="recruit"/>
+ -->
+
+<button id="lScout" class="button button1 big-btn">Scout <i class="fas fa-lock"></i></button>
+<button id="lArtillery" class="button button1 big-btn">Artillery <i class="fas fa-lock"></i></button>
+<button id="lInfantry" class="button button1 big-btn">Infantry <i class="fas fa-lock"></i></button>
  
+ 
+ <!-- 
+<input type="button" id = "recruit" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'"/>
 
-
-<!-- 
 <button class="button button1">like<i class="fas fa-lock"></i></button>
 -->
 <!-- 
@@ -57,13 +65,27 @@
   <a class="btn" href="#"><i class="icon-align-right"></i></a>
   <a class="btn" href="#"><i class="icon-align-justify"></i></a>
 </div>
+OLD
+<input id="uScout" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input id="uArtillery" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileArtillary'" value="Artillery"/>
+<input id="uInfantry" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
   -->
-<input id="uScout" type="button" class="button button1"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
-<input id="uArtillery" type="button" class="button button1"  onclick="location.href='/accounts/profileArtillary'" value="Artillery"/>
-<input id="uInfantry" type="button" class="button button1"  onclick="location.href='/accounts/profileArtillary'" value="Infantry"/>
-</form>
+  
+<input type="button" id = "recruit" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'"/>  
+<input type="button" id="uScout" class="button button1 big-btn" onclick="location.href='/accounts/profileScout'"/>  
+<input type="button" id="uArtillery" class="button button1 big-btn" onclick="location.href='/accounts/profileArtillary'"/>  
+<input type="button" id="uInfantry" class="button button1 big-btn" onclick="location.href='/accounts/profileInfantry'"/>  
 
+
+
+</form>
+</div>
 <style>
+#max
+{
+    position: absolute; /*or fixed*/
+    right: 100px;
+}
 
 #lock {
   background-image: url(https://www.w3schools.com/css/searchicon.png);
@@ -121,28 +143,36 @@ p {
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
+   /* text-transform: UPPERCASE;*/
     display: inline-block;
-    font-size: 16px;
+    font-size: 24px;
     margin: 4px 2px;
     cursor: pointer;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
-}
 
+}
+input[type="button"] {
+    white-space: normal;
+    width: 200px;
+}
 .Lbutton {
-    position:fixed;
+    position:absolute;
     transition: .5s ease;
-    top: 42%;
-    left: 90%;
+    top: 30%;
+    left: 88%;
 }
 .Fbutton {
-    position:fixed;
+    position:absolute;
     transition: .5s ease;
-    top: 32%;
-    left: 90%;
+    top: 22%;
+    left: 88%;
 }
 
-
+.big-btn {
+        width: 180px;
+        height: 120px;
+    }
 
 .button1:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
@@ -197,7 +227,8 @@ li a:hover {
 }
 </style>
 
-<body>
+<body >
+
  <table id="stats">
     <thead>
       <tr>
@@ -228,7 +259,7 @@ li a:hover {
         <th>Flag Returns</th>
         <th>Flag Captures</th>
         <th>Experience</th>
-        <th>Level</th>
+        <!-- <th>Level</th> -->
       </tr>
     </thead>
     <tbody>
@@ -238,29 +269,27 @@ li a:hover {
          	    <td th:text="${profiles.flagreturns}">...</td>
          	    <td th:text="${profiles.flagcaptures}">...</td>
          	    <td th:text="${profiles.experience}">...</td>
-         	    <td id="level" th:text="${profiles.level}">...</td>
+         	   <!--   <td id="level" th:text="${profiles.level}">...</td>-->
       		</tr>
    		</th:block>
     </tbody>
   </table>  
-  
+
   
 </body>
-<script th:inline="javascript">
-/*<![CDATA[*/
-	
-	/*]]>*/
-</script>
+
+
 
 <script th:inline="javascript">
 	/*<![CDATA[*/
-	
 	let temp = /*[[${account.getUserID()}]]*/;
 	temp += "\'s Profile";
 	document.getElementById("user").innerHTML = temp;
 	
+
 	/*]]>*/
 </script>
+
 
 <script th:inline="javascript">
 	/*<![CDATA[*/
@@ -273,6 +302,7 @@ li a:hover {
 	
 	document.getElementById("date").innerHTML = member;
 	
+	
 	/*]]>*/
 </script>
 
@@ -281,7 +311,7 @@ li a:hover {
 <script  th:inline="javascript">
 window.onload = function() {
 	/*<![CDATA[*/
-	console.log("in function");
+
 	let user = /*[[${account.getUserID()}]]*/;
 	let dev = /*[[${account.getDeveloper()}]]*/;
 	let admin = /*[[${account.getAdministrator()}]]*/;
@@ -305,8 +335,27 @@ window.onload = function() {
 		  document.getElementById('uInfantry').style = "display: none;";
 	}
 		
+	document.getElementById('stats').style = "display: none;"; 
+	document.getElementById('stats2').style = "display: none;"; 
+	
+	let val = "Level " + level +" Recruit";
+	document.getElementById('recruit').value = val; 
+	
+	let sVal = "Level " + level +" Scout";
+	document.getElementById('uScout').value = sVal; 	
+
+	let aVal = "Level " + level +" Artillery";
+	document.getElementById('uArtillery').value = aVal; 
+	
+	
+	let iVal = "Level " + level +" Infantry";
+	document.getElementById('uInfantry').value = iVal; 
+	
 	
 	/*]]>*/
 };	
 </script>
+
+
+
 </html>
