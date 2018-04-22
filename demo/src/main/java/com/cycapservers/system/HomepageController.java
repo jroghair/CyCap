@@ -59,6 +59,12 @@ public class HomepageController {
 
     private final Logger logger = LoggerFactory.getLogger(HomepageController.class);
     
+    @GetMapping("/logout")
+    public String logout(Model model, @ModelAttribute("account") Account account){
+    	account.setUserID(null);
+    	return "main_page";
+    	
+    }
     @ModelAttribute("account")
     public Account newAccount(){
     	return new Account();
