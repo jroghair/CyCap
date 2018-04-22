@@ -2,6 +2,8 @@ package com.cycapservers.account;
 
 import java.awt.Point;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -20,8 +22,15 @@ public class ProfileDataUpdate {
 	/**
 	 * Autowires ProfilesRepository interface for database connection
 	 **/
+	private static ProfilesRepository profilesRepo;
+
 	@Autowired
-	private static ProfilesRepository profilesRepository;
+	private ProfilesRepository profilesRepository;
+
+	@PostConstruct
+	private void initStaticRepo() {
+		profilesRepo = profilesRepository;
+	}
 
 	/**
 	 * Default constructor
@@ -42,6 +51,21 @@ public class ProfileDataUpdate {
 	 * @return Point contains experience and level of a player for the specific
 	 *         role
 	 */
+	/*
+	 * public static class MPoint { public int level; public int experience;
+	 * public int scoutunlocked; public int artilleryunlocked; public int
+	 * infantryunlocked;
+	 * 
+	 * public MPoint(int level, int experience, int scoutunlocked, int
+	 * artilleryunlocked, int infantryunlocked) {
+	 * 
+	 * this.level = level; this.experience = experience; this.scoutunlocked =
+	 * scoutunlocked; this.artilleryunlocked = artilleryunlocked;
+	 * this.infantryunlocked = infantryunlocked; }
+	 * 
+	 * }
+	 */
+
 	// need to return level as well
 	public static Point dbGetLevel(String userID, String champion) {
 		if (Utils.DEBUG)
@@ -49,20 +73,32 @@ public class ProfileDataUpdate {
 														// null?
 		if (Utils.DEBUG)
 			System.out.println("\tClient Role: " + champion);
-		Profiles profile = profilesRepository.findByUserID(userID, champion); // need
-																				// to
-																				// add
-																				// in
-																				// once
-																				// data
-																				// pull
-																				// is
-																				// modified
+		Profiles profile = profilesRepo.findByUserID(userID, champion); // need
+																		// to
+																		// add
+																		// in
+																		// once
+																		// data
+																		// pull
+																		// is
+																		// modified
 		System.out.println("Profile is null?: " + profile == null);
 		System.out.println("Profile is level?: " + profile.getLevel());
 		System.out.println("Profile is Experience?: " + profile.getExperience());
+		// creates a modified point using inner class MPoint in order to store
+		// more data easily for each player
 		Point point = new Point(profile.getLevel(), profile.getExperience());
 		return point;
+	}
+
+	public static boolean dbCheckLock(String userID, String champion) {
+		Profiles profile = profilesRepo.findByUserID(userID, champion);
+		if (champion.toLowerCase().equals("scout"))
+			return profile.getScoutunlocked() == 1;
+		else if (champion.toLowerCase().equals("artillery"))
+			return profile.getArtillaryunlocked() == 1;
+		else
+			return profile.getInfantryunlocked() == 1;
 	}
 
 	/**
@@ -76,17 +112,19 @@ public class ProfileDataUpdate {
 	// instead of taking in players just take in a single player
 	public static void dbSaveData(PlayerStats player) {
 		if (Utils.DEBUG)
-			System.out.print("Client ID: " + player.getUserID()); // are either
-																	// of these
+			System.out.print("Client ID: " + player.getUserID()); // are
+																	// either
+																	// of
+																	// these
 																	// null?
 		if (Utils.DEBUG)
 			System.out.println("\tClient Role: " + player.getChampion());
-		Profiles oldProfile = profilesRepository.findByUserID(player.getUserID(), player.getChampion()); // need
-																											// to
-																											// update
-																											// to
-																											// specific
-																											// roles
+		Profiles oldProfile = profilesRepo.findByUserID(player.getUserID(), player.getChampion()); // need
+																									// to
+																									// update
+																									// to
+																									// specific
+																									// roles
 		int kills = oldProfile.getKills() + player.getKills();
 		int deaths = oldProfile.getDeaths() + player.getDeaths();
 		int gamewins = oldProfile.getGamewins() + player.getWins();
@@ -112,15 +150,21 @@ public class ProfileDataUpdate {
 		int experience = player.getExperience();
 		int level = player.getLevel();
 
-		// create a new profile
-		Profiles profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses,
-				gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level);
+		Profiles profile;
 
+		// create a new profile
+		if (level >= 5) {
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses,
+					gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 1, 1, 1);
+		} else {
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses,
+					gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 0, 0, 0);
+		}
 		// delete old profile from database
-		profilesRepository.delete(oldProfile);
+		profilesRepo.delete(oldProfile);
 
 		// save new profile to database
-		profilesRepository.save(profile);
+		profilesRepo.save(profile);
 	}
 
 }

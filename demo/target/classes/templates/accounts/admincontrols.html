@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<ul>
+  <li><a class="active" href="/accounts/chat">Chat</a></li>
+  <li><a href="/game_list">Available Games</a></li>
+  <li><a href="/accounts/profile">Profile</a></li>
+</ul>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+</head>
+<style>
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+</style>
+<h1>Administrator Controls</h1>
+<style>
+#myInput {
+  background-image: url(https://www.w3schools.com/css/searchicon.png);
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 10%;
+  height: 10%
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+#admin {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 30%;
+}
+
+#admin td, #stats th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#admin tr:nth-child(even){background-color: #f2f2f2;}
+
+#cadmin tr:hover {background-color: #ddd;}
+
+#admin th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+<body>
+ 
+ <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/>
+ <table id="admin">
+    <thead>
+      <tr>
+      	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
+      	<th th:onclick="'javascript:sortTableString(1);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Admin</th>
+      	<th><i>Options</i></th>
+      </tr>
+    </thead>
+    <tbody>
+		<th:block th:each="accountsList : ${accountsList}">
+     	 	<tr>
+     	 		<td th:text="${accountsList.userID}" class="user">...</td>
+     	 		<td th:text="${accountsList.administrator}" class="user">...</td>	
+     	 		<td><input type="button" value="Promote to Admin"/></td>
+      		</tr>
+   		</th:block>
+    </tbody>
+  </table>
+</body>
+
+  
+<script th:inline="javascript">
+	function playerSearch(){
+    /*<![CDATA[*/
+    var input = document.getElementById("myInput");
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("admin");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[0];
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }   
+    }
+    /*]]>*/
+	}
+</script>
+
+
+</html>

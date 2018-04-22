@@ -40,19 +40,22 @@ public class Account {
 
 	@NotNull
 	@Column(name = "Member")
-	private boolean member;
+	private int member;
 
 	@NotNull
 	@Column(name = "Administrator")
-	private boolean administrator;
+	private int administrator;
 
 	@NotNull
 	@Column(name = "Developer")
-	private boolean developer;
+	private int developer;
 
 	public Account() {
 		this.setDateOfCreation();
-		this.member = true;
+		this.member = 1;
+		/*
+		 * this.developer = 0; this.administrator = 0;
+		 */
 	}
 
 	public String getUserID() {
@@ -93,28 +96,29 @@ public class Account {
 		this.dateOfCreation = dat;
 	}
 
-	public boolean isMember() {
+	public int getMember() {
 		return member;
 	}
 
-	public void setMember(boolean member) {
+	public void setMember(int member) {
 		this.member = member;
 	}
 
-	public boolean isAdministrator() {
+	public int getAdministrator() {
+		System.out.println(this.userID);
 		return administrator;
 	}
 
-	public void setAdministrator(boolean administrator) {
+	public void setAdministrator(int administrator) {
 		this.administrator = administrator;
 	}
 
-	public boolean isDeveloper() {
+	public int getDeveloper() {
+		System.out.println(this.userID);
 		return developer;
 	}
 
-	public void setDeveloper(boolean developer) {
+	public void setDeveloper(int developer) {
 		this.developer = developer;
 	}
-
 }

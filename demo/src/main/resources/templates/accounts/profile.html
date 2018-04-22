@@ -6,9 +6,11 @@
   <li><a class="active" href="/accounts/chat">Chat</a></li>
   <li><a href="/game_list">Available Games</a></li>
   <li><a href="/accounts/profile">Profile</a></li>
+  <li><a id="admin" href="/accounts/AdminControls">Administrator Controls</a></li>
 </ul>
 
 </head>
+
 <h1 id="user"/> 
 
 
@@ -138,9 +140,24 @@ li a:hover {
 	document.getElementById("user").innerHTML = temp;
 	
 	/*]]>*/
-	
-	
-	
 </script>
 
+<script  th:inline="javascript">
+window.onload = function() {
+	/*<![CDATA[*/
+	console.log("in function");
+	let user = /*[[${account.getUserID()}]]*/;
+	let dev = /*[[${account.getDeveloper()}]]*/;
+	let admin = /*[[${account.getAdministrator()}]]*/;
+	console.log(user);
+	console.log(dev);
+	console.log(admin);
+	if(dev==0 && admin ==0){
+		document.getElementById('admin').style = "display:none;";
+		console.log("hid admin");
+	}
+	
+	/*]]>*/
+};	
+</script>
 </html>

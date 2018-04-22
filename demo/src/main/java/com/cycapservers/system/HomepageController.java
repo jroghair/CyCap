@@ -25,6 +25,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.cycapservers.account.Account;
 //import org.springframework.web.bind.annotation.GetMapping;
 import com.cycapservers.account.AccountRepository;
+import com.cycapservers.account.AccountsList;
 import com.cycapservers.account.Friend;
 import com.cycapservers.account.FriendRepository;
 import com.cycapservers.account.Friends;
@@ -137,9 +138,10 @@ public class HomepageController {
 					account.setDateOfCreation();
 					this.accountsRepository.save(account);
 
-					Profiles p1 = new Profiles(user, "infantry", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-					Profiles p2 = new Profiles(user, "recruit", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-					Profiles p3 = new Profiles(user, "scout", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+					Profiles p1 = new Profiles(user, "infantry", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+					Profiles p2 = new Profiles(user, "recruit", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+					Profiles p3 = new Profiles(user, "scout", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+					Profiles p4 = new Profiles(user, "artillery", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 					// TODO: artillery class!
 					this.profilesRepository.save(p1);
 					this.profilesRepository.save(p2);
@@ -284,6 +286,13 @@ public class HomepageController {
 	public String profilePage(Model model, @SessionAttribute("account") Account account,
 			@ModelAttribute("Profiles") Profiles profiles) {
 		logger.info("Entered into get Profile controller Layer");
+
+		String name = account.getUserID();
+		Account p = accountsRepository.findByUserID(name);
+		System.out.println("p: " + p.getAdministrator());
+		account = p;
+		model.addAttribute("account", account);
+
 		// model.addAttribute("account", account);]
 		System.out.println(account.getUserID());
 		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
@@ -473,6 +482,33 @@ public class HomepageController {
 		 * flagreturns, flagcaptures, experience);
 		 */
 		return "accounts/leaderboards";
+	}
+
+	@ModelAttribute(value = "accountsList")
+	public AccountsList newAccountsList() {
+		return new AccountsList();
+	}
+
+	@GetMapping("/accounts/AdminControls")
+	public String LeaderBoards(Model model, @SessionAttribute("account") Account account,
+			@ModelAttribute("AccountsList") AccountsList accountsList) {
+		logger.info("Entered into get AdminControls controller Layer");
+		System.out.println(account.getAdministrator());
+		System.out.println(account.getDeveloper());
+		if (account.getAdministrator() == 0 && account.getDeveloper() == 0)
+			return "accounts/access";
+		Collection<Account> users = accountsRepository.findAllUsers();
+
+		List<Account> list = new ArrayList<Account>();
+		for (Account x : users) {
+			list.add(x);
+		}
+
+		accountsList.setAccountsList(list);
+
+		model.addAttribute("accountsList", accountsList.getAccountsList());
+
+		return "accounts/admincontrols";
 	}
 
 }
