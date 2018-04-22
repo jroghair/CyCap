@@ -103,7 +103,6 @@ public abstract class GameState extends TimerTask
 					try {
 						p.session.sendMessage(new TextMessage(p.getLastUnsentGameState()));
 						p.setLastUnsentGameState(null);
-						System.out.println("State being sent");
 					} catch (IOException e) {
 						System.out.println("Error when sending game state");
 						e.printStackTrace();
@@ -162,8 +161,6 @@ public abstract class GameState extends TimerTask
 	@Override
 	public void run() {
 		if(started) {
-			//TODO
-			System.out.println("Started");
 			////UPDATE GAME STATE////
 			updateGameState();
 			
@@ -179,5 +176,11 @@ public abstract class GameState extends TimerTask
 			this.new_sounds.clear();
 			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		}
+		else {
+			if(players.size() == incomingPlayers.size()) {
+				setUpGame();
+			}
+		}
 	}
+
 }

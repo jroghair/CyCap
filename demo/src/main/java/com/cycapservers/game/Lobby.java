@@ -22,6 +22,8 @@ public class Lobby{
 	 */
 	private GameState game;
 	
+	private boolean startGame;
+	
 	public Timer t;
 	
 	/**
@@ -62,7 +64,12 @@ public class Lobby{
 			this.game = new FreeForAll(id, 0);
 		}
 		this.maxSize = game.max_players;
+		this.startGame = false;
 		
+	}
+	
+	public boolean isStarting(){
+		return startGame;
 	}
 	
 	public TimerTask newTask(){
@@ -75,6 +82,7 @@ public class Lobby{
 					game.addIncomingPlayer(i);
 					try {
 						i.session.sendMessage(new TextMessage("play"));
+						startGame = true;
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -176,11 +184,9 @@ public class Lobby{
 	 * The user id of the person joining the game.
 	 * @param s
 	 * The websocketsession of the person joining the game.
-	 * @return
-	 * returns true if the game has started.
 	 * @throws IOException
 	 */
-	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
+	public void addPlayer(String p, WebSocketSession s) throws IOException{
 		players.add(new IncomingPlayer(p, "recruit", s)); //TODO: this needs to use the role that was chosen on the lobby page
 		this.curSize++;
 		
@@ -190,14 +196,8 @@ public class Lobby{
 		}
 		this.t.cancel();
 		this.t = new Timer();
-		//this.t.schedule(newTask(), (240000 / (curSize + startGap )));
-		this.t.schedule(newTask(), 100);
-		if((curSize + startGap) == maxSize){
-			return true;
-		}
-		else{
-			return false;
-		}
+		this.t.schedule(newTask(), (240000 / (curSize + startGap)));
+		//this.t.schedule(newTask(), 100);
 	}
 	
 	/**

@@ -253,10 +253,8 @@ public class CaptureTheFlag extends GameState {
 	}
 	
 	public void setUpGame() {
-		//TODO
-		System.out.println("SetUp");
 		for(Player p : this.players) {
-			p.stats.setGameType(this.getClass());
+			//p.stats.setGameType(this.getClass());
 			//TODO: set each player's role in DB
 			//TOOD: download current level and xp from database
 		}
@@ -266,14 +264,16 @@ public class CaptureTheFlag extends GameState {
 	
 	public void endGame() {
 		for(Player p : this.players) {
-			p.stats.updateScore();
+			//p.stats.updateScore();
 			//TODO: ProfileRepo.update(p)
 		}
 	}
 
+	/*
 	@Override
 	public void run() {
 		updateGameState();
 	}
+	*/
 
 }

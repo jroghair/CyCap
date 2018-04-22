@@ -29,6 +29,7 @@ public class GameManager {
 	private long time = 0;
 	private Timer timer;
 	
+	
 	private boolean afkPlayers;
 	
 	static final int TOLERABLE_UPDATE_ERROR = 10; //IN MS
@@ -92,11 +93,17 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(TeamDeathMatch.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3],session);
+								lobbies.get(i).addPlayer(arr[3],session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
+								if(lobbies.get(i).isStarting()){
+									/*
+									lobbies.get(i).getGame().setUpGame();
+									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 500, 100);
+									lobbies.remove(i);
 									//lobbies.remove(i);
+									 
+									 */
 								}
 								break;
 							}
@@ -117,13 +124,16 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(CaptureTheFlag.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3], session);
+								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
+								if(lobbies.get(i).isStarting()){
+									/*
+									System.out.println("Setting Up Game");
 									lobbies.get(i).getGame().setUpGame();
 									timer.scheduleAtFixedRate(lobbies.get(i).getGame(), 500, 100);
 									lobbies.remove(i);
+									*/
 								}
 								break;
 							}
@@ -145,10 +155,10 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(FreeForAll.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3], session);
+								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
+								if(lobbies.get(i).isStarting()){
 									lobbies.remove(i);
 								}
 								break;
@@ -222,17 +232,25 @@ public class GameManager {
 			g.removePlayer(session);
 		}
 		for(Lobby lobby : lobbies) {
-			/*
 			lobby.removePlayer(session);
 			if(lobby.getCurrentSize() == 0){
+				System.out.println("Here");
+				timer.scheduleAtFixedRate(lobby.getGame(), 500, 100);
+				//lobby.getGame().setUpGame();
+				lobby.t.cancel();
+				lobbies.remove(lobby);
+				break;
+				//lobbies.remove(lobby);
+				/*
 				System.out.println("timer");
 				lobby.getGame().setUpGame();
 				timer.scheduleAtFixedRate(lobby.getGame(), 500, 100);
 				lobby.t.cancel();
 				lobbies.remove(lobby);
 				break;
+				*/
 			}
-			*/
+			
 		}
 	}
 	
