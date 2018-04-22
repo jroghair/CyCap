@@ -34,7 +34,7 @@ public class AI_player extends GameCharacter {
 	}
 
 	public void get_path(GameState g) {
-
+		System.out.println("updating path: " + this.entity_id);
 		/*
 		 * if it has the flag then path to home base if enemy has the flag path
 		 * to them and shoot
@@ -104,7 +104,7 @@ public class AI_player extends GameCharacter {
 	}
 
 	public void update(GameState g, InputSnapshot s) {
-
+		//System.out.println(g.game_type);
 //		long total_start = System.currentTimeMillis();
 		Random r = new Random();
 		

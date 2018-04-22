@@ -308,7 +308,7 @@ public class GameState extends TimerTask {
 		this.add_AI_player(1, "scout");
 		this.add_AI_player(1, "scout");
 		this.add_AI_player(1, "scout");
-		if(true){
+		if(false){
 			this.add_AI_player(2, "scout");
 			this.add_AI_player(1, "scout");
 			this.add_AI_player(2, "scout");
