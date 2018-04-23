@@ -47,6 +47,7 @@ public class GameManager {
 		String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
 		games.add(new GuestCaptureTheFlag(id));
 		game_ids.add(id);
+		games.get(0).readyToStart = true;
 		timer.scheduleAtFixedRate(games.get(0), 500, 100);
 	}
 	

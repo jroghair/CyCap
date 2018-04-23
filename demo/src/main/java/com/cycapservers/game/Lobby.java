@@ -54,10 +54,12 @@ public class Lobby {
 		this.curSize=0;
 		this.t = new Timer();
 		if(c.equals(TeamDeathMatch.class)){
-			this.game = new TeamDeathMatch(id, 0);
+			int map_num = Utils.RANDOM.nextInt(2);
+			this.game = new TeamDeathMatch(id, map_num);
 		}
 		else if(c.equals(CaptureTheFlag.class)){
-			this.game = new CaptureTheFlag(id, 0);
+			int map_num = Utils.RANDOM.nextInt(2);
+			this.game = new CaptureTheFlag(id, map_num);
 		}
 		else if(c.equals(FreeForAll.class)){
 			this.game = new FreeForAll(id, 0);

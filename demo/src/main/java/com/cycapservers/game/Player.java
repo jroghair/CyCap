@@ -221,7 +221,7 @@ public class Player extends GameCharacter {
 	 * respawns the player into a proper respawn node, resets their weapons and health
 	 */
 	protected void respawn(GameState g) {
-		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(TeamDeathMatch.class)) {
+		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(TeamDeathMatch.class) || g.getClass().equals(GuestCaptureTheFlag.class)) {
 			SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
 			//respawn player
 			this.x = n.getX();

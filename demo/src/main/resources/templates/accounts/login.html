@@ -1,18 +1,29 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>CyCap Account Login</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
-</head>
-<body>
-	<h1>Form</h1>
-    <form th:action="@{/accounts/login}"  method="post" th:object="${account}">
-    	<p>User Id: <input type="text" th:field="*{userID}" /></p>
-        <p>Password: <input type="password" th:field="*{password}" /></p>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="stylesheet" href="/css/cycap_style.css"/>
+		<link rel="stylesheet" href="/css/topnav_style.css"/>
+		<title>CyCap Account Login</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	</head>
+	<body>
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<a href="about" id="logo"><img src="/res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
+			<a href="/">Home</a>
+			<a href="how_to">How To Play</a>
+			<a href="about">About the Team</a>
+		</div>
+	
+		<h2>Login</h2>
+		<form th:action="@{/accounts/login}"  method="post" th:object="${account}">
+			<p>Username: <input type="text" th:field="*{userID}" /></p>
+			<p>Password: <input type="password" th:field="*{password}" /></p>
 
-        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-    </form>
-</body>
+			<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+		</form>
+	</body>
 </html>
 
     

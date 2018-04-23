@@ -28,7 +28,7 @@ public class PlayerStats {
 	protected int flag_returns;
 	protected int flag_captures;
 	
-	
+	protected String endgame_message;
 	
 
 	//GameSpecific Stats
@@ -62,14 +62,6 @@ public class PlayerStats {
 
 	public void addDeath(){
 		deaths++; 
-	}
-	
-	public void playerWinsGame(){
-		wins++; 
-	}
-	
-	public void playerLossesGame(){
-		losses++; 
 	}
 	
 	public void addFlagGrab(){
@@ -146,22 +138,6 @@ public class PlayerStats {
 		this.gamesplayed = gamesplayed;
 	}
 
-	public int getGamewins() {
-		return gamewins;
-	}
-
-	public void setGamewins(int gamewins) {
-		this.gamewins = gamewins;
-	}
-
-	public int getGamelosses() {
-		return gamelosses;
-	}
-
-	public void setGamelosses(int gamelosses) {
-		this.gamelosses = gamelosses;
-	}
-
 	public void setLevelAndXP() {
 		Point p = ProfileDataUpdate.dbGetLevel(userID, champion);
 		this.level = p.x;
@@ -190,7 +166,19 @@ public class PlayerStats {
 			//call util class to calculate level and experience it takes in level and experience
 			Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience)); //so util returns a pair
 			this.level = p.x;
-			this.experience = p.y; 
+			this.experience = p.y;
+			
+			if(wins > losses) {
+				endgame_message = "w:";
+			}
+			else {
+				endgame_message = "l:";
+			}
+			endgame_message += new_xp + ":";
+			endgame_message += champion + ":";
+			endgame_message += kills + ":";
+			endgame_message += deaths + ":";
+			endgame_message += level;
 		}
 		else if(this.game_type.equals(TeamDeathMatch.class)){
 			//calculate score

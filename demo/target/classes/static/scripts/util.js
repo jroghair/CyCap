@@ -197,7 +197,13 @@ function message_handler(msg){
 		requestAnimationFrame(run); //more synchronized method similar to setInterval
 	}
 	else if(temp[0] == "endgame"){
-		
+		//temp[1] is w/l
+		//temp[2] is gained xp
+		//temp[3] is current class
+		//temp[4] is kills
+		//temp[5] is deaths
+		//temp[6] is new level
+		//"Your team [won/lost]! During the game, you killed [kills] enemies and died [deaths] times. You gained [xp] xp with the [class] class. Your new level is [level]."
 	}
 	else{
 		gameState.receiveGameState(msg.data);

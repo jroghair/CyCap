@@ -204,7 +204,7 @@ public class TeamDeathMatch extends GameState {
 		this.userPasswords.add(pass);
 		try {
 			
-			String message = "join:" + pass + ":" + this.game_id + ":" + "TDM:" + role;
+			String message = "join:" + pass + ":" + this.game_id + ":" + "CTF:" + role + ":" + this.mapGridWidth + ":" + this.mapGridHeight;
 			if(Utils.DEBUG) System.out.println(message);
 			for(Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);

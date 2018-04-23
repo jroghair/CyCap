@@ -1,8 +1,7 @@
 //////SPRITESHEET DATA//////
 let player_images = new Image();
 player_images.src = "res/images/player_images.png";
-player_images.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
-						 {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
+generateSpriteSheetData(128, 128, 4, 2, player_images);
 
 let enemy_image = new Image();
 enemy_image.src = "res/images/enemy.png";
@@ -18,8 +17,6 @@ background_tiles.src = "res/images/map_tiles_ss.png";
 background_tiles.sprites = [{x:0, y:0, w:64, h:64}, {x:64, y:0, w:64, h:64}, {x:0, y:64, w:64, h:64}, {x:64, y:64, w:64, h:64}];
 background_tiles.chances = [0.95, 0.04, 0.007, 0.003];
 let grid_length = 32;
-let bg_width_grids = 41;
-let bg_height_grids = 30;
 
 let wall_image = new Image();
 wall_image.src = "res/images/wall2.png";
@@ -150,8 +147,7 @@ smoke_ss.sprites = [{x:0, y:0, h:256, w:256}];
 				   
 let flags_ss = new Image();
 flags_ss.src = "res/images/flags.png";
-flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
-                    {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
+generateSpriteSheetData(128, 128, 4, 2, flags_ss);
 					
 let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code:3, img:speed_potion_ss},
 				   {code:4, img:flags_ss}, {code:5, img:ammo_pack}, {code:6, img:health_pack}, {code:7, img:boom_ss},

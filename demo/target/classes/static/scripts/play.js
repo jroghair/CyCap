@@ -276,7 +276,7 @@ function setup(arr) {
 	gt6 = -1 * ((gameState.player.y * gt4) - (canvas.height / 2));
 
 	canvas_box = new Entity(background_tiles, 0, gameState.player.x, gameState.player.y, canvas.width, canvas.height, 0, 0); //invisible box to determine whether or not to display an entity
-	map = new TiledBackground(background_tiles);
+	map = new TiledBackground(background_tiles, arr[5], arr[6]);
 	
 	//////GUI ELEMENTS//////
 	guis.push(new HealthGUI(30, gui_canvas.height - 20, 200, 20)); //health bar
@@ -325,7 +325,7 @@ function setup(arr) {
 	lastFrameTime = Date.now();
 	
 	////LOAD UP WALLS///
-	arr.splice(0, 5);
+	arr.splice(0, 7);
 	gameState.addWalls(arr);
 	
 	document.getElementById("loading_screen").remove();
@@ -825,32 +825,11 @@ function Wall(img, grid_x, grid_y){
 	this.base(img, 0, (this.grid_x * grid_length) + (grid_length/2), (this.grid_y * grid_length) + (grid_length/2), grid_length, grid_length, 0, 1);
 }
 
-function ParticleEffect(img, x, y, width, height, num_frames, life_time){
-	this.life_time = life_time; //in milliseconds
-	this.last_frame = Date.now();
-	this.frame_speed = life_time/num_frames;
-	this.num_frames = num_frames;
-	this.base = Entity;
-	this.base(img, 0, x, y, width, height, 0, 1);
-
-	this.update = function(){
-		if(this.sprIdx >= (this.num_frames - 1)){
-			let temp_index = part_fx.indexOf(this);
-			part_fx.splice(temp_index, 1);
-		}	
-
-		else if((Date.now() - this.last_frame) > this.frame_speed){
-			this.last_frame = Date.now();
-			this.sprIdx++;
-		}
-	}
-}
-
-function TiledBackground(img){
+function TiledBackground(img, width, height){
 	this.img = img;
 	this.tile_list = [];
-	for(let i = 0; i < bg_width_grids; i++){
-		for(let j = 0; j < bg_height_grids; j++){
+	for(let i = 0; i < width; i++){
+		for(let j = 0; j < height; j++){
 			this.tile_list.push(new BGTile(img, i, j, getWeightedIndex(this.img.chances)));
 		}
 	}

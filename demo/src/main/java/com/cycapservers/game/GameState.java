@@ -24,6 +24,7 @@ public abstract class GameState extends TimerTask
 	protected List<String> userPasswords;
 	protected List<InputSnapshot> unhandledInputs;
 	protected boolean readyToStart;
+	protected boolean gameFinished;
 	/////////////////////////////
 	
 	//////PLAYERS//////
@@ -92,6 +93,7 @@ public abstract class GameState extends TimerTask
 		
 		this.started = false;
 		this.readyToStart = false;
+		this.gameFinished = false;
 	}
 
 	public abstract void updateGameState();
@@ -157,16 +159,23 @@ public abstract class GameState extends TimerTask
 	public abstract void setUpGame();
 	
 	public void endGame(int winner) {
-		started = false;
+		gameFinished = true;
 		for(Player p : this.players) {
 			p.stats.updateScore(winner);
 			ProfileDataUpdate.dbSaveData(p.stats);
+			String message = "endgame:";
+			try {
+				p.session.sendMessage(new TextMessage(message + p.stats.endgame_message));
+			} catch (IOException e) {
+				System.out.println("Error sending endgame message");
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Override
 	public void run() {
-		if(started) {
+		if(started && !gameFinished) {
 			////UPDATE GAME STATE////
 			updateGameState();
 			
@@ -182,7 +191,7 @@ public abstract class GameState extends TimerTask
 			this.new_sounds.clear();
 			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		}
-		else if(readyToStart){
+		else if(readyToStart && !gameFinished){
 			if(players.size() == incomingPlayers.size()) {
 				setUpGame();
 			}

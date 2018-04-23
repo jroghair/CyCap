@@ -1,0 +1,33 @@
+*{
+	font-family: sans-serif;
+}
+
+html{
+	height: 100%;
+}
+
+body {
+	margin: 0.0;
+	background-color: #141414;
+	height: 100%;
+}
+
+button{
+	text-align: center;
+	background-color: #C8102E;
+	border-color: #c8102e;
+	font-size: 200%;
+}
+
+a{
+	color: #f2f2f2;
+	text-decoration: none;
+}
+
+h2{
+	color: LightSlateGray;
+}
+
+p{
+	color: #f2f2f2;
+}
