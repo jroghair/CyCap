@@ -121,6 +121,18 @@ public class CaptureTheFlag extends GameState {
 						+ " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
 			}
 		}
+
+		// kill players who are outside the map
+		for (int i = 0; i < this.players.size(); i++) {
+			if ((this.players.get(i).x < 0 || this.players.get(i).x > (Utils.GRID_LENGTH * this.mapGridWidth))
+					&& this.players.get(i).isDead == false) {
+				this.players.get(i).die();
+			} else if ((this.players.get(i).y < 0 || this.players.get(i).y > (Utils.GRID_LENGTH * this.mapGridHeight))
+					&& this.players.get(i).isDead == false) {
+				this.players.get(i).die();
+			}
+		}
+
 		// updating AI players
 		for (AI_player ai : AI_players) {
 			if (!ai_player_delay) {
