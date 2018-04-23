@@ -30,4 +30,7 @@ public interface AccountRepository extends CrudRepository<Account, String> {
 	 */
 	Account save(Account account);
 
+	@Transactional
+	void delete(Account account);
+
 }

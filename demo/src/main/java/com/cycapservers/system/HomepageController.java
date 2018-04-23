@@ -1,5 +1,6 @@
 package com.cycapservers.system;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -136,6 +138,7 @@ public class HomepageController {
 			if (s3.length == 2 && s3[0].length() > 0 && s3[1].length() == 3) {
 				String user = account.getUserID();
 				Account acnt = this.accountsRepository.findByUserID(user);
+
 				if (acnt == null) {
 					account.setDateOfCreation();
 					this.accountsRepository.save(account);
@@ -148,6 +151,7 @@ public class HomepageController {
 					this.profilesRepository.save(p1);
 					this.profilesRepository.save(p2);
 					this.profilesRepository.save(p3);
+					this.profilesRepository.save(p4);
 
 					return "accounts/login";
 				}
@@ -256,7 +260,6 @@ public class HomepageController {
 	@RequestMapping(value = "/accounts/chat", method = RequestMethod.GET)
 	public String friendChat2(HttpServletRequest request, @SessionAttribute("account") Account account) {
 		logger.info("Entered into get Chat controller Layer");
-		// System.out.println(account.getUserID());
 
 		return "accounts/chat";
 	}
@@ -361,7 +364,6 @@ public class HomepageController {
 				artillery.getLevel(), infantry.getLevel());
 
 		roleLevels = roleLevels2;
-		System.out.println("scout level: " + scout.getLevel());
 
 		model.addAttribute("roleLevels", roleLevels);
 
@@ -386,7 +388,6 @@ public class HomepageController {
 			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
 			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
 		logger.info("Entered into get Profile infantry controller Layer");
-		System.out.println(account.getUserID());
 
 		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
 		profiles = infantry;
@@ -529,7 +530,6 @@ public class HomepageController {
 			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
 			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
 		logger.info("Entered into get Profile Artillery controller Layer");
-		System.out.println(account.getUserID());
 
 		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
 		profiles = artillery;
@@ -628,8 +628,7 @@ public class HomepageController {
 	public String LeaderBoards(Model model, @SessionAttribute("account") Account account,
 			@ModelAttribute("AccountsList") AccountsList accountsList) {
 		logger.info("Entered into get AdminControls controller Layer");
-		System.out.println(account.getAdministrator());
-		System.out.println(account.getDeveloper());
+
 		if (account.getAdministrator() == 0 && account.getDeveloper() == 0)
 			return "accounts/access";
 		Collection<Account> users = accountsRepository.findAllUsers();
@@ -647,11 +646,43 @@ public class HomepageController {
 	}
 
 	@RequestMapping(value = "/accounts/AdminControls", method = RequestMethod.POST)
-	public String AdminControlsPost(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("AccountsList") AccountsList accountsList) {
-		logger.info("Entered into get AdminControls controller Layer");
-		System.out.println(account.getAdministrator());
-		System.out.println(account.getDeveloper());
+	public String AdminControlsPost(@RequestParam("player") String player, HttpServletRequest request, Model model,
+			@SessionAttribute("account") Account account, @ModelAttribute("AccountsList") AccountsList accountsList,
+			@ModelAttribute("Account") Account playeraccount) {
+		logger.info("Entered into get AdminControls POST controller Layer");
+
+		System.out.println("Session Account: " + account.getUserID() + " | player: " + player);
+
+		Account oldAccount = accountsRepository.findByUserID(player);
+		if (oldAccount.getAdministrator() == 0) {
+			playeraccount.setUserID(player);
+			playeraccount.setPassword(oldAccount.getPassword());
+			playeraccount.setEmail(oldAccount.getEmail());
+
+			Date date = oldAccount.getDateOfCreation2();
+			playeraccount.setDateOfCreation2(date);
+			playeraccount.setMember(1);
+			playeraccount.setDeveloper(0);
+			playeraccount.setAdministrator(1);
+
+			accountsRepository.delete(oldAccount);
+			accountsRepository.save(playeraccount);
+
+		} else if (!account.getUserID().equals(player)) {
+			System.out.println("in Else if");
+			playeraccount.setUserID(player);
+			playeraccount.setPassword(oldAccount.getPassword());
+			playeraccount.setEmail(oldAccount.getEmail());
+
+			Date date = oldAccount.getDateOfCreation2();
+			playeraccount.setDateOfCreation2(date);
+			playeraccount.setMember(1);
+			playeraccount.setDeveloper(0);
+			playeraccount.setAdministrator(0);
+			accountsRepository.delete(oldAccount);
+			accountsRepository.save(playeraccount);
+		}
+
 		if (account.getAdministrator() == 0 && account.getDeveloper() == 0)
 			return "accounts/access";
 		Collection<Account> users = accountsRepository.findAllUsers();
@@ -664,6 +695,8 @@ public class HomepageController {
 		accountsList.setAccountsList(list);
 
 		model.addAttribute("accountsList", accountsList.getAccountsList());
+
+		model.addAttribute("playeraccount", playeraccount);
 
 		return "accounts/admincontrols";
 	}

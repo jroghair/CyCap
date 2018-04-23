@@ -21,7 +21,7 @@ public class Account {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private int id = 0;
+	private int id;
 
 	@NotNull
 	// @GeneratedValue(strategy=GenerationType.AUTO)
@@ -90,12 +90,22 @@ public class Account {
 		return new SimpleDateFormat("MM-dd-yyyy").format(dateOfCreation);
 	}
 
+	public Date getDateOfCreation2() {
+
+		// return dateOfCreation;
+		return this.dateOfCreation;
+	}
+
 	public void setDateOfCreation() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 		LocalDate localDate = LocalDate.now();
 		dtf.format(localDate);
 		java.sql.Date dat = java.sql.Date.valueOf(localDate);
 		this.dateOfCreation = dat;
+	}
+
+	public void setDateOfCreation2(Date date) {
+		this.dateOfCreation = date;
 	}
 
 	public int getMember() {

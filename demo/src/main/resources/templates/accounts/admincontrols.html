@@ -7,7 +7,7 @@
   <li><a href="/accounts/profile">Profile</a></li>
 </ul>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-
+<input id="playerid"/>
 </head>
 <style>
 
@@ -79,7 +79,7 @@ li a:hover {
     <thead>
       <tr>
       	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
-      	<th th:onclick="'javascript:sortTableString(1);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Admin</th>
+      	<th><i>Current Level</i></th>
       	<th><i>Options</i></th>
       </tr>
     </thead>
@@ -87,29 +87,79 @@ li a:hover {
 		<th:block th:each="accountsList : ${accountsList}">
      	 	<tr>
      	 		<td th:text="${accountsList.userID}" class="user">...</td>
-     	 		<td th:text="${accountsList.administrator}" class="user">...</td>
-
+     	 		 <td th:switch="${accountsList.administrator}">
+					<p th:case="1">Admin</p>
+				  <p th:case="0">Non-Admin</p> 
+			 </td>	
+			 <form>
+				<td th:switch="${accountsList.administrator}">
+				  <button th:case="1" id="button" type="button">Demote To Member</button>
+				  <button th:case="0" id="button" type="button">Promote To Admin</button>
+				   
+				</td>
+			</form>
+<!--  
   				<form>   	 		
-     	 		<td><button type="button">Promote to Admin</button></td>
-      			</form>
+     	 		<td>
+     	 		<button id="button" type="button">Promote To Admin</button></td>
+     	 		
+      			</form>-->
+      			
+      			
       		</tr>
    		</th:block>
     </tbody>
   </table>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script type="text/javascript">
 
 	    /*<![CDATA[*/
+	    	
 	    	$(document).ready(function(){
-	   $("#admin tr").click(function(){
-    	alert( $(this).children().closest("td").html());
+	    		
+    $("#admin tr").click(function(){
+    	
+    		
+    	
+    	id=$(this).children().closest("td").html();
+    	console.log("here : " + id);
+
+    	
+    	var button =$(this).closest('tr').find('button').text();
+    	
+    /*	if(button.match("Promote To Admin")){
+    		$(this).closest('tr').find('button').text("Demote From Admin");
+    	}
+    	else 
+    		$(this).closest('tr').find('button').text("Promote To Admin");
+    	*/
+    	$.ajax({
+			url: /*[[ @{/accounts/AdminControls} ]]*/ null,
+			type: 'POST',
+			data: { player: id,
+    	success: function () {
+
+    		location.reload(true); //will log Object
+
+        }
+			}
+    	})
+    	
     });
 	        });
-							    	
-	    /*]]>*/		
+
+				    	
+	    /*]]>*/	
+	    
+	    
+	  
 
 
 </script>
+
+
+
 </body>
 
   
@@ -148,5 +198,43 @@ li a:hover {
 
 
 </script>
+
+
+<script type="text/javascript">
+
+	    /*<![CDATA[*/
+	    	$.ajax({
+    			url: /*[[ @{/accounts/AdminControls} ]]*/ null,
+    			type: 'POST',
+    			data: { player: $("#playerid").val() }
+	    	}).then(function() {
+	    		$(document).ready(function(){
+	    		    $("button").click(function(){
+	    		    	var player = $(this).children().closest("td").html()
+	    		    	
+	    		    	alert(player);
+	    		    });
+	    			       });
+	    	});
+    	    			
+    			
+
+	   	    	
+	    /*]]>*/		
+
+
+</script>
+
+
+
+	    	$("button").click(function(){
+	    		var id = $(this).children().closest("td").html();
+	    		alert(id);
+	    	$.ajax({
+    			url: /*[[ @{/accounts/AdminControls} ]]*/ null,
+    			type: 'POST',
+    			data: { player: id}
+	    	}).then(function() { });
+	    	});
 -->
 </html>
