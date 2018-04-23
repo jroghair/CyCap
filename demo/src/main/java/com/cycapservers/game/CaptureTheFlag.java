@@ -189,8 +189,8 @@ public class CaptureTheFlag extends GameState {
 		return output; //RETURN THE MESSAGE
 	}
 	
-	public void playerJoin(String client_id, WebSocketSession session, String role) {
-		int team;
+	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
+		//int team;
 		//synchronized {
 			if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
 				team = Utils.RANDOM.nextInt(2) + 1;

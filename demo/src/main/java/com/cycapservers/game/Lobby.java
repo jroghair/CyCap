@@ -38,6 +38,12 @@ public class Lobby {
 	 */
 	private final int startGap = 4;
 	
+	private int team1;
+	
+	private int team2;
+	
+	private int freeTeam;
+	
 	/**
 	 * Takes in the game mode that the lobby is going to represent.
 	 * @param gamemode
@@ -118,7 +124,7 @@ public class Lobby {
 	public void GivePlayerList(WebSocketSession session, String id) throws IOException{
 			session.sendMessage(new TextMessage("clean"));
 			for(int i = 0; i < curSize; i++){
-				session.sendMessage(new TextMessage("player:"+ players.get(i).client_id));
+				session.sendMessage(new TextMessage("player:"+ players.get(i).client_id + ":" + players.get(i).role + ":" + players.get(i).team));
 			}
 		return;
 	}
@@ -134,7 +140,22 @@ public class Lobby {
 	 * @throws IOException
 	 */
 	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
-		players.add(new IncomingPlayer(p, "recruit", s)); //TODO: this needs to use the role that was chosen on the lobby page
+		int team = 1;
+		if(this.game.getClass().equals(CaptureTheFlag.class) || this.game.getClass().equals(TeamDeathMatch.class)){
+			if(team1 == 0 && team2 == 0){
+				team1++;
+				team = 1;
+			}
+			else if(team1 < team2){
+				team1++;
+				team = 1;
+			}
+			else{
+				team2++;
+				team = 2;
+			}
+		}
+		players.add(new IncomingPlayer(p, "recruit", s, team)); //TODO: this needs to use the role that was chosen on the lobby page
 		this.curSize++;
 		for(IncomingPlayer i : players){
 			this.GivePlayerList(i.session, game.game_id);

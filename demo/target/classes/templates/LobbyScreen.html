@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<h2 id = "name">Lobby Name</h2>
-		<h3 id = "players">Number of Players</h3>
-		<button onclick = "refresh()">refresh</button>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Lobby</title>
+		<link rel="stylesheet" href="/css/cycap_style.css"/>
+		<link rel="stylesheet" href="/css/topnav_style.css"/>
 	</head>
 	<body>
-		<p></p>
-		<button>recruit</button>
-		<button>infantry</button>
-		<button>scout</button> 
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<a href="about" id="logo"><img src="/res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
+			<a href="/">Home</a>
+			<a href="how_to">How To Play</a>
+			<a href="about">About the Team</a>
+		</div>
+	
+		<h2 id = "name">Lobby Name</h2>
+		<h3 id = "players">Number of Players</h3>
+		<h3 id = "time">Time Until Start</h3>
+		<p id = "role">Role: recruit</p>
+		<button onclick = "recruit()">recruit</button>
+		<button onclick = "infantry()">infantry</button>
+		<button onclick = "scout()">scout</button> 
+		<button onclick = "artillery()">artillery</button>
+		
 		<section id = "play">
 		
 		</section>

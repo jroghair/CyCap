@@ -144,14 +144,14 @@ public abstract class GameState extends TimerTask
 	public boolean findIncomingPlayer(String userId, WebSocketSession session){
 		for(IncomingPlayer p : incomingPlayers){
 			if(p.client_id.equals(userId)){
-				this.playerJoin(p.client_id, session, p.role);
+				this.playerJoin(p.client_id, session, p.role, p.team);
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public abstract void playerJoin(String client_id, WebSocketSession session, String role);
+	public abstract void playerJoin(String client_id, WebSocketSession session, String role, int team);
 	
 	public abstract void add_AI_player(int team, String role);
 	
