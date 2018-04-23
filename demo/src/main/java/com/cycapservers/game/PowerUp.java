@@ -12,7 +12,7 @@ public abstract class PowerUp extends Item {
 	}
 	
 	public PowerUp(PowerUp p, double x, double y, String entity_id) {
-		super(p.imageId, p.spriteIndex, x, y, p.getDrawWidth(), p.getDrawHeight(), p.rotation, p.alpha, p.name, entity_id);
+		super(p.imageId, p.spriteIndex, x, y, p.drawWidth, p.drawHeight, p.rotation, p.alpha, p.name, entity_id);
 		this.duration = p.duration;
 	}
 	

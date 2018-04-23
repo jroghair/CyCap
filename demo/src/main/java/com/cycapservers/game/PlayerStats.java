@@ -6,21 +6,18 @@ import com.cycapservers.account.ProfileDataUpdate;
 
 public class PlayerStats {
 
-	////// PLAYER DATA//////
 	protected String userID;
 	protected String champion;
 	protected int experience;
 	protected int level;
 	protected int team;
 
-	////// BASIC GAME STATS//////
 	protected int kills;
 	protected int deaths;
 	protected int wins;
 	protected int losses;
 
-	////// MODE SPECIFIC STATS//////
-
+	// MODE SPECIFIC STATS//
 	// CTF
 	protected int flag_grabs;
 	protected int flag_returns;
@@ -32,10 +29,9 @@ public class PlayerStats {
 	int gamewins;
 	int gamelosses;
 
-	public PlayerStats(GameCharacter player) {
-		this.userID = player.entity_id; // need to add this in later
-		this.champion = player.role; // need to ensure role was already assigned
-		this.team = player.team;
+	public PlayerStats(Player player, String champion) {
+		this.userID = player.getEntity_id(); // need to add this in later
+		this.userID = player.role; // need to ensure role was already assigned
 		this.kills = 0;
 		this.deaths = 0;
 		this.wins = 0;
@@ -48,13 +44,14 @@ public class PlayerStats {
 		this.gamesplayed = 0;
 		this.gamelosses = 0;
 		this.gamewins = 0;
+
 	}
 
-	public void addKill() {
+	public void playerGetsKill() {
 		kills++;
 	}
 
-	public void addDeath() {
+	public void playerDies() {
 		deaths++;
 	}
 
@@ -66,16 +63,16 @@ public class PlayerStats {
 		losses++;
 	}
 
-	public void addFlagGrab() {
+	public void playerflag_grabs() {
 		flag_grabs++;
 	}
 
-	public void addFlagReturn() {
+	public void playerFlagReturns() {
 		flag_returns++;
 	}
 
-	public void addFlagCapture() {
-		this.flag_captures++;
+	public void playerFlagCaptures() {
+		this.losses++;
 	}
 
 	public void playerExperienceGain(int exp) {
@@ -131,7 +128,7 @@ public class PlayerStats {
 		return flag_captures;
 	}
 
-	public void setGameType(Class<? extends GameState> gametype) {
+	public void setGameType(String gametype) {
 		this.game_type = gametype;
 	}
 
@@ -160,7 +157,6 @@ public class PlayerStats {
 	}
 
 	public void setLevelAndXP() {
-		System.out.println("in set Level and Xp");
 		Point p = ProfileDataUpdate.dbGetLevel(userID, champion);
 		this.level = p.x;
 		this.experience = p.y;
@@ -186,13 +182,7 @@ public class PlayerStats {
 			}
 			this.experience += new_xp;
 
-			// call util class to calculate level and experience it takes in
-			// level and experience
-			Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience)); // so
-																							// util
-																							// returns
-																							// a
-																							// pair
+			Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience));
 			this.level = p.x;
 			this.experience = p.y;
 		} else if (this.game_type.equals(TeamDeathMatch.class)) {

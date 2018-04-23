@@ -2,8 +2,10 @@ package com.cycapservers.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.TimerTask;
 
 import org.springframework.web.socket.TextMessage;
@@ -11,26 +13,25 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.cycapservers.account.ProfileDataUpdate;
 
-public abstract class GameState extends TimerTask {
-	////// NITTY GRITTY STUFF//////
-	/**
-	 * Players that are planning to join the game.
-	 */
-	protected ArrayList<IncomingPlayer> incomingPlayers;
+public class GameState extends TimerTask {
 	protected String game_id;
+	protected String game_type;
 	protected List<String> usedEntityIds;
 	protected int entity_id_len;
 	protected List<String> userPasswords;
-	protected List<InputSnapshot> unhandledInputs;
-	/////////////////////////////
+	private List<InputSnapshot> unhandledInputs;
 
 	////// PLAYERS//////
 	protected int max_players;
 	protected List<AI_player> AI_players;
 	protected List<Player> players;
+	protected int playersOnTeam1;
+	protected int playersOnTeam2;
 	protected boolean friendlyFire;
 	protected long respawnTime; // the amount of time to respawn after death in
 								// ms
+	boolean started;;
+	// TODO: spawn nodes
 	///////////////////
 
 	////// ITEMS//////
@@ -41,7 +42,7 @@ public abstract class GameState extends TimerTask {
 	protected List<String> new_sounds;
 
 	// stuff for AI
-	protected ArrayList<ArrayList<mapNode>> ai_map;
+	protected ArrayList<ArrayList<mapNode>> map;
 
 	protected List<Bullet> bullets;
 
@@ -51,51 +52,203 @@ public abstract class GameState extends TimerTask {
 	protected int mapGridHeight;
 	protected List<SpawnNode> spawns;
 
-	////// GRAPHICAL OBJECTS//////
-	protected List<Particle> particles;
-	protected List<ParticleEffect> effects;
+	////// CTF STUFF//////
+	protected GridLockedNode team1_base;
+	protected GridLockedNode team2_base;
+	protected Flag team1_flag;
+	protected Flag team2_flag;
+	/////////////////////
 
-	////// SCORES AND TIME//////
-	protected HashMap<Integer, Integer> team_scores;
-	protected long start_time;
-	protected int time_limit;
-	protected boolean started;
-	protected int winner;
-	protected int score_limit;
-
-	protected long lastGSMessage;
+	private long lastGSMessage;
 	protected double currentDeltaTime; // the time since the last game state
 										// update in seconds
 
-	public GameState(String id) {
+	protected HashMap<Integer, Integer> team_scores;
+	protected long start_time;
+	protected int time_limit;
+	protected int winner;
+	protected int score_limit;
+
+	/// LOBBY ITEMS
+	protected int maxPlayers;
+
+	public GameState() {
 		this.usedEntityIds = new ArrayList<String>();
 		entity_id_len = 6;
 		this.userPasswords = new ArrayList<String>();
 
-		this.game_id = id;
-		this.incomingPlayers = new ArrayList<IncomingPlayer>();
+		this.max_players = 8;
 		this.players = new ArrayList<Player>();
-		this.AI_players = new ArrayList<AI_player>();
-		this.team_scores = new HashMap<Integer, Integer>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
 		this.spawns = new ArrayList<SpawnNode>();
 		this.new_sounds = new ArrayList<String>();
 		this.current_item_list = new ArrayList<Item>();
-		this.particles = new ArrayList<Particle>();
-		this.effects = new ArrayList<ParticleEffect>();
 
 		this.unhandledInputs = new ArrayList<InputSnapshot>();
 		this.lastGSMessage = System.currentTimeMillis();
 
-		this.started = false;
+		this.playersOnTeam1 = 0;
+		this.playersOnTeam2 = 0;
+		this.team_scores = new HashMap<Integer, Integer>();
+		this.team_scores.put(1, 0); // for TDM and CTF only
+		this.team_scores.put(2, 0);
+
+		friendlyFire = false;
+		respawnTime = 10000; // 10 seconds respawn time
+		pu_handler = new PowerUpHandler((short) 30000, (short) 2500);
+
+		MapLoader.loadPredefinedMap(0, this);// load up the map
+
+		this.AI_players = new ArrayList<AI_player>();
+		// generate the map when player is constructed
+		this.map = Utils.generate_node_array(this);
+		// this.add_AI_player(1, "recruit");
+		// this.add_AI_player(2, "recruit");
 	}
 
-	public abstract void updateGameState();
+	public abstract void setUpGame();
 
-	public abstract List<Item> getItemList();
+	public void endGame(int winner) {
+		started = false;
+		for (Player p : this.players) {
+			p.stats.updateScore(winner);
+			ProfileDataUpdate.dbSaveData(p.stats);
+		}
+	}
 
-	public abstract String toDataString(Player p);
+	public void updateGameState() {
+		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage) / 1000.0;
+		this.lastGSMessage = System.currentTimeMillis();
+
+		// DEV STUFF
+		if (Utils.DEBUG) {
+			int error = (int) (this.currentDeltaTime * 1000 - 100);
+			if (error >= GameManager.TOLERABLE_UPDATE_ERROR) {
+				System.out.println("Time error in Gamestate sending: " + error);
+			}
+			if (this.bullets.size() >= GameManager.ADVANCED_BULLET_WARNING_LEVEL) {
+				System.out.println("ADVANCED WARNING!! TOO MANY BULLETS");
+			} else if (this.bullets.size() >= GameManager.BULLET_WARNING_LEVEL) {
+				System.out.println("Warning! High number of bullets");
+			}
+		}
+
+		///////// UPDATE GAME OBJECTS///////////
+		// move all of the bullets first
+		ListIterator<Bullet> iter = this.bullets.listIterator();
+		while (iter.hasNext()) {
+			Bullet temp = iter.next();
+			if (temp.update(this)) {
+				this.usedEntityIds.remove(temp.entity_id);
+				iter.remove(); // remove the bullet from the list if it is done
+								// (animation done/hit a wall/etc)
+			}
+		}
+		// UPDATE the flags
+		this.team1_flag.update();
+		this.team2_flag.update();
+
+		////// APPLY INPUT SNAPSHOTS//////
+		for (int i = 0; i < this.unhandledInputs.size(); i++) {
+			try {
+				Player p = this.unhandledInputs.get(i).client;
+				p.update(this, this.unhandledInputs.get(i));
+			} catch (ConcurrentModificationException e) {
+				System.out.println("unhandled input " + i + ": " + e);
+			} catch (NullPointerException e) {
+				System.out.println("Null pointer Exception when getting index " + i
+						+ " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
+			}
+		}
+
+		/*
+		 * / updating AI players for (AI_player ai : AI_players) {
+		 * ai.update(this, null); }
+		 */
+
+		////// Check For Flag captures//////
+		if (!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
+			this.team_scores.put(2, this.team_scores.get(2) + 1); // +1 to team
+																	// 2
+			// ((CTF_PlayerStats) this.team1_flag.grabber.stats).addFlagCap();
+			// //give the proper player a flag capture
+			this.team1_flag.returnToBase(); // return the flag to base
+			if (Utils.DEBUG)
+				System.out.println("FLAG 1 CAPTURED!!");
+		} else if (!this.team2_flag.atBase && this.team1_flag.atBase
+				&& Utils.isColliding(this.team2_flag, team1_base)) {
+			this.team_scores.put(1, this.team_scores.get(1) + 1); // +1 to team
+																	// 1
+			// ((CTF_PlayerStats) this.team2_flag.grabber.stats).addFlagCap();
+			// //give the proper player a flag capture
+			this.team2_flag.returnToBase(); // return the flag to base
+			if (Utils.DEBUG)
+				System.out.println("FLAG 2 CAPTURED!!");
+		}
+
+		pu_handler.update(this); // update the powerups
+
+		this.unhandledInputs.clear(); // empty the queue of unhandled inputs
+
+		for (Player p : players) {
+			p.setLastUnsentGameState(this.toDataString(p));
+		}
+
+		this.current_item_list = getItemList();
+
+		this.new_sounds.clear();
+	}
+
+	public List<Item> getItemList() {
+		List<Item> list = new ArrayList<Item>();
+		list.addAll(this.pu_handler.getPowerUpsList());
+		list.add(this.team1_flag);
+		list.add(this.team2_flag);
+		return list;
+	}
+
+	public String toDataString(Player p) {
+		String output = "";
+
+		// add game score data
+		output += "001," + this.team_scores.get(1) + "," + this.team_scores.get(2) + ":";
+
+		////// ADD NEW SOUNDS TO PLAY//////
+		for (int i = 0; i < new_sounds.size(); i++) {
+			output += new_sounds.get(i) + ":";
+		}
+
+		////// ADD PLAYER MESSAGES///////
+		for (int i = 0; i < players.size(); i++) {
+			if ((players.get(i).team == p.team)
+					|| (Utils.distanceBetween(p, players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += players.get(i).toDataString(p.entity_id) + ":";
+			}
+		}
+
+		////// ADD AI PLAYER MESSAGES///////
+		for (int i = 0; i < AI_players.size(); i++) {
+			if ((AI_players.get(i).team == p.team)
+					|| (Utils.distanceBetween(p, AI_players.get(i)) <= (p.visibility * Utils.GRID_LENGTH))) {
+				output += AI_players.get(i).toDataString(p.entity_id) + ":";
+			}
+		}
+
+		////// ADD ITEM MESSAGES//////
+		for (Item i : this.current_item_list) {
+			output += i.toDataString(p.entity_id) + ":";
+		}
+
+		////// ADD BULLET MESSAGES//////
+		for (int i = 0; i < bullets.size(); i++) {
+			output += bullets.get(i).toDataString(p.entity_id);
+			if (i != bullets.size() - 1)
+				output += ":";
+		}
+
+		return output; // RETURN THE MESSAGE
+	}
 
 	public void addInputSnap(InputSnapshot s) {
 		for (Player p : this.players) {
@@ -116,78 +269,63 @@ public abstract class GameState extends TimerTask {
 		}
 	}
 
-	/**
-	 * Works with the lobby to show if a player is going to arrive.
-	 * 
-	 * @param userId
-	 */
-	public void addIncomingPlayer(IncomingPlayer p) {
-		this.incomingPlayers.add(p);
-	}
-
-	/**
-	 * Checks to see if the given userId is in the incoming players list and if
-	 * they are adds them to the game.
-	 * 
-	 * @param userId
-	 *            The person who wants to joins user id.
-	 * @param session
-	 *            The person who wants to join websocketsession.
-	 * @param role
-	 *            The role that the person wants.
-	 * @return returns true if the person is in the incoming player list and
-	 *         they joined the game. returns false if they arn't.
-	 */
-	public boolean findIncomingPlayer(String userId, WebSocketSession session) {
-		for (IncomingPlayer p : incomingPlayers) {
-			if (p.client_id.equals(userId)) {
-				this.playerJoin(p.client_id, session, p.role);
-				return true;
-			}
+	public void playerJoin(String client_id, WebSocketSession session, String role) {
+		int team;
+		if (this.playersOnTeam1 > this.playersOnTeam2) {
+			team = 2;
+			this.playersOnTeam2++;
+		} else {
+			team = 1;
+			this.playersOnTeam1++;
 		}
-		return false;
+		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
+		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+		this.players.add(new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role,
+				client_id, pass, session));
+		this.userPasswords.add(pass);
+		try {
+			String message = "join:" + pass;
+			for (Wall w : this.walls) {
+				message += ":" + w.toDataString(client_id);
+			}
+			session.sendMessage(new TextMessage(message));
+		} catch (IOException e) {
+			System.out.println("could not send password for " + client_id + "! error!");
+			e.printStackTrace();
+		}
 	}
 
-	public abstract void playerJoin(String client_id, WebSocketSession session, String role);
+	public void add_AI_player(int team, String role) {
+		// make AI player and send map reference
+		// mapNode randomNode = getRandomNode();
+		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
+		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+		AI_players.add(
+				new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		this.usedEntityIds.add(s);
+		AI_players.get(AI_players.size() - 1).get_path(this);
+	}
 
-	public abstract void add_AI_player(int team, String role);
-
-	public abstract void removePlayer(WebSocketSession session);
-
-	public abstract void setUpGame();
-
-	public void endGame(int winner) {
-		started = false;
-		for (Player p : this.players) {
-			p.stats.updateScore(winner);
-			ProfileDataUpdate.dbSaveData(p.stats);
+	public void removePlayer(WebSocketSession session) {
+		ListIterator<Player> iter = this.players.listIterator();
+		while (iter.hasNext()) {
+			Player temp = iter.next();
+			if (temp.session.equals(session)) {
+				if (temp.team == 1) {
+					this.playersOnTeam1--;
+				} else {
+					this.playersOnTeam2--;
+				}
+				this.usedEntityIds.remove(temp.entity_id);
+				this.userPasswords.remove(temp.password);
+				iter.remove();
+				return;
+			}
 		}
 	}
 
 	@Override
 	public void run() {
-		if (started) {
-			//// UPDATE GAME STATE////
-			updateGameState();
-
-			//// GET NEW ITEM LIST////
-			this.current_item_list = getItemList();
-
-			//// INFORM PLAYERS OF GS UPDATE////
-			for (Player p : players) {
-				p.setLastUnsentGameState(this.toDataString(p));
-			}
-
-			////// CLEAR LISTS/////
-			this.new_sounds.clear();
-			this.unhandledInputs.clear(); // empty the queue of unhandled inputs
-		} else {
-			System.out.println("in run else statement");
-			if (players.size() == incomingPlayers.size()) {
-				setUpGame();
-				System.out.println("called setup game");
-
-			}
-		}
+		updateGameState();
 	}
 }

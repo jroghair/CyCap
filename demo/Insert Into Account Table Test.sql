@@ -18,9 +18,7 @@ UserID varchar(255) NOT NULL,
 Password varchar(255) NOT NULL,
 Creation_Date date NOT NULL,
 Email varchar(255) NOT NULL,
-Member TINYINT(1) NOT NULL,
-Administrator TINYINT(1) NOT NULL,
-Developer TINYINT(1) NOT NULL,
+
 primary key (Id)
 );
 
@@ -49,9 +47,6 @@ Flagreturns int NOT NULL,
 Flagcaptures int NOT NULL,
 Experience int NOT NULL,
 Level int NOT NULL,
-Scoutunlocked TINYINT(1) NOT NULL,
-Artilleryunlocked TINYINT(1) NOT NULL,
-Infantryunlocked TINYINT(1) NOT NULL,
 primary key (Id)
 );
 
@@ -95,22 +90,11 @@ VALUES (7, 'bryan', 'infantry', 34, 15, 2, 1, 3, 1, 2, 1, 15,9);
 
 
 insert into db309sd1.profiles
-VALUES (19, 'jr', 'scout', 2, 6, 3, 2, 4, 1, 2, 1, 67,2);
+VALUES (8, 'bryan', 'scout', 2, 6, 3, 2, 4, 1, 2, 1, 67,2);
 
 
 
 insert into db309sd1.profiles
-VALUES (20, 'jr', 'recruit', 3, 6, 5, 2, 4, 7, 8, 3, 2,54);
+VALUES (9, 'bryan', 'recruit', 3, 6, 5, 2, 4, 7, 8, 3, 2,54);
 
 
-
-
-insert into db309sd1.account
-VALUES (21, 'jr', 'recruit', 3, 6, 5, 2, 4, 7, 8, 3, 2,54);
-
-
-
-
-UPDATE db309sd1.account
-SET Administrator = 1
-WHERE id=16;
