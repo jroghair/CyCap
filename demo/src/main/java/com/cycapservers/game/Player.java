@@ -4,13 +4,25 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class Player extends GameCharacter {
 	
+	/**
+	 * the password which the client must send for this player to be updated
+	 */
 	protected String password;
+	/**
+	 * the websocket session associated with this player during the gameplay
+	 */
 	protected WebSocketSession session;
+	/**
+	 * the number of the most recent snapshot handled by the server
+	 */
 	protected int highestHandledSnapshot;
+	/**
+	 * the last game state message that has not yet been sent to this client. is null if most recent has been sent
+	 */
 	protected String lastUnsentGameState;
 	
-	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session, PlayerStats stats){
-		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role, stats);
+	public Player(double x, double y, double width, double height, double rotation, double alpha, int team, String role, String client_id, String password, WebSocketSession session){
+		super(0, 0, x, y, width, height, rotation, alpha, client_id, team, role);
 	
 		this.password = password;
 		this.session = session;
@@ -18,8 +30,12 @@ public class Player extends GameCharacter {
 		this.lastUnsentGameState = null;
 	}
 	
+	/**
+	 * called when the player dies. handles everything related to this, such as moving to the graveyard 
+	 */
 	public void die() {
 		this.isDead = true;
+		this.stats.addDeath(); //give player an extra death
 		if(this.item_slot !=  null) {
 			this.item_slot.drop();
 			this.item_slot = null;
@@ -73,6 +89,11 @@ public class Player extends GameCharacter {
 		}
 	}
 	
+	/**
+	 * moves the player based on input snapshot and checks for collision
+	 * @param game - current game state
+	 * @param s - current input snapshot
+	 */
 	private void movePlayer(GameState game, InputSnapshot s) {
 		int movement_code  = 0b0000; //the binary code for which directions the player moving
 
@@ -196,14 +217,41 @@ public class Player extends GameCharacter {
 	}
 
 	@Override
+	/**
+	 * respawns the player into a proper respawn node, resets their weapons and health
+	 */
 	protected void respawn(GameState g) {
-		SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
-		//respawn player
-		this.x = n.getX();
-		this.y = n.getY();
-		//set isDead to false
-		this.isDead = false;
-		//reset ammo and health
-		Utils.setRole(this);
+		System.out.println("trying to respawn player...");
+		if(g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(TeamDeathMatch.class) || g.getClass().equals(GuestCaptureTheFlag.class)) {
+			SpawnNode n = Utils.getRandomSpawn(g.spawns, this.team);
+			//respawn player
+			this.x = n.getX();
+			this.y = n.getY();
+			//set isDead to false
+			this.isDead = false;
+			//reset ammo and health
+			Utils.setRole(this);
+			return;
+		}
+		else if(g.getClass().equals(FreeForAll.class)) {
+			SpawnNode n = Utils.getRandomSpawn(g.spawns);
+			//respawn player
+			this.x = n.getX();
+			this.y = n.getY();
+			//set isDead to false
+			this.isDead = false;
+			//reset ammo and health
+			Utils.setRole(this);
+			return;
+		}
+	}
+	
+	public void leaveGame() {
+		//TODO
+		if(this.item_slot !=  null) {
+			this.item_slot.drop();
+			this.item_slot = null;
+		}
+		//give XP
 	}
 }

@@ -6,7 +6,7 @@ public class GridLockedNode extends Node {
 	private short gridY;
 	
 	public GridLockedNode(short gridX, short gridY) {
-		super((gridX * Utils.GRID_LENGTH) /*+ (Utils.GRID_LENGTH/2)*/, (gridY * Utils.GRID_LENGTH) /*+ (Utils.GRID_LENGTH/2)*/);
+		super((gridX * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2, (gridY * Utils.GRID_LENGTH) + Utils.GRID_LENGTH/2);
 		this.gridX = gridX;
 		this.gridY = gridY;
 	}

@@ -1,11 +1,146 @@
-<h1 id="user"></h1>
-<button><a href="/accounts/friends">Friend's List</a></button>
+<html>
+
+
+<head>
+<ul>
+  <li><a class="active" href="/accounts/chat">Chat</a></li>
+  <li><a href="/game_list">Available Games</a></li>
+  <li><a href="/accounts/profile">Profile</a></li>
+</ul>
+
+</head>
+<h1 id="user"/> 
+
+
+<form>	
+<input type="button" class="button button1"  onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>	
+<input type="button" class="button button1" onclick="location.href='/accounts/friends'" value="Friends List"/>
+</form>
+ 
+ <form>
+ <!--  
+<form th:action="@{/accounts/profile}/{role}"  method="post">
+<input type="button" name="infantry" class="button button1"  value="Infantry"/> -->
+<input type="button" class="button button1" onclick="location.href='/accounts/profile'" value="Overall"/>
+<input type="button" class="button button1" onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
+<input type="button" class="button button1" onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
+<input type="button" class="button button1"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+</form>
+
+<style>
+.button {
+
+    background-color: #4CAF50; /* Green  #4CAF50;*/
+    border: 1px solid #ddd;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    
+}
+.button1:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+#stats {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#stats td, #stats th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#stats tr:nth-child(even){background-color: #f2f2f2;}
+
+#cstats tr:hover {background-color: #ddd;}
+
+#stats th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+
+<body>
+ <table id="stats">
+    <thead>
+      <tr>
+        <th>Kills</th>
+        <th>Deaths</th>
+        <th>Game Wins</th>
+        <th>Game Losses</th>
+        <th>Games Played</th>
+        <th>Flag Grabs</th>
+        <th>Flag Returns</th>
+        <th>Flag Captures</th>
+        <th>Experience</th>
+      </tr>
+    </thead>
+    <tbody>
+		<th:block th:each="profiles : ${profiles}">
+     	 	<tr>
+         		<td th:text="${profiles.kills}">...</td>
+         		<td th:text="${profiles.deaths}">...</td>
+         	    <td th:text="${profiles.gamewins}">...</td> 
+         	    <td th:text="${profiles.gamelosses}">...</td>
+         	    <td th:text="${profiles.gamesplayed}">...</td>
+         	    <td th:text="${profiles.flaggrabs}">...</td>
+         	    <td th:text="${profiles.flagreturns}">...</td>
+         	    <td th:text="${profiles.flagcaptures}">...</td>
+         	    <td th:text="${profiles.experience}">...</td>
+      		</tr>
+   		</th:block>
+	
+
+    </tbody>
+  </table>
+</body>
 <script th:inline="javascript">
 	/*<![CDATA[*/
 	
 	let temp = /*[[${account.getUserID()}]]*/;
-	temp += "\'s Profile Page";
+	temp += "\'s Profile";
 	document.getElementById("user").innerHTML = temp;
 	
 	/*]]>*/
+	
+	
+	
 </script>
+
+</html>

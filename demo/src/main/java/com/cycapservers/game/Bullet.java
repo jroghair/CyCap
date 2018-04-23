@@ -18,10 +18,26 @@ public class Bullet extends Entity {
 	protected long lifeSpan;
 	protected long birthTime;
 	
-	public Bullet(int sprIdx, double startX, double startY, double endX,
-			double endY, double w, double h, double r, double a,
-			double speed, int damage, double variation, GameCharacter p,
-			String entity_id) {
+	/**
+	 * Creates a new bullet entity
+	 * @param sprIdx - sprite index on the bullet image
+	 * @param startX - start x position of the bullet
+	 * @param startY - start y position of the bullet
+	 * @param endX - x position of the mouse (used to calculate direction)
+	 * @param endY - y position of the mouse (used to calculate direction)
+	 * @param w - width of the entity
+	 * @param h - width of the entity
+	 * @param r - rotation of the entity
+	 * @param a - transparency of the entity
+	 * @param speed - movement speed of the bullet in pixels per second
+	 * @param damage - amount of damage the bullet deals upon impact
+	 * @param variation - the deviation from center
+	 * @param p - the owner of the bullet
+	 * @param entity_id - the entity's unique id
+	 */
+	public Bullet(int sprIdx, double startX, double startY, double endX, 
+			double endY, double w, double h, double r, double a, double speed, 
+			int damage, double variation, GameCharacter p, String entity_id) {
 		super(2, sprIdx, startX, startY, w, h, r, a, entity_id);
 		
 		this.birthTime = System.currentTimeMillis();
@@ -69,16 +85,11 @@ public class Bullet extends Entity {
 				}
 			}
 			for(AI_player ai : game.AI_players) {
-				if(ai.equals(this.owner)){
-					continue;
-					
-				}
 				if(Utils.isColliding(this, ai)) {
 					if(ai.team != this.team) {
-						ai.takeDamage(this.damage);
+						ai.takeDamage(this.damage, owner);
 						return true;
 					}
-					
 				}
 			}
 			for(Player p : game.players) {
@@ -87,17 +98,20 @@ public class Bullet extends Entity {
 				}
 				if(Utils.isColliding(this, p)) {
 					if(game.friendlyFire || (p.team != this.team)) {
-						p.takeDamage(this.damage);
+						p.takeDamage(this.damage, this.owner);
 						return true;
-
 					}
-					
 				}
 			}
 		}
 		return false;
 	}
 	
+	/**
+	 * Returns the object data for this bullet for the specified client
+	 * @param client_id - the name of the client who the data is for
+	 * @return the data string of this object
+	 */
 	@Override
 	public String toDataString(String client_id) {
 		String output = "";

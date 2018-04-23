@@ -20,7 +20,7 @@ public class AI_player extends GameCharacter {
 
 	public AI_player(double x, double y, double w, double h, double r, double a, int team, String role, String ai_id,
 			GameState g, PlayerStats stats) {
-		super(0, 0, x, y, w, h, r, a, ai_id, team, role, stats);
+		super(0, 0, x, y, w, h, r, a, ai_id, team, role);
 
 		// mapNode randomNode = getRandomNode(g);
 		// set new location
@@ -34,65 +34,82 @@ public class AI_player extends GameCharacter {
 	}
 
 	public void get_path(GameState g) {
-		System.out.println("updating path: " + this.entity_id);
+		Random r = new Random();
 		/*
 		 * if it has the flag then path to home base if enemy has the flag path
 		 * to them and shoot
 		 */
-//		long start_time = System.currentTimeMillis();
-		Entity target;
-
-		if (this.team == 1) {
-			if (g.team1_flag.grabbed) {// if our flag is grabbed
-				target = g.team1_flag.grabber;
-			} else {
-				if (this.item_slot == g.team2_flag) {
-					// quick fix to target to base
-					Entity e = new Entity(0, 0, (double) g.team1_base.getX(), (double) g.team1_base.getY(), 0.0, 0.0,
-							0.0, 0.0, "");
-					target = e;
+		Entity target = null;
+		// System.out.println("Class for gamestate: " + g.getClass());
+		if (g.getClass().equals(CaptureTheFlag.class) || g.getClass().equals(GuestCaptureTheFlag.class)) {// game
+																											// type
+																											// is
+																											// capture
+			// the flag
+			if (this.team == 1) {
+				if (((CaptureTheFlag) g).team1_flag.grabbed) {// if our flag is
+																// grabbed
+					target = ((CaptureTheFlag) g).team1_flag.grabber;
 				} else {
-					Random r = new Random();
-					if(r.nextInt(10) < 5){
-					target = g.team2_flag;
-					}else{
-						Entity e = new Entity(0, 0, (double) g.team1_base.getX(), (double) g.team1_base.getY(), 0.0, 0.0,
-								0.0, 0.0, "");
+					if (this.item_slot == ((CaptureTheFlag) g).team2_flag) {
+						// quick fix to target to base
+						Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(),
+								(double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 						target = e;
+					} else {
+						if (r.nextInt(10) < 5) {
+							target = ((CaptureTheFlag) g).team2_flag;
+						} else {
+							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(),
+									(double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
+							target = e;
+						}
 					}
 				}
-			}
-		} else {
-			if (g.team2_flag.grabbed) {// if our flag is grabbed
-				target = g.team2_flag.grabber;
 			} else {
-				if (this.item_slot == g.team1_flag) {
-					// quick fix to target to base
-					Entity e = new Entity(0, 0, (double) g.team2_base.getX(), (double) g.team2_base.getY(), 0.0, 0.0,
-							0.0, 0.0, "");
-					target = e;
+				if (((CaptureTheFlag) g).team2_flag.grabbed) {// if our flag is
+																// grabbed
+					target = ((CaptureTheFlag) g).team2_flag.grabber;
 				} else {
-					Random r = new Random();
-					if(r.nextInt(10) < 5){
-					target = g.team1_flag;
-					}else{
-						Entity e = new Entity(0, 0, (double) g.team2_base.getX(), (double) g.team2_base.getY(), 0.0, 0.0,
-								0.0, 0.0, "");
+					if (this.item_slot == ((CaptureTheFlag) g).team1_flag) {
+						// quick fix to target to base
+						Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team2_base.getX(),
+								(double) ((CaptureTheFlag) g).team2_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 						target = e;
+					} else {
+						if (r.nextInt(10) < 5) {
+							target = ((CaptureTheFlag) g).team1_flag;
+						} else {
+							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team2_base.getX(),
+									(double) ((CaptureTheFlag) g).team2_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
+							target = e;
+						}
 					}
 				}
 			}
 		}
-//		long end_time = System.currentTimeMillis();
-		
+		if (g.getClass().equals(FreeForAll.class)) {
+			// path to either a power up or enemy player, for now it will just
+			// be to a player
+			while (target != this) {
+				target = g.players.get(r.nextInt(g.players.size()));
+			}
+		}
+		if (g.getClass().equals(TeamDeathMatch.class)) {
+			while (target != this) {
+				target = g.players.get(r.nextInt(g.players.size()));
+			}
+		}
+		// long end_time = System.currentTimeMillis();
+
 		path_gen = new AI_path_generator(this, g);
 		if (this.moving && g.players.size() > 0) {
 			this.path = path_gen.get_a_star_path(this, target);
 		}
 		this.new_path = true;
 		this.last_path_update_time = System.currentTimeMillis();
-		
-//		System.out.println("get path: " + (end_time - start_time));
+
+		// System.out.println("get path: " + (end_time - start_time));
 	}
 
 	public double get_distance_to_target() {
@@ -104,10 +121,8 @@ public class AI_player extends GameCharacter {
 	}
 
 	public void update(GameState g, InputSnapshot s) {
-		//System.out.println(g.game_type);
-//		long total_start = System.currentTimeMillis();
 		Random r = new Random();
-		
+
 		if (this.isDead) {
 			if ((System.currentTimeMillis() - this.lastDeathTime) > g.respawnTime) {
 				this.respawn(g);
@@ -121,8 +136,8 @@ public class AI_player extends GameCharacter {
 					}
 				}
 			}
-//			long shoot_start = System.currentTimeMillis();
-			
+			// long shoot_start = System.currentTimeMillis();
+
 			if (System.currentTimeMillis() - this.last_shoot_time > 500) {
 				if (r.nextDouble() <= this.firing_chance) {
 
@@ -136,32 +151,11 @@ public class AI_player extends GameCharacter {
 					 */
 
 					for (Player p : g.players) {
-						if (p.team == 2 && this.team == 1) {// on enemy team
-							double distance = Utils.distanceBetween(this, p);// getting
-																				// distance
-//							System.out.println("Distance between the two: " + distance);
-							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								//System.out.println("Found a player to shoot at...");
-								// form new snap shot and fire weapon
+						if (p.team != this.team) {
+							double distance = Utils.distanceBetween(this, p);
+							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g) && p.isDead == false) {
 								InputSnapshot ai_snapshot = new InputSnapshot(
-										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
-								if (this.currentWeapon.ammo_in_clip > 1) {
-									this.currentWeapon.update(this, ai_snapshot, g);
-									this.last_shoot_time = System.currentTimeMillis();
-									break;
-								} else {
-									this.currentWeapon.reload();
-									break;
-								}
-							}
-						} else if (p.team == 1 && this.team == 2) {
-							double distance = Utils.distanceBetween(this, p);// getting
-							// distance
-							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								//System.out.println("Found a player to shoot at...");
-								// form new snap shot and fire weapon
-								InputSnapshot ai_snapshot = new InputSnapshot(
-										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
+										"::test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
 								if (this.currentWeapon.ammo_in_clip > 1) {
 									this.currentWeapon.update(this, ai_snapshot, g);
 									this.last_shoot_time = System.currentTimeMillis();
@@ -174,32 +168,11 @@ public class AI_player extends GameCharacter {
 						}
 					}
 					for (AI_player p : g.AI_players) {
-						if (p.team == 2 && this.team == 1 && System.currentTimeMillis() - this.last_shoot_time > 500) {// on enemy team
-							double distance = Utils.distanceBetween(this, p);// getting
-																				// distance
-//							System.out.println("Distance between the two: " + distance);
-							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								//System.out.println("Found a player to shoot at...");
-								// form new snap shot and fire weapon
+						if (p.team != this.team) {
+							double distance = Utils.distanceBetween(this, p);
+							if (distance <= (9 * 32) && Utils.checkLineOfSight(this, p, g) && p.isDead == false) {
 								InputSnapshot ai_snapshot = new InputSnapshot(
-										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
-								if (this.currentWeapon.ammo_in_clip > 1) {
-									this.currentWeapon.update(this, ai_snapshot, g);
-									this.last_shoot_time = System.currentTimeMillis();
-									break;
-								} else {
-									this.currentWeapon.reload();
-									break;
-								}
-							}
-						} else if (p.team == 1 && this.team == 2) {
-							double distance = Utils.distanceBetween(this, p);// getting
-							// distance
-							if (distance <= (7 * 32) && Utils.checkLineOfSight(this, p, g)) {
-								//System.out.println("Found a player to shoot at...");
-								// form new snap shot and fire weapon
-								InputSnapshot ai_snapshot = new InputSnapshot(
-										":test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
+										"::test:" + p.x + ":" + p.y + ":0.0:0.0:true:true:::0:0.0");
 								if (this.currentWeapon.ammo_in_clip > 1) {
 									this.currentWeapon.update(this, ai_snapshot, g);
 									this.last_shoot_time = System.currentTimeMillis();
@@ -214,9 +187,10 @@ public class AI_player extends GameCharacter {
 				}
 			}
 
-//			long shoot_end = System.currentTimeMillis();
-//			System.out.println("total time for shooting update: " + (shoot_end - shoot_start));
-			
+			// long shoot_end = System.currentTimeMillis();
+			// System.out.println("total time for shooting update: " +
+			// (shoot_end - shoot_start));
+
 			// get initial path
 			if (this.last_path_update_time == 0) {
 				get_path(g);
@@ -224,14 +198,17 @@ public class AI_player extends GameCharacter {
 
 			// if its been 2.5 seconds or the path is almost done update the
 			// path.
-			if (this.path != null && (System.currentTimeMillis() - this.last_path_update_time) > (5000 + r.nextInt(1000) - 500)
-					|| (this.get_distance_to_target() < 10
-							&& (System.currentTimeMillis() - this.last_path_update_time) > (1000 + r.nextInt(200) - 100))) {
+			if (this.path != null
+					&& (System.currentTimeMillis() - this.last_path_update_time) > (5000 + r.nextInt(1000) - 500)
+					|| (this.get_distance_to_target() < 10 && (System.currentTimeMillis()
+							- this.last_path_update_time) > (1000 + r.nextInt(200) - 100))) {
 				get_path(g);
 			}
 
+			//if its moving and the path exists
 			if (this.moving && path != null) {
-				if (this.new_path && (System.currentTimeMillis() - temp_move_time) > 150) {
+				//if there is a new path
+				if (this.new_path && (System.currentTimeMillis() - temp_move_time) > (150.0/100.0 * this.speed)) {
 					this.cur_p_node = path.size() - 1;
 					this.x = path.get(cur_p_node).x;
 					this.y = path.get(cur_p_node).y;
@@ -241,13 +218,17 @@ public class AI_player extends GameCharacter {
 																		// of
 																		// movement
 				}
+				
 				if ((System.currentTimeMillis() - temp_move_time) > 0 && this.cur_p_node >= 0 && !this.new_path) {
-					// System.out.println("waited " +
-					// (System.currentTimeMillis()
-					// -temp_move_time) + " milliseconds to move");
 					while (this.cur_p_node >= path.size()) {
 						this.cur_p_node--;// just for safety
 					}
+					
+					
+					
+					
+					
+					
 					this.x = path.get(cur_p_node).x;
 					this.y = path.get(cur_p_node).y;
 					this.cur_p_node--;
@@ -257,8 +238,9 @@ public class AI_player extends GameCharacter {
 				}
 			}
 		}
-//		long total_end = System.currentTimeMillis();
-//		System.out.println("total time for update function: " + (total_end - total_start));
+		// long total_end = System.currentTimeMillis();
+		// System.out.println("total time for update function: " + (total_end -
+		// total_start));
 	}
 
 	@Override
@@ -283,23 +265,24 @@ public class AI_player extends GameCharacter {
 	public mapNode getRandomNode(GameState g) {
 		boolean trav = false;
 		Random rangen = new Random();
-		int randi = rangen.nextInt(g.map.size());
-		int randj = rangen.nextInt(g.map.get(0).size());
+		int randi = rangen.nextInt(g.ai_map.size());
+		int randj = rangen.nextInt(g.ai_map.get(0).size());
 		while (!trav) {
-			randi = rangen.nextInt(g.map.size());
-			randj = rangen.nextInt(g.map.get(0).size());
-			if (g.map.get(randi).get(randj).node_trav == true) {
+			randi = rangen.nextInt(g.ai_map.size());
+			randj = rangen.nextInt(g.ai_map.get(0).size());
+			if (g.ai_map.get(randi).get(randj).node_trav == true) {
 				trav = true;
 			}
 		}
-		return g.map.get(randi).get(randj);
+		return g.ai_map.get(randi).get(randj);
 	}
 
 	@Override
 	protected void respawn(GameState g) {
 		// re-spawn player
-		this.x = 64;
-		this.y = 64;
+		SpawnNode n = Utils.getRandomSpawn(g.spawns, team);
+		this.x = n.getX();
+		this.y = n.getY();
 		// set isDead to false
 		this.isDead = false;
 		// reset ammo and health

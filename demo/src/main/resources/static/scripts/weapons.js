@@ -77,7 +77,8 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 	this.reload = function(){
 		let bullets_to_refill = this.mag_size - this.ammo_in_clip;
 		if(this.extra_ammo == 0){
-			console.log("I cannot reload");
+			//console.log("I cannot reload");
+			//TODO: play a sound
 		}
 		else if(this.extra_ammo < bullets_to_refill){
 			this.ammo_in_clip += this.extra_ammo;
@@ -90,15 +91,30 @@ function Weapon(name, ft, bt, damage, rate, bullet_speed, mag_size, extra_mags, 
 	}
 }
 
+function SmokeGrenade(rate, mag_size, extra_mags, reload_time){
+	this.base = Weapon;
+	this.base("Smoke", "single", 2, 0, rate, 0, mag_size, extra_mags, reload_time, 0, smoke_icon); 
+	
+	this.fire = function(player, snapshot){
+		this.ammo_in_clip--; //lose one bullet from the clip
+	}
+}
+
+function MortarWeapon(rate, mag_size, extra_mags, reload_time){
+	this.base = Weapon;
+	this.base("Mortar", "single", 2, 0, rate, 0, mag_size, extra_mags, reload_time, 0, mortar_icon); 
+	
+	this.fire = function(player, snapshot){
+		this.ammo_in_clip--; //lose one bullet from the clip
+	}
+}
+
 function Pistol(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation){
 	this.base = Weapon;
 	this.base("Pistol", "single", 2, damage, rate, bullet_speed, mag_size, extra_mags, reload_time, shot_variation, pistol_icon); 
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
 
@@ -108,9 +124,6 @@ function Shotgun(damage, rate, bullet_speed, mag_size, extra_mags, reload_time, 
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
 
@@ -132,14 +145,8 @@ function AutomaticGun(name, damage, rate, bullet_speed, mag_size, extra_mags, re
 	
 	this.fire = function(player, snapshot){
 		this.ammo_in_clip--; //lose one bullet from the clip
-		//make bullet sound
-		let sound_test = new SoundEmitter(gunshot1, false, 0, 0, 1.0);
-		sound_test.play();
 	}
 }
-
-//UNUSED WEAPONS
-let smg = new AutomaticGun("SMG", 5, 100, 600, 40, 4, 500, 0.1, smg_icon);
 
 /////DIFFERENT TYPES OF AMMUNITION/////
 function Bullet(width, height, sprIdx, startX, startY, endX, endY, damage, speed, shot_variation) {
@@ -206,12 +213,6 @@ function ArtilleryShell(width, height, start_x, start_y, end_x, end_y, img, team
 			let temp_multiplier = 0.0907*(-9.8*total_time*total_time + this.v_init*total_time) + 1
 			this.dWidth = this.start_width * temp_multiplier;
 			this.dHeight = this.start_height * temp_multiplier;
-		}
-		else{
-			//place mask
-			masks.push(new GroundMask(this.blast_img, Math.floor(this.end_x/grid_length), Math.floor(this.end_y/grid_length), 3, 1));
-			part_fx.push(new ParticleEffect(boom_ss, this.end_x, this.end_y, grid_length*2, grid_length*2, 74, 3000));
-			//TODO: deal damage
 		}
 	}
 }

@@ -35,9 +35,4 @@ public class mapNode {
 		// TODO not important
 		// System.out.println(this.previous);
 	}
-	
-	public String toString(){
-		return "x: " + this.x + " y: " +  this.y + " trave: " + this.node_trav;
-	}
-	
 }

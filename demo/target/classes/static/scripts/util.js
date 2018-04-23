@@ -16,15 +16,6 @@ let fog_norm, fog_close, fog_far; //Fog of War image data
 
 let serverSocket = {}; //the web socket to connect to the server with
 
-
-//draws a complete border given a grid height & height. it starts at an X & Y grid position
-function placeBorder(width, height, x, y){
-	wallLine(x, y, width, "x");
-	wallLine(x, height + y - 1, width, "x");
-	wallLine(x, y + 1, height - 2, "y");
-	wallLine(width + x - 1, y + 1, height - 2, "y");
-}
-
 function getWeightedIndex(list){
 	let temp = Math.random();
 	let sum = 0;
@@ -61,24 +52,6 @@ function distanceBetween(x1, y1, x2, y2){
 
 function distanceBetweenEntities(ent1, ent2){
 	return Math.sqrt(Math.pow(ent1.x - ent2.x, 2) + Math.pow(ent1.y - ent2.y, 2));
-}
-
-//takes in a starting grid coordinate, a length of the wall line, and which axis it will follow("x" or "y")
-//this will travel in the positive direction of which ever axis you give it
-function wallLine(start_x, start_y, length, axis){
-	if(axis === "x"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x + i, start_y));
-		}
-	}
-	else if(axis === "y"){
-		for(var i = 0; i < length; i++){
-			walls.push(new Wall(wall_image, start_x, start_y + i));
-		}
-	}
-	else{
-		return;
-	}
 }
 
 //Draws three F.O.W. images and stores them in 3 variables for later drawing
@@ -201,12 +174,11 @@ function toDegrees(angle) {
   return (angle * (180.0 / Math.PI));
 }
 
-function connectToServer(role){
+function connectToServer(){
 	serverSocket = new WebSocket('ws://' + window.location.host + '/my-websocket-endpoint');
 	serverSocket.onopen = function() {
 		//do some initial handshaking, sending back and forth information like the password and starting game state, etc
-		sendMessageToServer("join:" + gameState.player.client_id + ":" + role);
-		requestAnimationFrame(run); //more synchronized method similar to setInterval
+		sendMessageToServer("join:" + client_id);
 	};
 
 	serverSocket.onmessage = message_handler;
@@ -221,9 +193,11 @@ function sendMessageToServer(msg){
 function message_handler(msg){
 	let temp = msg.data.split(":");
 	if(temp[0] == "join"){
-		gameState.pw = temp[1];
-		temp.splice(0, 2)
-		gameState.addWalls(temp);
+		setup(temp);
+		requestAnimationFrame(run); //more synchronized method similar to setInterval
+	}
+	else if(temp[0] == "endgame"){
+		
 	}
 	else{
 		gameState.receiveGameState(msg.data);

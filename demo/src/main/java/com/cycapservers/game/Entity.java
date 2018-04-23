@@ -12,9 +12,9 @@ public class Entity {
 	
 	protected double y;
 	
-	protected double drawWidth;
+	private double drawWidth;
 	
-	protected double drawHeight;
+	private double drawHeight;
 	
 	protected double collision_radius;
 	
@@ -22,8 +22,7 @@ public class Entity {
 	
 	protected double alpha;
 	
-	public Entity(int id, int sprIdx, double x, double y, double w, 
-			double h, double r, double a, String entity_id){
+	public Entity(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id){
 		this.imageId = id;
 		this.spriteIndex = sprIdx;
 		this.x = x;
@@ -43,8 +42,8 @@ public class Entity {
 		output += spriteIndex + ",";
 		output += (int) x + ",";
 		output += (int) y + ",";
-		output += (int) drawWidth + ",";
-		output += (int) drawHeight + ",";
+		output += drawWidth + ",";
+		output += drawHeight + ",";
 		output += rotation + ",";
 		output += alpha;
 		return output;
