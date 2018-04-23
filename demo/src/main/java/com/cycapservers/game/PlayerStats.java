@@ -181,7 +181,7 @@ public class PlayerStats {
 			endgame_message += level;
 		}
 		else if(this.game_type.equals(TeamDeathMatch.class)){
-			//calculate score
+			//TODO: calculate score
 		}
 		else if(this.game_type.equals(FreeForAll.class)){
 			
