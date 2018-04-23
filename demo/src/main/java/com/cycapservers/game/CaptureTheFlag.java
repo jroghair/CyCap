@@ -198,9 +198,9 @@ public class CaptureTheFlag extends GameState {
 		return output; //RETURN THE MESSAGE
 	}
 	
-	public void playerJoin(String client_id, WebSocketSession session, String role) {
-		int team;
-		//synchronized {
+	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
+		//int team;
+		/*synchronized {
 			if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
 				team = Utils.RANDOM.nextInt(2) + 1;
 			}
@@ -212,7 +212,7 @@ public class CaptureTheFlag extends GameState {
 				team = 1;
 				this.playersOnTeam1++;
 			}
-		//}
+		*/
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);

@@ -20,5 +20,6 @@ public class GuestCaptureTheFlag extends CaptureTheFlag {
 	
 	public void endGame(int winner) {
 		started = false;
+		//TODO: make this so it repeats the game over and over
 	}
 }

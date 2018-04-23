@@ -47,6 +47,12 @@ public class Lobby {
 	 */
 	private final int startGap = 4;
 	
+	private int team1;
+	
+	private int team2;
+	
+	private int freeTeam;
+	
 	/**
 	 * Takes in the game mode that the lobby is going to represent.
 	 * @param gamemode
@@ -146,15 +152,16 @@ public class Lobby {
 	 * Sends to all people in the lobby all of the names of people in the lobby.
 	 * @param session
 	 * A session Representing the person getting sent the message.
+	 * @param id
+	 * A String Representing the Game id.
 	 * @throws IOException
 	 */
 	public void GivePlayerList(WebSocketSession session) throws IOException{
-			String output = "player";
-			for(int i = 0; i < curSize; i++){
-				output += ":" + players.get(i).client_id + ":" + players.get(i).role;
-			}
-			session.sendMessage(new TextMessage(output));
-		return;
+		String output = "player";
+		for(int i = 0; i < curSize; i++){
+			output += ":" + players.get(i).client_id + ":" + players.get(i).role + ":" + players.get(i).team;
+		}
+		session.sendMessage(new TextMessage(output));
 	}
 	
 	public void ChangePlayerClass(WebSocketSession session, String id, String role){
@@ -191,8 +198,25 @@ public class Lobby {
 	 * @throws IOException
 	 */
 	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
-		players.add(new IncomingPlayer(p, "recruit", s));
+		int team = 1;
+		if(this.game.getClass().equals(CaptureTheFlag.class) || this.game.getClass().equals(TeamDeathMatch.class)){
+			if(team1 == 0 && team2 == 0){
+				team1++;
+				team = 1;
+			}
+			else if(team1 < team2){
+				team1++;
+				team = 1;
+			}
+			else{
+				team2++;
+				team = 2;
+			}
+		}
+		players.add(new IncomingPlayer(p, "recruit", s, team)); //TODO: this needs to use the role that was chosen on the lobby page
 		this.curSize++;
+		
+		////////////////////////
 		
 		for(IncomingPlayer i : players){
 			this.GivePlayerList(i.session);
@@ -218,6 +242,7 @@ public class Lobby {
 			if(i.session.equals(s)) {
 				players.remove(i);
 				this.curSize--;
+				//TODO: decrement the correct team
 				this.t.cancel();
 				this.t = new Timer();
 				this.t.schedule(newTask(), (240000 /(curSize + startGap)));

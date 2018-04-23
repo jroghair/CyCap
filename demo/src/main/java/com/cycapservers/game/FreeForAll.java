@@ -189,7 +189,7 @@ public class FreeForAll extends GameState {
 	}
 
 	@Override
-	public void playerJoin(String client_id, WebSocketSession session, String role) {
+	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
 		// TODO Auto-generated method stub
 		
 	}

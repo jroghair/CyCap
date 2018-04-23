@@ -116,6 +116,15 @@ public class HomepageController {
     	}
     }
     
+    @GetMapping("/logout")
+    public String logout(Model model, @ModelAttribute("account") Account account){
+    	account.setUserID(null);
+    	return "main_page";
+    	
+    }
+    
+    //TODO: fix the login checks on the profile pages
+    
     @RequestMapping(value = "/accounts/register", method = RequestMethod.GET)
     public ModelAndView register(Model model, HttpServletRequest request){
     	logger.info("Entered into get accounts registration controller Layer");

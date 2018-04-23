@@ -82,8 +82,8 @@ function message_handler(msg){
 	if(temp[0] == "player"){
 		document.getElementById("play").innerHTML = "";
 		players = 0;
-		for(let i = 1; i < temp.length; i+=2){
-			updatePlayerList(temp[i], temp[i + 1], 1);
+		for(let i = 1; i < temp.length; i+=3){
+			updatePlayerList(temp[i], temp[i + 1], temp[i + 2]);
 			players++;
 		}
 		document.getElementById("players").innerHTML = "Number of Players: " + players;
@@ -91,10 +91,6 @@ function message_handler(msg){
 	else if(temp[0] == "joined"){
 		gameId = temp[1];
 		console.log(gameId);
-	}
-	else if(temp[0] == "clean"){
-		document.getElementById("play").innerHTML = "";
-		players = 0;
 	}
 	else if(temp[0] == "play"){
 		window.location.href = "play";

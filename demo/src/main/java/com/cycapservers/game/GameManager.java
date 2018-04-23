@@ -73,7 +73,7 @@ public class GameManager {
 				}
 			}
 			if(!found){
-				games.get(0).playerJoin(arr[1], session, "recruit"); //the player can only play as the recruit in the guest game
+				games.get(0).playerJoin(arr[1], session, "recruit", 1); //the player can only play as the recruit in the guest game
 			}
 		}
 		

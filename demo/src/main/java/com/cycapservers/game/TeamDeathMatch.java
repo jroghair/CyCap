@@ -182,9 +182,8 @@ public class TeamDeathMatch extends GameState {
 	}
 
 	@Override
-	public void playerJoin(String client_id, WebSocketSession session, String role) {
-		int team;
-		if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
+	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
+		/*if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
 			team = Utils.RANDOM.nextInt(2) + 1;
 		}
 		else if(this.playersOnTeam1 > this.playersOnTeam2) {
@@ -195,7 +194,7 @@ public class TeamDeathMatch extends GameState {
 			team = 1;
 			this.playersOnTeam1++;
 		}
-		//}
+		//}*/
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);
