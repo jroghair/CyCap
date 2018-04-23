@@ -1,6 +1,7 @@
 package com.cycapservers.account;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -14,148 +15,81 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-/**
- * Account Entity class for database calls to the Account table
- * 
- * @author Jeremy Roghair
- */
 @Entity
 @Table(name = "account")
 public class Account {
-
-	/**
-	 * Id is the primary key of the account table within the database. This
-	 * field is auto generated within the database.
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id = 0;
 
-	/**
-	 * UserID is the users id that is set when registering a new account. This
-	 * key is a foreign key on the Friends and Profile tables. This field cannot
-	 * be null.
-	 */
 	@NotNull
 	// @GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "UserID")
 	private String userID;
-
-	/**
-	 * Password is the users password that is set when registering a new
-	 * account. This field cannot be null.
-	 */
 	@NotNull
 	@Column(name = "Password")
 	private String password;
-
-	/**
-	 * Email is the users email that is set when registering a new account. This
-	 * field cannot be null.
-	 */
 	@NotNull
 	@Column(name = "Email")
 	private String email;
-
-	/**
-	 * Creation_Date is the date when a user creates their account when
-	 * registering an new account. This field cannot be null.
-	 */
 	@NotNull
 	@Column(name = "Creation_Date")
 	// private DateTimeFormatter dateOfCreation;
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date dateOfCreation;
 
-	// moderator true/false
-	// developer true/false
+	@NotNull
+	@Column(name = "Member")
+	private int member;
 
-	// add account level boolean values for account levels
-	// admin true/false, moderator true/false, member true/false
-	// moderator deals with player reports, banning players etc
-	// developer
+	@NotNull
+	@Column(name = "Administrator")
+	private int administrator;
 
-	/**
-	 * Default constructor, sets date of creation automatically.
-	 */
+	@NotNull
+	@Column(name = "Developer")
+	private int developer;
+
 	public Account() {
 		this.setDateOfCreation();
+		this.member = 1;
+		/*
+		 * this.developer = 0; this.administrator = 0;
+		 */
 	}
 
-	/**
-	 * Getter Method for UserID
-	 * 
-	 * @return userID
-	 */
 	public String getUserID() {
 
 		return this.userID;
 	}
 
-	/**
-	 * Setter Method for UserID
-	 * 
-	 * @param userID
-	 * @return void
-	 */
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
 
-	/**
-	 * Getter Method for Password
-	 * 
-	 * @return password
-	 */
 	public String getPassword() {
 		return this.password;
 	}
 
-	/**
-	 * Setter Method for Password
-	 * 
-	 * @param password
-	 * @return void
-	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	/**
-	 * Getter Method for Email
-	 * 
-	 * @return email
-	 */
 	public String getEmail() {
 		return this.email;
 	}
 
-	/**
-	 * Setter Method for Email
-	 * 
-	 * @param email
-	 * @return void
-	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	/**
-	 * Getter Method for DateOfCreation
-	 * 
-	 * @return dateOfCreation
-	 */
-	public Date getDateOfCreation() {
+	public String getDateOfCreation() {
 
-		return dateOfCreation;
+		// return dateOfCreation;
+		return new SimpleDateFormat("MM-dd-yyyy").format(dateOfCreation);
 	}
 
-	/**
-	 * Setter Method for DateOfCreation
-	 * 
-	 * @return void
-	 */
 	public void setDateOfCreation() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 		LocalDate localDate = LocalDate.now();
@@ -164,4 +98,29 @@ public class Account {
 		this.dateOfCreation = dat;
 	}
 
+	public int getMember() {
+		return member;
+	}
+
+	public void setMember(int member) {
+		this.member = member;
+	}
+
+	public int getAdministrator() {
+		System.out.println(this.userID);
+		return administrator;
+	}
+
+	public void setAdministrator(int administrator) {
+		this.administrator = administrator;
+	}
+
+	public int getDeveloper() {
+		System.out.println(this.userID);
+		return developer;
+	}
+
+	public void setDeveloper(int developer) {
+		this.developer = developer;
+	}
 }

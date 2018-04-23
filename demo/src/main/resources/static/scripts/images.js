@@ -38,10 +38,18 @@ let shield_potion = new Image();
 shield_potion.src = "res/images/shield_potion.png";
 shield_potion.sprites = [{x:0, y:0, h:256, w:256}];
 
+let ammo_pack = new Image();
+ammo_pack.src = "res/images/ammo_box.png";
+ammo_pack.sprites = [{x:0, y:0, w:128, h:128}];
+
+let health_pack = new Image();
+health_pack.src = "res/images/health_pack.png";
+health_pack.sprites = [{x:0, y:0, w:128, h:128}];
+
 let color_boxes = new Image();
 color_boxes.src = "res/images/colors.png";
 color_boxes.sprites = [];
-generateSpriteSheetData(2, 2, 4, 2, color_boxes);
+generateSpriteSheetData(4, 4, 4, 2, color_boxes);
 					  
 let item_frame = new Image();
 item_frame.src = "res/images/item_slot_frame.png";
@@ -122,12 +130,8 @@ flags_ss.src = "res/images/flags.png";
 flags_ss.sprites = [{x:0, y:0, w:128, h:128}, {x:128, y:0, w:128, h:128}, {x:256, y:0, w:128, h:128},
                     {x:0, y:128, w:128, h:128}, {x:128, y:128, w:128, h:128}, {x:256, y:128, w:128, h:128}];
 					
-let font_ss = new Image();
-font_ss.src = "res/images/font_ss.png";
-font_ss.sprites = [];
-generateSpriteSheetData(32, 32, 16, 16, font_ss);
-					
-let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code: 3, img:speed_potion_ss}];
+let image_codes = [{code:0, img:player_images}, {code:1, img:enemy_image}, {code:2, img:bullet_image}, {code:3, img:speed_potion_ss},
+				   {code:4, img:flags_ss}, {code:5, img:ammo_pack}, {code:6, img:health_pack}, {code:7, img:boom_ss}];
 
 function findImageFromCode(code){
 	for(let i = 0; i < image_codes.length; i++){
@@ -138,6 +142,7 @@ function findImageFromCode(code){
 }
 
 function generateSpriteSheetData(pHeight, pWidth, cols, rows, img){
+	img.sprites = [];
 	for(let i = 0; i < rows; i++){
 		for(let j = 0; j < cols; j++){
 			img.sprites.push({x:(pWidth*j), y:(pHeight*i), w:pWidth, h:pHeight});

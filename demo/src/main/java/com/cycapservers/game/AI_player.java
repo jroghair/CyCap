@@ -126,16 +126,16 @@ public class AI_player extends GameCharacter {
 	public mapNode getRandomNode(GameState g) {
 		boolean trav = false;
 		Random rangen = new Random();
-		int randi = rangen.nextInt(g.map.size());
-		int randj = rangen.nextInt(g.map.get(0).size());
+		int randi = rangen.nextInt(g.ai_map.size());
+		int randj = rangen.nextInt(g.ai_map.get(0).size());
 		while (!trav) {
-			randi = rangen.nextInt(g.map.size());
-			randj = rangen.nextInt(g.map.get(0).size());
-			if (g.map.get(randi).get(randj).node_trav == true) {
+			randi = rangen.nextInt(g.ai_map.size());
+			randj = rangen.nextInt(g.ai_map.get(0).size());
+			if (g.ai_map.get(randi).get(randj).node_trav == true) {
 				trav = true;
 			}
 		}
-		return g.map.get(randi).get(randj);
+		return g.ai_map.get(randi).get(randj);
 	}
 
 	@Override

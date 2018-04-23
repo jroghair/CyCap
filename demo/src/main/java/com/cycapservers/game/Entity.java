@@ -12,9 +12,9 @@ public class Entity {
 	
 	protected double y;
 	
-	protected double drawWidth;
+	private double drawWidth;
 	
-	protected double drawHeight;
+	private double drawHeight;
 	
 	protected double collision_radius;
 	
@@ -42,8 +42,8 @@ public class Entity {
 		output += spriteIndex + ",";
 		output += (int) x + ",";
 		output += (int) y + ",";
-		output += (int) drawWidth + ",";
-		output += (int) drawHeight + ",";
+		output += drawWidth + ",";
+		output += drawHeight + ",";
 		output += rotation + ",";
 		output += alpha;
 		return output;
@@ -122,11 +122,4 @@ public class Entity {
 	public void updateCollision_radius() {
 		collision_radius = Utils.distanceBetween(x, y, x + drawWidth/2, y + drawHeight/2);
 	}
-
-	public String getEntity_id() {
-		return entity_id;
-	}
-
-
-	
 }

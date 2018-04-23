@@ -60,14 +60,36 @@ public abstract class Weapon{
 		this.ammo_in_clip = w.ammo_in_clip;
 		this.extra_ammo = w.extra_ammo;
 		this.max_ammo_refill = w.max_ammo_refill;
+		this.shot_sound = w.shot_sound;
 	}
 	
+	/**
+	 * updates important data about this weapon
+	 * @param p - the player who is shooting the bullet
+	 * @param s - the input snapshot which created this bullet
+	 * @param g - the current game state
+	 */
 	public abstract void update(Player p, InputSnapshot s, GameState g);
 	
+	/**
+	 * checks to see if the weapon is to be fired
+	 * @param p - the player who is shooting the bullet
+	 * @param s - the input snapshot which created this bullet
+	 * @param g - the current game state
+	 */
 	public abstract void checkFire(Player p, InputSnapshot s, GameState g);
 	
+	/**
+	 * fires a new bullet
+	 * @param p - the player who is shooting the bullet
+	 * @param s - the input snapshot which created this bullet
+	 * @param g - the current game state
+	 */
 	public abstract void fire(Player p, InputSnapshot s, GameState g);
 	
+	/**
+	 * reloads the weapon
+	 */
 	public void reload() {
 		int bullets_to_refill = this.mag_size - this.ammo_in_clip;
 		if(this.extra_ammo == 0){

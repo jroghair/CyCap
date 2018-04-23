@@ -2,10 +2,11 @@
 <html>
 
 <head>
-<ul>
+<ul class="sticky" >
   <li><a class="active" href="/accounts/chat">Chat</a></li>
   <li><a href="/game_list">Available Games</a></li>
   <li><a href="/accounts/profile">Profile</a></li>
+  <li><a id="admin" href="/accounts/AdminControls">Administrator Controls</a></li>
 </ul>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 
@@ -14,6 +15,13 @@
 <h1> CyCap LeaderBoards</h1>
 
 <style>
+ul.sticky  {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    border: 2px solid #4CAF50;
+}
+
 #myInput {
   background-image: url(https://www.w3schools.com/css/searchicon.png);
   background-position: 10px 12px;
@@ -97,10 +105,12 @@ li a:hover {
 <input type='text' id='filter' />
 <button id='btnFilter'>Go</button> 
  -->
+ 
  <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/> 
  <input type="button" class="button button1" id="Infantry" th:onclick= "'javascript:infantry(\''+'infantry'+'\');'" value="Infantry Rankings"/> 
  <input type="button" class="button button1" id="recruit" th:onclick= "'javascript:recruit(\''+'recruit'+'\');'" value="Recruit Rankings"/>
  <input type="button"  class="button button1" id="scout" th:onclick= "'javascript:scout(\''+'scout'+'\');'" value="Scout Rankings"/>
+  <input type="button"  class="button button1" id="scout" th:onclick= "'javascript:artillery(\''+'artillery'+'\');'" value="Artillery Rankings"/>
   
 <script th:inline="javascript">
 	function playerSearch(){
@@ -199,6 +209,30 @@ li a:hover {
 </script>
 
 
+<script th:inline="javascript">
+	function artillery(s){
+    /*<![CDATA[*/
+    var filter = s.toUpperCase();
+    console.log(filter);
+    var table = document.getElementById("stats");
+    var tr = table.getElementsByTagName("tr");
+    var length = tr.length;
+    
+    for(i=1;i<length;i++){
+    	var a = tr[i].getElementsByTagName("td")[1];
+		console.log(a);
+    	if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+  
+         
+    }
+    /*]]>*/
+	}
+</script>
+
 <script>
 function sortTableString(n) {
     /*<![CDATA[*/
@@ -290,7 +324,7 @@ function sortTableNumeric(n) {
 <body>
  <table id="stats">
     <thead>
-      <tr>
+      <tr class="sticky" >
       	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
       	<th th:onclick="'javascript:sortTableString(1);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Character Class</th>
       	<th th:onclick="'javascript:sortTableNumeric(2);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Level</th>

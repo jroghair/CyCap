@@ -1,11 +1,8 @@
-function SoundEmitter(src, is_looping, x, y, start_vol){
+function SoundEmitter(src, is_looping, x, y){
 	this.x = x;
 	this.y = y;
 	this.sound = src.cloneNode();
-	this.sound.volume = start_vol;
-	if(is_looping == true){
-		this.sound.loop = true;
-	}
+	this.sound.loop = is_looping;
     this.sound.style.display = "none";
     document.body.appendChild(this.sound);
 	
@@ -20,6 +17,7 @@ function SoundEmitter(src, is_looping, x, y, start_vol){
 	this.update = function(){
 		this.sound.volume = this.getVolume();
 	}
+	
 	this.getVolume = function(){
 		let distance = distanceBetween(gameState.player.x, gameState.player.y, this.x, this.y) / grid_length;
 		if(distance > 16){
@@ -29,6 +27,12 @@ function SoundEmitter(src, is_looping, x, y, start_vol){
 			return Math.min(0.946*Math.exp(-0.48*distance), 1.0);
 		}
 	}
+	
+	this.sound.volume = this.getVolume();
+}
+
+function SoundFactory(){
+	this.sounds = [];
 }
 
 let gunshot1 = document.createElement("audio");

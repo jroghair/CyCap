@@ -6,26 +6,135 @@
   <li><a class="active" href="/accounts/chat">Chat</a></li>
   <li><a href="/game_list">Available Games</a></li>
   <li><a href="/accounts/profile">Profile</a></li>
+  <li><a id="admin" href="/accounts/AdminControls">Administrator Controls</a></li>
 </ul>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous"/>
+
 </head>
-<h1 id="user"/> 
 
 
 <form>	
-<input type="button" class="button button1" onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>
-<input type="button" class="button button1"  onclick="location.href='/accounts/friends'" value="Friends List"/>
-</form>
- 
- 
- 
-<form>
-<input type="button" class="button button1" onclick="location.href='/accounts/profile'" value="Overall"/>
-<input type="button" class="button button1"  onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
-<input type="button" class="button button1" onclick="location.href='/accounts/profileRecruit'" value="Recruit"/>
-<input type="button" class="button button1"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input type="button" class="button button1 Lbutton"  onclick="location.href='/accounts/leaderboards'" value="LeaderBoards"/>	
+<input type="button" class="button button1 Fbutton" onclick="location.href='/accounts/friends'" value="Friends List"/>
 </form>
 
+<span class="tab"/>
+<span class="tab"/>
+<span class="tab"/>
+
+<div>
+<h1 id="user" />
+
+</div>
+
+<p id="level" />
+<p id="date" />
+<div id="verticalLine"> </div>
+        <div id="colorstrip"/>
+
+<span style="display:inline-block; width: 1500;"></span>
+
+
+
+ 
+ 
+ <div class="btn-group">
+ <form>
+ <!--  
+<form th:action="@{/accounts/profile}/{role}"  method="post">
+<input type="button" name="infantry" class="button button1"  value="Infantry"/> -->
+<!--  <input type="button" class="button button1 big-btn " onclick="location.href='/accounts/profile'" value="Overall"/> -->
+
+<!-- <input type="button" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'" value="recruit"/>
+ -->
+ 
+ 
+ <!-- 
+<input type="button" id = "recruit" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'"/>
+
+<button class="button button1">like<i class="fas fa-lock"></i></button>
+-->
+<!-- 
+ <div class="btn-group">
+  <a class="btn" href="#"><i class="icon-align-left"></i></a>
+  <a class="btn" href="#"><i class="icon-align-center"></i></a>
+  <a class="btn" href="#"><i class="icon-align-right"></i></a>
+  <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+</div>
+OLD
+<input id="uScout" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileScout'" value="Scout"/>
+<input id="uArtillery" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileArtillary'" value="Artillery"/>
+<input id="uInfantry" type="button" class="button button1 big-btn"  onclick="location.href='/accounts/profileInfantry'" value="Infantry"/>
+  -->
+  <input type="button" id = "career" class="button button1 big-btn" onclick="location.href='/accounts/profile'"/>  
+<input type="button" id = "recruit" class="button button1 big-btn" onclick="location.href='/accounts/profileRecruit'"/>  
+<input type="button" id="uScout" class="button button1 big-btn" onclick="location.href='/accounts/profileScout'"/>  
+<input type="button" id="uArtillery" class="button button1 big-btn" onclick="location.href='/accounts/profileArtillery'"/>  
+<input type="button" id="uInfantry" class="button button1 big-btn" onclick="location.href='/accounts/profileInfantry'"/>  
+
+<button id="lScout" class="button button1 big-btn">Scout <i class="fas fa-lock"></i></button>
+<button id="lArtillery" class="button button1 big-btn">Artillery <i class="fas fa-lock"></i></button>
+<button id="lInfantry" class="button button1 big-btn">Infantry <i class="fas fa-lock"></i></button>
+
+
+
+</form>
+</div>
 <style>
+#max
+{
+    position: absolute; /*or fixed*/
+    right: 100px;
+}
+
+#lock {
+  background-image: url(https://www.w3schools.com/css/searchicon.png);
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 10%;
+  height: 10%
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.tab { 
+       display:inline-block; 
+       margin-left: 40px; 
+}
+h1 {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+p {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1.4px;
+
+}
+
+
+#colorstrip {
+	height: 20px;
+    border-bottom:solid 10px #ccc;
+    margin-left: 0px;
+}
+#verticalLine {
+    position:absolute;
+    border-left: solid 12px #ccc;
+    margin-left: 1650px;
+    height: 100%;
+    top: 180;
+}
+
+
 .button {
 
     background-color: #4CAF50; /* Green  #4CAF50;*/
@@ -34,17 +143,41 @@
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
+   /* text-transform: UPPERCASE;*/
     display: inline-block;
-    font-size: 16px;
+    font-size: 24px;
     margin: 4px 2px;
     cursor: pointer;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
-    
+
 }
+input[type="button"] {
+    white-space: normal;
+    width: 200px;
+}
+.Lbutton {
+    position:absolute;
+    transition: .5s ease;
+    top: 30%;
+    left: 88%;
+}
+.Fbutton {
+    position:absolute;
+    transition: .5s ease;
+    top: 22%;
+    left: 88%;
+}
+
+.big-btn {
+        width: 180px;
+        height: 120px;
+    }
+
 .button1:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
 }
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -69,83 +202,163 @@ li a:hover {
     background-color: #111;
 }
 
-#stats {
+#stats, #stats2 {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    width: 70%;
 }
 
-#stats td, #stats th {
+#stats td, #stats th, #stats2 td, #stats2 th {
     border: 1px solid #ddd;
     padding: 8px;
+    text-align: center;
 }
 
-#stats tr:nth-child(even){background-color: #f2f2f2;}
+#stats tr:nth-child(even), #stats2 tr:nth-child(even){background-color: #f2f2f2;}
 
 #cstats tr:hover {background-color: #ddd;}
 
-#stats th {
+#stats th,  #stats2 th {
     padding-top: 12px;
     padding-bottom: 12px;
-    text-align: left;
+    text-align: center;
     background-color: #4CAF50;
     color: white;
 }
 </style>
-
-<body>
+<body >
  <table id="stats">
     <thead>
       <tr>
         <th>Kills</th>
         <th>Deaths</th>
+        <th>K/D Ratio</th>
         <th>Game Wins</th>
         <th>Game Losses</th>
-        <th>Games Played</th>
-        <th>Flag Grabs</th>
-        <th>Flag Returns</th>
-        <th>Flag Captures</th>
-        <th>Experience</th>
+        <th>Game Win-Ratio</th>
       </tr>
     </thead>
     <tbody>
-		<th:block th:each="profiles : ${profiles}">
+		<th:block th:each="careerTotals : ${careerTotals}">
      	 	<tr>
-         		<td th:text="${profiles.kills}">...</td>
-         		<td th:text="${profiles.deaths}">...</td>
-         	    <td th:text="${profiles.gamewins}">...</td> 
-         	    <td th:text="${profiles.gamelosses}">...</td>
-         	    <td th:text="${profiles.gamesplayed}">...</td>
-         	    <td th:text="${profiles.flaggrabs}">...</td>
-         	    <td th:text="${profiles.flagreturns}">...</td>
-         	    <td th:text="${profiles.flagcaptures}">...</td>
-         	    <td th:text="${profiles.experience}">...</td>
+         		<td th:text="${careerTotals.kills}">...</td>
+         		<td th:text="${careerTotals.deaths}">...</td>
+         		<td th:text="${careerTotals.kdratio}">...</td>
+         	    <td th:text="${careerTotals.gamewins}">...</td> 
+         	    <td th:text="${careerTotals.gamelosses}">...</td>
+         	    <td th:text="${careerTotals.winrate}">...</td>
       		</tr>
    		</th:block>
-	
-      	<!--
-		<td>32</td>
-		<td>21</td>
-		<td>4</td>
-		<td>2</td>
-		<td>6</td>
-		<td>6</td>
-		<td>7</td>
-		<td>5</td> -->	
     </tbody>
   </table>
+  <h5></h5>
+ <table id="stats2">
+    <thead>
+      <tr>
+        <th>Flag Grabs</th>
+        <th>Flag Returns</th>
+        <th>Flag Captures</th>
+         <th>Level</th> 
+      </tr>
+    </thead>
+    <tbody>
+		<th:block th:each="careerTotals : ${careerTotals}">
+     	 	<tr>
+         	    <td th:text="${careerTotals.flaggrabs}">...</td>
+         	    <td th:text="${careerTotals.flagreturns}">...</td>
+         	    <td th:text="${careerTotals.flagcaptures}">...</td>
+         	    <td id="level" th:text="${careerTotals.level}">...</td>
+      		</tr>
+   		</th:block>
+    </tbody>
+  </table> 
+  
 </body>
+
+
+
 <script th:inline="javascript">
 	/*<![CDATA[*/
-	
 	let temp = /*[[${account.getUserID()}]]*/;
 	temp += "\'s Profile";
 	document.getElementById("user").innerHTML = temp;
 	
+
 	/*]]>*/
-	
-	
-	
 </script>
+
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	let member = "Member since ";
+	let date = /*[[${account.getDateOfCreation()}]]*/;
+	console.log(date)
+	member+= date;
+	member +="."
+
+	
+	document.getElementById("date").innerHTML = member;
+	
+	
+	/*]]>*/
+</script>
+
+
+<script  th:inline="javascript">
+window.onload = function() {
+	/*<![CDATA[*/
+	let user = /*[[${account.getUserID()}]]*/;
+	let dev = /*[[${account.getDeveloper()}]]*/;
+	let admin = /*[[${account.getAdministrator()}]]*/;
+	console.log(user);
+	console.log(dev);
+	console.log(admin);
+	if(dev==0 && admin ==0){
+		document.getElementById('admin').style = "display:none;";
+		console.log("hid admin");
+	}
+	
+	let Rlevel = /*[[${roleLevels.getRecruitLevel()}]]*/;
+	console.log("R levels: " + Rlevel);
+	let Slevel = /*[[${roleLevels.getScoutLevel()}]]*/;
+	let Alevel = /*[[${roleLevels.getArtilleryLevel()}]]*/;
+	let Ilevel = /*[[${roleLevels.getInfantryLevel()}]]*/;
+	var totalLevel = Rlevel+Slevel+Alevel+Ilevel;
+	
+	console.log("total levels: " + totalLevel);
+	if(totalLevel>=5){
+		  document.getElementById('lScout').style = "display: none;"; 
+		  document.getElementById('lArtillery').style = "display: none;";
+		  document.getElementById('lInfantry').style = "display: none;";
+	} else {
+		  document.getElementById('uScout').style = "display: none;"; 
+		  document.getElementById('uArtillery').style = "display: none;";
+		  document.getElementById('uInfantry').style = "display: none;";
+	}
+	
+	let val = "Level " + Rlevel +" Recruit";
+	document.getElementById('recruit').value = val; 
+	
+	
+	let sVal = "Level " + Slevel +" Scout";
+	document.getElementById('uScout').value = sVal; 	
+
+	
+	let aVal = "Level " + Alevel +" Artillery";
+	document.getElementById('uArtillery').value = aVal; 
+	
+	
+	let iVal = "Level " + Ilevel +" Infantry";
+	document.getElementById('uInfantry').value = iVal; 
+
+	let cVal = "Level " + totalLevel + " Career";
+	document.getElementById('career').value = cVal; 
+		
+	/*]]>*/
+};	
+</script>
+
+
+
 
 </html>

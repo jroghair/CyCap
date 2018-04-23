@@ -12,33 +12,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-/** Websocket Event listener for chat system 
- *@author Jeremy 
- * */
 @Component
 public class WebSocketEventListener {
-	   /**Creates a logger that generates messages in the applications log
-     * */
+
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
-    /**Auto wires a messageTemplate
-     * */
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    /**Listens for event for a websocket connection
-     * @param event received event
-     * @return void
-     * */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         logger.info("Received a new web socket connection");
     }
-    
-    /**Event listener for user disconnections 
-     * @return event recieved event
-     * @return void 
-     * */
+
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());

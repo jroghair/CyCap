@@ -75,7 +75,7 @@ li a:hover {
 <body>
  
  <input type="text" id="myInput" th:onkeyup= "'javascript:playerSearch();'" placeholder="Search for players.." title="Type in a name"/>
- <table id="admin">
+ <table id="admin" >
     <thead>
       <tr>
       	<th th:onclick="'javascript:sortTableString(0);'"><i class="fa fa-sort-desc" style="font-size:24px;color:red"></i>Player</th>
@@ -87,12 +87,29 @@ li a:hover {
 		<th:block th:each="accountsList : ${accountsList}">
      	 	<tr>
      	 		<td th:text="${accountsList.userID}" class="user">...</td>
-     	 		<td th:text="${accountsList.administrator}" class="user">...</td>	
-     	 		<td><input type="button" value="Promote to Admin"/></td>
+     	 		<td th:text="${accountsList.administrator}" class="user">...</td>
+
+  				<form>   	 		
+     	 		<td><button type="button">Promote to Admin</button></td>
+      			</form>
       		</tr>
    		</th:block>
     </tbody>
   </table>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+	    /*<![CDATA[*/
+	    	$(document).ready(function(){
+	   $("#admin tr").click(function(){
+    	alert( $(this).children().closest("td").html());
+    });
+	        });
+							    	
+	    /*]]>*/		
+
+
+</script>
 </body>
 
   
@@ -117,5 +134,19 @@ li a:hover {
 	}
 </script>
 
+<!-- 
+<script type="text/javascript">
 
+	    /*<![CDATA[*/
+	    	$(document).ready(function(){
+    $("button").click(function(){
+    	alert( $(this).children().closest("td").html());
+    });
+	        });
+							    	
+	    /*]]>*/		
+
+
+</script>
+-->
 </html>
