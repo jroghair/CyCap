@@ -1,7 +1,7 @@
 package com.cycapservers.account;
 import java.util.Collection;
 
-import org.springframework.context.annotation.Primary;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

@@ -8,6 +8,8 @@ import java.util.TimerTask;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.cycapservers.account.ProfileDataUpdate;
+
 /**
  * Represents one instance of a lobby.
  * @author ted
@@ -159,7 +161,12 @@ public class Lobby {
 		for(IncomingPlayer p : players){
 			if(p.client_id.equals(id)){
 				//TODO add checking for player level;
-				p.role = role;
+				if(ProfileDataUpdate.dbCheckLock(id, role)) {
+					p.role = role;
+				}
+				else {
+					role = "no";
+				}
 				try {
 					session.sendMessage(new TextMessage("role:" + role));
 					for(IncomingPlayer p1 : players){

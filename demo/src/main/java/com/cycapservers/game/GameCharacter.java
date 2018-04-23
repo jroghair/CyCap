@@ -30,12 +30,7 @@ public abstract class GameCharacter extends Entity {
 	
 	public GameCharacter(int id, int sprIdx, double x, double y, double w, double h, double r, double a, String entity_id, int team, String role) {
 		super(id, sprIdx, x, y, w, h, r, a, entity_id);
-		if(team == 1) {
-			this.spriteIndex = 4;
-		}
-		else {
-			this.spriteIndex = 0;
-		}
+		this.spriteIndex = Utils.getSpriteIndexFromTeam(team);
 		this.team = team;
 		this.role = role;
 		
