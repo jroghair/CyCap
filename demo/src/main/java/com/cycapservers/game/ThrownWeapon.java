@@ -27,7 +27,7 @@ public abstract class ThrownWeapon extends Weapon {
 	}
 
 	@Override
-	public void update(Player p, InputSnapshot s, GameState g) {
+	public void update(GameCharacter p, InputSnapshot s, GameState g) {
 		if(!this.is_reloading){
 			this.checkFire(p, s, g);
 		}
@@ -37,7 +37,7 @@ public abstract class ThrownWeapon extends Weapon {
 	}
 
 	@Override
-	public void checkFire(Player p, InputSnapshot s, GameState g) {
+	public void checkFire(GameCharacter p, InputSnapshot s, GameState g) {
 		if(s.mouse_clicked && ((System.currentTimeMillis() - this.last_shot) >= this.fire_rate)){
 			if(this.ammo_in_clip - 1 != -1){
 				Point point = Utils.mapCoordinatesToGridCoordinates(s.mapX, s.mapY);
@@ -56,6 +56,6 @@ public abstract class ThrownWeapon extends Weapon {
 	}
 
 	@Override
-	public abstract void fire(Player p, InputSnapshot s, GameState g);
+	public abstract void fire(GameCharacter p, InputSnapshot s, GameState g);
 
 }

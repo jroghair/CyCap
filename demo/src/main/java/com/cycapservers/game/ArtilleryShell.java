@@ -40,7 +40,7 @@ public class ArtilleryShell extends Bullet{
 	 * @param fx
 	 * @param max_height
 	 */
-	public ArtilleryShell(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, int damage, Player p, String entity_id, int fx, double max_height) {
+	public ArtilleryShell(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, int damage, GameCharacter p, String entity_id, int fx, double max_height) {
 		super(sprIdx, startX, startY, endX, endY, w, h, 0, 1.0, 0, damage, 0, p, entity_id);
 		this.fx_code = fx;
 		this.start_width = w;
@@ -78,7 +78,7 @@ public class ArtilleryShell extends Bullet{
 			for(AI_player p : game.AI_players) {
 				if(Utils.distanceBetween(this, p) <= this.damage_range) {
 					if(game.friendlyFire || (p.team != this.team) || p.equals(this.owner)) {
-						p.takeDamage(this.damage);
+						p.takeDamage(this.damage, this.owner);
 					}
 				}
 			}

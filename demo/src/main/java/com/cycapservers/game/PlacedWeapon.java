@@ -7,19 +7,19 @@ public abstract class PlacedWeapon extends Weapon {
 	}
 
 	@Override
-	public void update(Player p, InputSnapshot s, GameState g) {
+	public void update(GameCharacter p, InputSnapshot s, GameState g) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void checkFire(Player p, InputSnapshot s, GameState g) {
+	public void checkFire(GameCharacter p, InputSnapshot s, GameState g) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void fire(Player p, InputSnapshot s, GameState g) {
+	public void fire(GameCharacter p, InputSnapshot s, GameState g) {
 		// TODO Auto-generated method stub
 
 	}

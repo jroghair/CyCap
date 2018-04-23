@@ -195,10 +195,11 @@ public class FreeForAll extends GameState {
 	}
 
 	@Override
-	public void add_AI_player(int team, String role) {
+	public void add_AI_player(String role) {
+		int team = 8;
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns);
-		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s));
 		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
 	}

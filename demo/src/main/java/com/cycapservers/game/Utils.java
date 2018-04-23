@@ -17,7 +17,7 @@ public final class Utils{
 	public final static int LEFT  = 0b0010;
 	public final static int RIGHT = 0b0001;
 	public final static double SIN_45 = Math.sin(Math.PI/4);
-	public final static int AI_NODE_PIXEL_DISTANCE = 8;
+	public final static int AI_NODE_PIXEL_DISTANCE = 16;
 	public final static Random RANDOM = new Random();
 	
 	//////THE WEAPONS//////
@@ -322,7 +322,30 @@ public final class Utils{
 		}
 	}
 	
+	public static boolean checkLineOfSight(Entity ent1, Entity ent2, GameState g){
+		double delta_x = ent1.x - ent2.x;
+		double delta_y = ent1.y - ent2.y;
+		
+		for(int i = 0;i < 8;i++){
+			double x_coord = (ent1.x + (delta_x/8.0) * i);
+			double y_coord = (ent1.y + (delta_y/8.0) * i);
+			
+			Entity e = new Entity(0,0,x_coord, 
+					y_coord, 0.0, 0.0, 0.0, 0.0, "");
+			try{
+				Point temp = get_nearest_map_node(e, g);
+				if(temp == null){
+					return false;
+				}
+			}catch(Exception ex){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public static Point get_nearest_map_node(Entity e, GameState g) {
+		if(Utils.DEBUG) System.out.println("Coords for node: "+ e.x + ", " + e.y);
 		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		short i = 0, j = 0;
@@ -389,7 +412,7 @@ public final class Utils{
 		for(int i = 0; i < (GRID_LENGTH * g.mapGridWidth); i += Utils.AI_NODE_PIXEL_DISTANCE){
 			ArrayList<mapNode> node_col = new ArrayList<mapNode>();
 			for(int j = 0;j < (GRID_LENGTH * g.mapGridHeight );j += Utils.AI_NODE_PIXEL_DISTANCE){
-				Entity test_player_ent = new Entity(0, 0, i, j, GRID_LENGTH, GRID_LENGTH, 0, 1, "temp");//used for traversing
+				Entity test_player_ent = new Entity(0, 0, i, j, 31, 31, 0, 1, "temp");//used for traversing
 				boolean traversable = true;
 				for(int t = 0; t < g.walls.size(); t++){
 					if(isColliding(test_player_ent, g.walls.get(t))){

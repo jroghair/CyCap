@@ -113,10 +113,12 @@ public class TeamDeathMatch extends GameState {
 			}
 		}
 		
-		/*/ updating AI players
+		////// updating AI players ///////
 		for (AI_player ai : AI_players) {
+			if(!ai_player_delay) {
 				ai.update(this, null);
-		}*/
+			}
+		}
 		
 		//////TODO: Check For other team kills?//////
 		
@@ -183,18 +185,6 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
-		/*if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
-			team = Utils.RANDOM.nextInt(2) + 1;
-		}
-		else if(this.playersOnTeam1 > this.playersOnTeam2) {
-			team = 2;
-			this.playersOnTeam2++;
-		}
-		else {
-			team = 1;
-			this.playersOnTeam1++;
-		}
-		//}*/
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);
@@ -202,9 +192,8 @@ public class TeamDeathMatch extends GameState {
 		p.stats.setGameType(this.getClass());
 		this.userPasswords.add(pass);
 		try {
-			
-			String message = "join:" + pass + ":" + this.game_id + ":" + "CTF:" + role + ":" + this.mapGridWidth + ":" + this.mapGridHeight;
-			if(Utils.DEBUG) System.out.println(message);
+			String message = "join:" + pass + ":" + this.game_id + ":" + "TDM:" + role + ":" + this.mapGridWidth + ":" + this.mapGridHeight;
+			//if(Utils.DEBUG) System.out.println(message);
 			for(Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);
 			}
@@ -217,9 +206,24 @@ public class TeamDeathMatch extends GameState {
 	}
 
 	@Override
-	public void add_AI_player(int team, String role) {
-		// TODO Auto-generated method stub
-		
+	public void add_AI_player(String role) {
+		ai_player_delay = true;
+		int team = 0;
+
+		if (this.playersOnTeam1 > this.playersOnTeam2) {
+			team = 2;
+			this.playersOnTeam2++;
+		} else {
+			team = 1;
+			this.playersOnTeam1++;
+		}
+
+		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
+		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
+		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s));
+		this.usedEntityIds.add(s);
+		AI_players.get(AI_players.size() - 1).get_path(this);
+		ai_player_delay = false;
 	}
 
 	@Override
@@ -246,13 +250,20 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void setUpGame() {
+		if(Utils.DEBUG) System.out.println("In TDM setup!");
 		for(Player p : players) {
 			p.stats.setLevelAndXP();
 		}
-		//for(int i = 0; i < (max_players - players.size()); i++){
-		//	addAI_player();
-		//}
-		this.start_time = System.currentTimeMillis();//TODO: start game timer
+		
+		String roles[] = { "scout", "recruit", "infantry" };
+		int number_ai_players = this.max_players - players.size();
+		if(Utils.DEBUG) System.out.println("Making " + number_ai_players + " ais!");
+		for (int i = 0; i < number_ai_players; i++) {
+			add_AI_player(roles[Utils.RANDOM.nextInt(roles.length)]);
+		}
+		
+		this.start_time = System.currentTimeMillis();
 		this.started = true;
+		if(Utils.DEBUG) System.out.println("TDM setup done!");
 	}
 }

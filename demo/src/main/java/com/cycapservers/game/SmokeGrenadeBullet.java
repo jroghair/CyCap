@@ -48,7 +48,7 @@ public class SmokeGrenadeBullet extends Bullet {
 	 * @param fx
 	 * @param max_height
 	 */
-	public SmokeGrenadeBullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, Player p, String entity_id, int fx, double max_height, int smoke_time, int intensity) {
+	public SmokeGrenadeBullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, GameCharacter p, String entity_id, int fx, double max_height, int smoke_time, int intensity) {
 		super(sprIdx, startX, startY, endX, endY, w, h, 0, 1.0, 0, 0, 0, p, entity_id);
 		this.fx_code = fx;
 		this.start_width = w;

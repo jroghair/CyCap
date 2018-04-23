@@ -30,7 +30,7 @@ public class MortarWeapon extends ThrownWeapon {
 	}
 
 	@Override
-	public void fire(Player p, InputSnapshot s, GameState g) {
+	public void fire(GameCharacter p, InputSnapshot s, GameState g) {
 		this.ammo_in_clip--; //lose one bullet from the clip
 		String id = Utils.getGoodRandomString(g.usedEntityIds, g.entity_id_len);
 		Point point = Utils.mapCoordinatesToGridCoordinates(s.mapX, s.mapY);

@@ -44,6 +44,7 @@ public abstract class GameState extends TimerTask
 	
 	// stuff for AI
 	protected ArrayList<ArrayList<mapNode>> ai_map;
+	protected boolean ai_player_delay;
 	
 	protected List<Bullet> bullets;
 	
@@ -78,6 +79,7 @@ public abstract class GameState extends TimerTask
 		this.incomingPlayers = new ArrayList<IncomingPlayer>();
 		this.players = new ArrayList<Player>();
 		this.AI_players = new ArrayList<AI_player>();
+		ai_player_delay = false;
 		this.team_scores = new HashMap<Integer, Integer>();
 		this.bullets = new ArrayList<Bullet>();
 		this.walls = new ArrayList<Wall>();
@@ -152,7 +154,7 @@ public abstract class GameState extends TimerTask
 	
 	public abstract void playerJoin(String client_id, WebSocketSession session, String role, int team);
 	
-	public abstract void add_AI_player(int team, String role);
+	public abstract void add_AI_player(String role);
 	
 	public abstract void removePlayer(WebSocketSession session);
 	
@@ -171,6 +173,7 @@ public abstract class GameState extends TimerTask
 				e.printStackTrace();
 			}
 		}
+		//TODO: make all of the AIs dead?
 	}
 
 	@Override
@@ -192,6 +195,7 @@ public abstract class GameState extends TimerTask
 			this.unhandledInputs.clear(); //empty the queue of unhandled inputs
 		}
 		else if(readyToStart && !gameFinished){
+			if(Utils.DEBUG) System.out.println("Players size: " + players.size() + " - Incoming size: " + incomingPlayers.size());
 			if(players.size() == incomingPlayers.size()) {
 				setUpGame();
 			}

@@ -14,7 +14,7 @@ public class HealthGun extends AutomaticGun {
 	}
 
 	@Override
-	public void fire(Player p, InputSnapshot s, GameState g) {
+	public void fire(GameCharacter p, InputSnapshot s, GameState g) {
 		this.ammo_in_clip--; //lose one bullet from the clip
 		for(Player player : g.players) {
 			if(player.team == p.team && (Utils.distanceBetween(p, player) <= heal_range)) {

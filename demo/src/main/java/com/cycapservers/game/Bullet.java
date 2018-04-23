@@ -35,7 +35,7 @@ public class Bullet extends Entity {
 	 * @param p - the owner of the bullet
 	 * @param entity_id - the entity's unique id
 	 */
-	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, Player p, String entity_id) {
+	public Bullet(int sprIdx, double startX, double startY, double endX, double endY, double w, double h, double r, double a, double speed, int damage, double variation, GameCharacter p, String entity_id) {
 		super(2, sprIdx, startX, startY, w, h, r, a, entity_id);
 		
 		this.birthTime = System.currentTimeMillis();
@@ -82,12 +82,14 @@ public class Bullet extends Entity {
 					return true;
 				}
 			}
-			for(AI_player ai : game.AI_players) {
-				if(Utils.isColliding(this, ai)) {
-					/* TODO: reinstate damage to AI after it is ready
-					if(ai.team != this.team) {
-						ai.takeDamage(this.damage);
-					}*/
+			for(AI_player p : game.AI_players) {
+				if(p.equals(this.owner)) {
+					continue;
+				}
+				if(Utils.isColliding(this, p)) {
+					if(game.friendlyFire || (p.team != this.team)) {
+						p.takeDamage(this.damage, this.owner);
+					}
 					return true;
 				}
 			}

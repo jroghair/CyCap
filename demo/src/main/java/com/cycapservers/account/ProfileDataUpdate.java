@@ -54,8 +54,6 @@ public class ProfileDataUpdate {
 
 	// need to return level as well
 	public static Point dbGetLevel(String userID, String champion) {
-		if (Utils.DEBUG) System.out.print("Client ID: " + userID); // are either of these// null?
-		if (Utils.DEBUG) System.out.println("\tClient Role: " + champion);
 		Profiles profile = profilesRepo.findByUserID(userID, champion); 
 		// creates a modified point using inner class MPoint in order to store
 		// more data easily for each player

@@ -69,7 +69,7 @@ public abstract class Weapon{
 	 * @param s - the input snapshot which created this bullet
 	 * @param g - the current game state
 	 */
-	public abstract void update(Player p, InputSnapshot s, GameState g);
+	public abstract void update(GameCharacter p, InputSnapshot s, GameState g);
 	
 	/**
 	 * checks to see if the weapon is to be fired
@@ -77,7 +77,7 @@ public abstract class Weapon{
 	 * @param s - the input snapshot which created this bullet
 	 * @param g - the current game state
 	 */
-	public abstract void checkFire(Player p, InputSnapshot s, GameState g);
+	public abstract void checkFire(GameCharacter p, InputSnapshot s, GameState g);
 	
 	/**
 	 * fires a new bullet
@@ -85,7 +85,7 @@ public abstract class Weapon{
 	 * @param s - the input snapshot which created this bullet
 	 * @param g - the current game state
 	 */
-	public abstract void fire(Player p, InputSnapshot s, GameState g);
+	public abstract void fire(GameCharacter p, InputSnapshot s, GameState g);
 	
 	/**
 	 * reloads the weapon

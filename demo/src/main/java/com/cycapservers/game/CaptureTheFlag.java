@@ -119,10 +119,12 @@ public class CaptureTheFlag extends GameState {
 			}
 		}
 		
-		/*/ updating AI players
+		////// updating AI players ///////
 		for (AI_player ai : AI_players) {
+			if(!ai_player_delay) {
 				ai.update(this, null);
-		}*/
+			}
+		}
 		
 		//////Check For Flag captures//////
 		if(!this.team1_flag.atBase && this.team2_flag.atBase && Utils.isColliding(this.team1_flag, team2_base)) {
@@ -232,14 +234,26 @@ public class CaptureTheFlag extends GameState {
 		}
 	}
 	
-	public void add_AI_player(int team, String role) {
+	public void add_AI_player(String role) {
+		ai_player_delay = true;
+		int team = 0;
+
+		if (this.playersOnTeam1 > this.playersOnTeam2) {
+			team = 2;
+			this.playersOnTeam2++;
+		} else {
+			team = 1;
+			this.playersOnTeam1++;
+		}
+
 		// make AI player and send map reference
-		//mapNode randomNode = getRandomNode();
+		// mapNode randomNode = getRandomNode();
 		String s = Utils.getGoodRandomString(this.usedEntityIds, this.entity_id_len);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
-		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s, this));
+		AI_players.add(new AI_player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, s));
 		this.usedEntityIds.add(s);
 		AI_players.get(AI_players.size() - 1).get_path(this);
+		ai_player_delay = false;
 	}
 	
 	public void removePlayer(WebSocketSession session) {
@@ -268,9 +282,11 @@ public class CaptureTheFlag extends GameState {
 		for(Player p : players) {
 			p.stats.setLevelAndXP();
 		}
-		//for(int i = 0; i < (max_players - players.size()); i++){
-		//	addAI_player();
-		//}
+		String roles[] = { "scout", "recruit", "infantry" };
+		int number_ai_players = this.max_players - players.size();
+		for (int i = 0; i < number_ai_players; i++) {
+			add_AI_player(roles[Utils.RANDOM.nextInt(roles.length)]);
+		}
 		this.start_time = System.currentTimeMillis();
 		this.started = true;
 	}
