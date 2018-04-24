@@ -1,24 +1,32 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>CyCap Account Registration</title>
+	<head>
+		<title>CyCap Account Registration</title>
+		<link rel="stylesheet" href="/css/cycap_style.css"/>
+		<link rel="stylesheet" href="/css/topnav_style.css"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	</head>
+
+	<body>
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<a href="/about" id="logo"><img src="/res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
+			<a href="/">Home</a>
+			<a href="/how_to">How To Play</a>
+			<a href="/about">About the Team</a>
+		</div>
 	
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
-</head>
-Your login was unsuccessful, please try again.
-<body>
-	<h1>Form</h1>
-    <form th:action="@{/accounts/registration}"  method="post" th:object="${account}">
-    
- 		   
-    
-    	<p>User Id: <input type="text" th:field="*{userID}" /></p>
-    	
-        <p>Password: <input type="password" th:field="*{password}" /></p>
-		<p>Email: <input type="email" th:field="*{email}" /></p>
-		
-        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-    </form>
-</body>
+		<p>Your login was unsuccessful, please try again.</p>
+		<h2>Registration</h2>
+		<form th:action="@{/accounts/registration}"  method="post" th:object="${account}">
+
+			<p>User Id: <input type="text" th:field="*{userID}" /></p>
+			
+			<p>Password: <input type="password" th:field="*{password}" /></p>
+			<p>Email: <input type="email" th:field="*{email}" /></p>
+			
+			<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+		</form>
+	</body>
 </html>
 

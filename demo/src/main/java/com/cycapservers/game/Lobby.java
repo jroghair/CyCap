@@ -42,11 +42,6 @@ public class Lobby {
 	 */
 	private int maxSize;
 	
-	/**
-	 * How many people below the max before the game starts.
-	 */
-	private final int startGap = 4;
-	
 	private int team1;
 	
 	private int team2;
@@ -70,7 +65,8 @@ public class Lobby {
 			this.game = new CaptureTheFlag(id, map_num);
 		}
 		else if(c.equals(FreeForAll.class)){
-			this.game = new FreeForAll(id, 0);
+			this.game = new FreeForAll(id, 1);
+			this.freeTeam = 0;
 		}
 		this.maxSize = game.max_players;
 		
@@ -167,7 +163,6 @@ public class Lobby {
 	public void ChangePlayerClass(WebSocketSession session, String id, String role){
 		for(IncomingPlayer p : players){
 			if(p.client_id.equals(id)){
-				//TODO add checking for player level;
 				if(ProfileDataUpdate.dbCheckLock(id, role)) {
 					p.role = role;
 				}
@@ -197,7 +192,7 @@ public class Lobby {
 	 * returns true if the game has started.
 	 * @throws IOException
 	 */
-	public boolean addPlayer(String p, WebSocketSession s) throws IOException{
+	public void addPlayer(String p, WebSocketSession s) throws IOException{
 		int team = 1;
 		if(this.game.getClass().equals(CaptureTheFlag.class) || this.game.getClass().equals(TeamDeathMatch.class)){
 			if(team1 == 0 && team2 == 0){
@@ -213,24 +208,28 @@ public class Lobby {
 				team = 2;
 			}
 		}
-		players.add(new IncomingPlayer(p, "recruit", s, team)); //TODO: this needs to use the role that was chosen on the lobby page
+		else if(this.game.getClass().equals(FreeForAll.class)){
+			this.freeTeam++;
+			team = freeTeam;
+		}
+		players.add(new IncomingPlayer(p, "recruit", s, team));
 		this.curSize++;
 		
 		////////////////////////
-		
+		int time_to_start;
+		if(curSize >= game.max_players/2) {
+			time_to_start = 30000;
+		}
+		else {
+			time_to_start = 45000;
+		}
 		for(IncomingPlayer i : players){
 			this.GivePlayerList(i.session);
-			i.session.sendMessage(new TextMessage("time:" + (240000 / (curSize + startGap ))));
+			i.session.sendMessage(new TextMessage("time:" + time_to_start));
 		}
 		this.t.cancel();
 		this.t = new Timer();
-		this.t.schedule(newTask(), (240000 / (curSize + startGap )));
-		if((curSize + startGap) == maxSize){
-			return true;
-		}
-		else{
-			return false;
-		}
+		this.t.schedule(newTask(), time_to_start);
 	}
 	
 	/**
@@ -240,15 +239,30 @@ public class Lobby {
 	public void removePlayer(WebSocketSession s){
 		for(IncomingPlayer i : players) {
 			if(i.session.equals(s)) {
+				if(i.team == 1) {
+					team1--;
+				}
+				else if(i.team == 2) {
+					team2--;
+				}
 				players.remove(i);
 				this.curSize--;
-				//TODO: decrement the correct team
+				
+				//////UPDATE TIMER//////
+				int time_to_start;
+				if(curSize >= game.max_players/2) {
+					time_to_start = 30000;
+				}
+				else {
+					time_to_start = 45000;
+				}
 				this.t.cancel();
 				this.t = new Timer();
-				this.t.schedule(newTask(), (240000 /(curSize + startGap)));
+				this.t.schedule(newTask(), time_to_start);
 				for(IncomingPlayer j: players){
 					try {
 						this.GivePlayerList(j.session);
+						i.session.sendMessage(new TextMessage("time:" + time_to_start));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -263,6 +277,6 @@ public class Lobby {
 	 * @return
 	 */
 	public int getOpenSlots(){
-		return maxSize-curSize + startGap; 
+		return maxSize-curSize; 
 	}
 }

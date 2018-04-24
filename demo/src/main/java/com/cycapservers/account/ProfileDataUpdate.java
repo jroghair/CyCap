@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.cycapservers.game.PlayerStats;
-import com.cycapservers.game.Utils;
 
 /**
  * Static Controller class that allows the database to be updated for user
@@ -54,9 +53,7 @@ public class ProfileDataUpdate {
 
 	// need to return level as well
 	public static Point dbGetLevel(String userID, String champion) {
-		Profiles profile = profilesRepo.findByUserID(userID, champion); 
-		// creates a modified point using inner class MPoint in order to store
-		// more data easily for each player
+		Profiles profile = profilesRepo.findByUserID(userID, champion);
 		Point point = new Point(profile.getLevel(), profile.getExperience());
 		return point;
 	}
@@ -85,55 +82,70 @@ public class ProfileDataUpdate {
 	 */
 	// instead of taking in players just take in a single player
 	public static void dbSaveData(PlayerStats player) {
-		if (Utils.DEBUG)
-			System.out.print("Client ID: " + player.getUserID()); // are
-																	// either
-																	// of
-																	// these
-																	// null?
-		if (Utils.DEBUG)
-			System.out.println("\tClient Role: " + player.getChampion());
-		Profiles oldProfile = profilesRepo.findByUserID(player.getUserID(), player.getChampion()); // need
-																									// to
-																									// update
-																									// to
-																									// specific
-																									// roles
+		Profiles oldProfile = profilesRepo.findByUserID(player.getUserID(), player.getChampion());
+
 		int kills = oldProfile.getKills() + player.getKills();
 		int deaths = oldProfile.getDeaths() + player.getDeaths();
 		int gamewins = oldProfile.getGamewins() + player.getWins();
 		int gamelosses = oldProfile.getGamelosses() + player.getLosses();
-		int gamesplayed = oldProfile.getGamesplayed() + player.getGamesplayed(); // assuming
-																					// one
-																					// since
-																					// this
-																					// will
-																					// be
-																					// called
-																					// after
-																					// every
-																					// game
-																					// that
-																					// that
-																					// class
-																					// is
-																					// chosen
+		int gamesplayed = oldProfile.getGamesplayed() + player.getGamesplayed();
+
 		int flaggrabs = oldProfile.getFlaggrabs() + player.getFlag_grabs();
 		int flagreturns = oldProfile.getFlagreturns() + player.getFlag_returns();
 		int flagcaptures = oldProfile.getFlagcaptures() + player.getFlag_captures();
 		int experience = player.getExperience();
 		int level = player.getLevel();
 
-		Profiles profile;
+		Profiles profile = new Profiles();
 
-		// create a new profile
-		if (level >= 5) {
-			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses,
-					gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 1, 1, 1);
-		} else {
-			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses,
-					gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 0, 0, 0);
+		Profiles recruit = profilesRepo.findByUserID(player.getUserID(), "recruit");
+
+		if (recruit.getLevel() >= 5 && recruit.getScoutunlocked() != 1) {
+			Profiles scout = profilesRepo.findByUserID(player.getUserID(), "scout");
+			Profiles artillery = profilesRepo.findByUserID(player.getUserID(), "artillery");
+			Profiles infantry = profilesRepo.findByUserID(player.getUserID(), "infantry");
+
+			Profiles pr = new Profiles(recruit.getUserID(), recruit.getChampion(), recruit.getKills(),
+					recruit.getDeaths(), recruit.getGamewins(), recruit.getGamelosses(), recruit.getGamesplayed(),
+					recruit.getFlaggrabs(), recruit.getFlagreturns(), recruit.getFlagcaptures(),
+					recruit.getExperience(), recruit.getLevel(), 1, 1, 1);
+
+			Profiles ps = new Profiles(scout.getUserID(), scout.getChampion(), scout.getKills(), scout.getDeaths(),
+					scout.getGamewins(), scout.getGamelosses(), scout.getGamesplayed(), scout.getFlaggrabs(),
+					scout.getFlagreturns(), scout.getFlagcaptures(), scout.getExperience(), scout.getLevel(), 1, 1, 1);
+
+			Profiles pa = new Profiles(artillery.getUserID(), artillery.getChampion(), artillery.getKills(),
+					artillery.getDeaths(), artillery.getGamewins(), artillery.getGamelosses(),
+					artillery.getGamesplayed(), artillery.getFlaggrabs(), artillery.getFlagreturns(),
+					artillery.getFlagcaptures(), artillery.getExperience(), artillery.getLevel(), 1, 1, 1);
+
+			Profiles pi = new Profiles(infantry.getUserID(), infantry.getChampion(), infantry.getKills(),
+					infantry.getDeaths(), infantry.getGamewins(), infantry.getGamelosses(), infantry.getGamesplayed(),
+					infantry.getFlaggrabs(), infantry.getFlagreturns(), infantry.getFlagcaptures(),
+					infantry.getExperience(), infantry.getLevel(), 1, 1, 1);
+
+			profilesRepo.delete(recruit);
+			profilesRepo.delete(scout);
+			profilesRepo.delete(artillery);
+			profilesRepo.delete(infantry);
+
+			profilesRepo.save(pr);
+			profilesRepo.save(ps);
+			profilesRepo.save(pa);
+			profilesRepo.save(pi);
+
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 1, 1, 1);
 		}
+		else if (recruit.getLevel() < 5) {
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 0, 0, 0);
+		}
+		else if (recruit.getLevel() > 5) {
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 1, 1, 1);
+		}
+		else {
+			profile = new Profiles(player.getUserID(), player.getChampion(), kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs, flagreturns, flagcaptures, experience, level, 1, 1, 1);
+		}
+
 		// delete old profile from database
 		profilesRepo.delete(oldProfile);
 

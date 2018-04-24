@@ -113,6 +113,10 @@ function GameState(role, pw, type){
 					//TODO: update the game score gui
 					gameScoreGUI.update(objects[i]);
 				}
+				if(this.game_mode == "TDM"){
+					//TODO: update the game score gui
+					gameScoreGUI.update(objects[i]);
+				}
 			}
 			else if(obj[0] == "002"){
 				//new sound

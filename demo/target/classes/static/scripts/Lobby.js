@@ -54,6 +54,24 @@ function updatePlayerList(name, role, team) {
 	else if(team == 2){
 		p.style.backgroundColor = "blue";
 	}
+	else if(team == 3){
+		p.style.backgroundColor = "green";
+	}
+	else if(team == 4){
+		p.style.backgroundColor = "yellow";
+	}
+	else if(team == 5){
+		p.style.backgroundColor = "purple";
+	}
+	else if(team == 6){
+		p.style.backgroundColor = "pink";
+	}
+	else if(team == 7){
+		p.style.backgroundColor = "orange";
+	}
+	else if(team == 8){
+		p.style.backgroundColor = "LightSkyBlue";
+	}
     var t = document.createTextNode(name + " - " + role);
     p.appendChild(t);
     document.getElementById("play").appendChild(p);

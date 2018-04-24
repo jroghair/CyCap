@@ -142,6 +142,7 @@ public class PlayerStats {
 		Point p = ProfileDataUpdate.dbGetLevel(userID, champion);
 		this.level = p.x;
 		this.experience = p.y;
+		if(Utils.DEBUG) System.out.println("Start - ID: " + userID + "     Role: " + champion + "     Level: " + level + "     XP: " + experience);
 	}
 	
 	public void updateScore(int winner){ //could have this take in winning team to double scores potentially
@@ -181,7 +182,32 @@ public class PlayerStats {
 			endgame_message += level;
 		}
 		else if(this.game_type.equals(TeamDeathMatch.class)){
-			//TODO: calculate score
+			int new_xp = this.kills*30;
+			if(team == winner) {
+				new_xp *= 2;
+				wins++;
+			}
+			else {
+				losses++;
+			}
+			this.experience += new_xp;
+			
+			//call util class to calculate level and experience it takes in level and experience
+			Point p = Utils.calculateLevelAndXP(new Point(this.level, this.experience)); //so util returns a pair
+			this.level = p.x;
+			this.experience = p.y;
+			
+			if(wins > losses) {
+				endgame_message = "w:";
+			}
+			else {
+				endgame_message = "l:";
+			}
+			endgame_message += new_xp + ":";
+			endgame_message += champion + ":";
+			endgame_message += kills + ":";
+			endgame_message += deaths + ":";
+			endgame_message += level;
 		}
 		else if(this.game_type.equals(FreeForAll.class)){
 			

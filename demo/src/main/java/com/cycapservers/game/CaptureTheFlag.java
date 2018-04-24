@@ -3,14 +3,11 @@ package com.cycapservers.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-
-import com.cycapservers.account.ProfileDataUpdate;
 
 public class CaptureTheFlag extends GameState {
 	
@@ -49,11 +46,55 @@ public class CaptureTheFlag extends GameState {
 
 	public void updateGameState() {
 		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
-		if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
-			//TODO: set winning team correctly by comparing flag captures first and then kills
+		if(((System.currentTimeMillis() - this.start_time) >= time_limit)) {
+			int team1Kills = 0;
+			int team2Kills = 0;
+			
+			if((team_scores.get(1) > team_scores.get(2))){
+				winner = 1;
+			}
+			else if((team_scores.get(1) < team_scores.get(2))){
+				winner = 2;
+			}
+			else{
+				for(Player p: players){
+					if(p.team == 1){
+						team1Kills += p.stats.getKills();
+					}
+					else{
+						team2Kills += p.stats.getKills();
+					}
+				}
+				for(AI_player p: AI_players){
+					if(p.team == 1){
+						team1Kills += p.stats.getKills();
+					}
+					else{
+						team2Kills += p.stats.getKills();
+					}
+				}
+				if(team1Kills > team2Kills){
+					winner = 1;
+				}
+				else if(team1Kills < team2Kills){
+					winner = 2;
+				}
+				else{
+					winner = Utils.getRandomInRange(1, 2);
+				}
+			}
+			
+			endGame(winner);
+		}
+		else if((team_scores.get(1) >= score_limit)){
 			winner = 1;
 			endGame(winner);
 		}
+		else if((team_scores.get(2) >= score_limit)){
+			winner = 2;
+			endGame(winner);
+		}
+
 		
 		this.currentDeltaTime = (System.currentTimeMillis() - this.lastGSMessage)/1000.0;
 		this.lastGSMessage = System.currentTimeMillis();
@@ -116,6 +157,15 @@ public class CaptureTheFlag extends GameState {
 			}
 			catch(NullPointerException e) {
 				System.out.println("Null pointer Exception when getting index " + i + " of unhandled input list when list size is " + this.unhandledInputs.size() + ".");
+			}
+		}
+		
+		//////kill players who are outside the map//////
+		for (int i = 0; i < this.players.size(); i++) {
+			if ((this.players.get(i).x < 0 || this.players.get(i).x > (Utils.GRID_LENGTH * this.mapGridWidth)) && !this.players.get(i).isDead) {
+				this.players.get(i).die();
+			} else if ((this.players.get(i).y < 0 || this.players.get(i).y > (Utils.GRID_LENGTH * this.mapGridHeight)) && !this.players.get(i).isDead) {
+				this.players.get(i).die();
 			}
 		}
 		
@@ -201,20 +251,15 @@ public class CaptureTheFlag extends GameState {
 	}
 	
 	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
-		//int team;
-		/*synchronized {
-			if(this.playersOnTeam1 == 0 && this.playersOnTeam2 == 0) {
-				team = Utils.RANDOM.nextInt(2) + 1;
-			}
-			else if(this.playersOnTeam1 > this.playersOnTeam2) {
-				team = 2;
-				this.playersOnTeam2++;
-			}
-			else {
-				team = 1;
-				this.playersOnTeam1++;
-			}
-		*/
+		if(team == 1) {
+			this.playersOnTeam1++;
+		}
+		else if(team == 2) {
+			this.playersOnTeam2++;
+		}
+		else {
+			throw new IllegalStateException("Error in player join. Illegal team for CTF.");
+		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);

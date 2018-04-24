@@ -166,6 +166,7 @@ public class Profiles {
 		this.flagreturns = flagreturns;
 		this.flagcaptures = flagcaptures;
 		this.experience = experience;
+		this.level = level;
 		this.scoutunlocked = scoutunlocked;
 		this.artilleryunlocked = artilleryunlocked;
 		this.infantryunlocked = infantryunlocked;

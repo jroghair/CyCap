@@ -33,20 +33,49 @@ public class TeamDeathMatch extends GameState {
 
 		friendlyFire = false;
 		respawnTime = 5000; //10 seconds respawn time TODO: fix this on the client side
-		time_limit = 10 * 60 * 1000; //10 minutes to ms
-		score_limit = 25; //25 kills TODO: find a way to track team kills on the 
+		time_limit = 2 * 60 * 1000; //10 minutes to ms
+		score_limit = 25; //25 kills
 	}
 
 	@Override
 	public void updateGameState() {
 		//////CHECK TO SEE IF END GAME CONDITIONS ARE MET//////
+		int team1Kills = 0, team2Kills = 0;
+		for(Player p: players){
+			if(p.team == 1){
+				team1Kills += p.stats.getKills();
+			}
+			else{
+				team2Kills += p.stats.getKills();
+			}
+		}
+		for(AI_player p: AI_players){
+			if(p.team == 1){
+				team1Kills += p.stats.getKills();
+			}
+			else{
+				team2Kills += p.stats.getKills();
+			}
+		}
+		team_scores.replace(1, team1Kills);
+		team_scores.replace(2, team2Kills);
 		if(((System.currentTimeMillis() - this.start_time) >= time_limit) || (team_scores.get(1) >= score_limit) || (team_scores.get(2) >= score_limit)) {
-			//TODO: set the winner correctly
 			if(team_scores.get(1) >= score_limit) {
 				this.winner = 1;
 			}
 			else if(team_scores.get(2) >= score_limit) {
 				this.winner = 2;
+			}
+			else{
+				if(team_scores.get(1) > team_scores.get(2)){
+					winner = 1;
+				}
+				else if(team_scores.get(1) < team_scores.get(2)){
+					winner = 2;
+				}
+				else{
+					winner = Utils.getRandomInRange(1, 2);
+				}
 			}
 			endGame(winner);
 		}
@@ -113,15 +142,21 @@ public class TeamDeathMatch extends GameState {
 			}
 		}
 		
+		//////kill players who are outside the map//////
+		for (int i = 0; i < this.players.size(); i++) {
+			if ((this.players.get(i).x < 0 || this.players.get(i).x > (Utils.GRID_LENGTH * this.mapGridWidth)) && !this.players.get(i).isDead) {
+				this.players.get(i).die();
+			} else if ((this.players.get(i).y < 0 || this.players.get(i).y > (Utils.GRID_LENGTH * this.mapGridHeight)) && !this.players.get(i).isDead) {
+				this.players.get(i).die();
+			}
+		}
+		
 		////// updating AI players ///////
 		for (AI_player ai : AI_players) {
 			if(!ai_player_delay) {
 				ai.update(this, null);
 			}
 		}
-		
-		//////TODO: Check For other team kills?//////
-		
 		
 		pu_handler.update(this); //update the powerups
 	}
@@ -185,6 +220,15 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void playerJoin(String client_id, WebSocketSession session, String role, int team) {
+		if(team == 1) {
+			this.playersOnTeam1++;
+		}
+		else if(team == 2) {
+			this.playersOnTeam2++;
+		}
+		else {
+			throw new IllegalStateException("Error in player join. Illegal team for TDM.");
+		}
 		String pass = Utils.getGoodRandomString(this.userPasswords, 6);
 		SpawnNode n = Utils.getRandomSpawn(this.spawns, team);
 		Player p = new Player(n.getX(), n.getY(), Utils.GRID_LENGTH, Utils.GRID_LENGTH, 0, 1.0, team, role, client_id, pass, session);
@@ -193,7 +237,6 @@ public class TeamDeathMatch extends GameState {
 		this.userPasswords.add(pass);
 		try {
 			String message = "join:" + pass + ":" + this.game_id + ":" + "TDM:" + role + ":" + this.mapGridWidth + ":" + this.mapGridHeight;
-			//if(Utils.DEBUG) System.out.println(message);
 			for(Wall w : this.walls) {
 				message += ":" + w.toDataString(client_id);
 			}
@@ -250,20 +293,17 @@ public class TeamDeathMatch extends GameState {
 
 	@Override
 	public void setUpGame() {
-		if(Utils.DEBUG) System.out.println("In TDM setup!");
 		for(Player p : players) {
 			p.stats.setLevelAndXP();
 		}
 		
 		String roles[] = { "scout", "recruit", "infantry" };
 		int number_ai_players = this.max_players - players.size();
-		if(Utils.DEBUG) System.out.println("Making " + number_ai_players + " ais!");
 		for (int i = 0; i < number_ai_players; i++) {
 			add_AI_player(roles[Utils.RANDOM.nextInt(roles.length)]);
 		}
 		
 		this.start_time = System.currentTimeMillis();
 		this.started = true;
-		if(Utils.DEBUG) System.out.println("TDM setup done!");
 	}
 }

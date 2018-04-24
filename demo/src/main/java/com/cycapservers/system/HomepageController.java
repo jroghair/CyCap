@@ -1,6 +1,7 @@
 package com.cycapservers.system;
 
 import java.awt.Point;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.cycapservers.account.Account;
 //import org.springframework.web.bind.annotation.GetMapping;
 import com.cycapservers.account.AccountRepository;
+import com.cycapservers.account.AccountsList;
 import com.cycapservers.account.CareerTotals;
 import com.cycapservers.account.Friend;
 import com.cycapservers.account.FriendRepository;
@@ -78,7 +81,13 @@ public class HomepageController {
 	}
 	
     @GetMapping("/")
-    public String homepage() {
+    public String homepage(Model model, @SessionAttribute("account") Account account) {
+    	if(account.getUserID() != null) {
+	    	model.addAttribute("logged_in", true);
+    	}
+    	else {
+	    	model.addAttribute("logged_in", false);
+    	}
         return "main_page";
     }
     
@@ -174,10 +183,6 @@ public class HomepageController {
 		return "accounts/unsuccessfulregistration";
 	}
     
-    @GetMapping("/accounts/successfulregistration")
-    public String successfulAccountRegistration() {
-        return "accounts/successfulregistration";
-    }
     @GetMapping("/accounts/unsuccessfulregistration")
     public String unsuccessfulAccountRegistration() {
         return "accounts/unsuccessfulregistration";
@@ -329,82 +334,80 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profile")
-	public String profilePage(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
-			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
-		logger.info("Entered into get Profile controller Layer");
+	public String profilePage(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels, @ModelAttribute("CareerTotals") CareerTotals careerTotals) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile controller Layer");
 
-		String name = account.getUserID();
-		Account p = accountsRepository.findByUserID(name);
-		System.out.println("p: " + p.getAdministrator());
-		account = p;
-		model.addAttribute("account", account);
+			String name = account.getUserID();
+			Account p = accountsRepository.findByUserID(name);
+			account = p;
+			model.addAttribute("account", account);
 
-		Profiles q = profilesRepository.findByUserID(name, "recruit");
-		profiles = q;
-		model.addAttribute("profiles", profiles);
+			Profiles q = profilesRepository.findByUserID(name, "recruit");
+			profiles = q;
+			model.addAttribute("profiles", profiles);
 
-		// model.addAttribute("account", account);]
-		System.out.println(account.getUserID());
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
-		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
+			// model.addAttribute("account", account);]
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+			Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
 
-		int kills = infantry.getKills() + recruit.getKills() + scout.getKills() + artillery.getKills();
-		int deaths = infantry.getDeaths() + recruit.getDeaths() + scout.getDeaths() + artillery.getDeaths();
-		int gamewins = infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins() + artillery.getGamewins();
-		int gamelosses = infantry.getGamelosses() + recruit.getGamelosses() + scout.getGamelosses()
-				+ artillery.getGamelosses();
-		int gamesplayed = infantry.getGamesplayed() + recruit.getGamesplayed() + scout.getGamesplayed()
-				+ artillery.getGamesplayed();
-		int flaggrabs = infantry.getFlaggrabs() + recruit.getFlaggrabs() + scout.getFlaggrabs()
-				+ artillery.getFlaggrabs();
-		int flagreturns = infantry.getFlagreturns() + recruit.getFlagreturns() + scout.getFlagreturns()
-				+ artillery.getFlagreturns();
-		int flagcaptures = infantry.getFlagcaptures() + recruit.getFlagcaptures() + scout.getFlagcaptures()
-				+ scout.getFlagcaptures();
-		int level = infantry.getLevel() + recruit.getLevel() + scout.getLevel() + artillery.getLevel();
-		// int level = ;
+			int kills = infantry.getKills() + recruit.getKills() + scout.getKills() + artillery.getKills();
+			int deaths = infantry.getDeaths() + recruit.getDeaths() + scout.getDeaths() + artillery.getDeaths();
+			int gamewins = infantry.getGamewins() + recruit.getGamewins() + scout.getGamewins() + artillery.getGamewins();
+			int gamelosses = infantry.getGamelosses() + recruit.getGamelosses() + scout.getGamelosses()
+					+ artillery.getGamelosses();
+			int gamesplayed = infantry.getGamesplayed() + recruit.getGamesplayed() + scout.getGamesplayed()
+					+ artillery.getGamesplayed();
+			int flaggrabs = infantry.getFlaggrabs() + recruit.getFlaggrabs() + scout.getFlaggrabs()
+					+ artillery.getFlaggrabs();
+			int flagreturns = infantry.getFlagreturns() + recruit.getFlagreturns() + scout.getFlagreturns()
+					+ artillery.getFlagreturns();
+			int flagcaptures = infantry.getFlagcaptures() + recruit.getFlagcaptures() + scout.getFlagcaptures()
+					+ scout.getFlagcaptures();
+			int level = infantry.getLevel() + recruit.getLevel() + scout.getLevel() + artillery.getLevel();
+			// int level = ;
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		profiles.setUserID(account.getUserID());
-		profiles.setChampion("Overall");
-		profiles.setKills(kills);
-		profiles.setDeaths(deaths);
-		profiles.setGamewins(gamewins);
-		profiles.setGamelosses(gamelosses);
-		profiles.setGamesplayed(gamesplayed);
-		profiles.setFlaggrabs(flaggrabs);
-		profiles.setFlagreturns(flagreturns);
-		profiles.setFlagcaptures(flagcaptures);
-		// profiles.setExperience(experience);
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			profiles.setUserID(account.getUserID());
+			profiles.setChampion("Overall");
+			profiles.setKills(kills);
+			profiles.setDeaths(deaths);
+			profiles.setGamewins(gamewins);
+			profiles.setGamelosses(gamelosses);
+			profiles.setGamesplayed(gamesplayed);
+			profiles.setFlaggrabs(flaggrabs);
+			profiles.setFlagreturns(flagreturns);
+			profiles.setFlagcaptures(flagcaptures);
+			// profiles.setExperience(experience);
 
-		if (Utils.DEBUG)
-			System.out.println("is profiles nullFINAL?" + profiles == null);
+			model.addAttribute("profiles", profiles);
 
-		model.addAttribute("profiles", profiles);
+			CareerTotals career = new CareerTotals(name, kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+					flagreturns, flagcaptures, level);
 
-		CareerTotals career = new CareerTotals(name, kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-				flagreturns, flagcaptures, level);
+			careerTotals = career;
 
-		careerTotals = career;
+			model.addAttribute("careerTotals", careerTotals);
 
-		model.addAttribute("careerTotals", careerTotals);
+			RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
+					artillery.getLevel(), infantry.getLevel());
 
-		RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
-				artillery.getLevel(), infantry.getLevel());
+			roleLevels = roleLevels2;
 
-		roleLevels = roleLevels2;
-		System.out.println("scout level: " + scout.getLevel());
+			model.addAttribute("roleLevels", roleLevels);
 
-		model.addAttribute("roleLevels", roleLevels);
-
-		return "accounts/profile";
+			return "accounts/profile";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/**
@@ -421,42 +424,45 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileInfantry")
-	public String profilePageInfantry(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
-			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
-		logger.info("Entered into get Profile infantry controller Layer");
-		System.out.println(account.getUserID());
+	public String profilePageInfantry(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels, @ModelAttribute("CareerTotals") CareerTotals careerTotals) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile infantry controller Layer");
 
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		profiles = infantry;
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			profiles = infantry;
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
 
-		model.addAttribute("profiles", profiles);
+			model.addAttribute("profiles", profiles);
 
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
-		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+			Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
 
-		RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
-				artillery.getLevel(), infantry.getLevel());
+			RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
+					artillery.getLevel(), infantry.getLevel());
 
-		roleLevels = roleLevels2;
+			roleLevels = roleLevels2;
 
-		model.addAttribute("roleLevels", roleLevels);
+			model.addAttribute("roleLevels", roleLevels);
 
-		CareerTotals career = new CareerTotals(account.getUserID(), infantry.getKills(), infantry.getDeaths(),
-				infantry.getGamewins(), infantry.getGamelosses(), infantry.getGamesplayed(), infantry.getFlaggrabs(),
-				infantry.getFlagreturns(), infantry.getFlagcaptures(), infantry.getLevel());
+			CareerTotals career = new CareerTotals(account.getUserID(), infantry.getKills(), infantry.getDeaths(),
+					infantry.getGamewins(), infantry.getGamelosses(), infantry.getGamesplayed(), infantry.getFlaggrabs(),
+					infantry.getFlagreturns(), infantry.getFlagcaptures(), infantry.getLevel());
 
-		careerTotals = career;
+			careerTotals = career;
 
-		model.addAttribute("careerTotals", careerTotals);
+			model.addAttribute("careerTotals", careerTotals);
 
-		return "accounts/profileInfantry";
+			return "accounts/profileInfantry";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	@ModelAttribute(value = "roleLevels")
@@ -478,39 +484,43 @@ public class HomepageController {
 	 * @return String returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileRecruit")
-	public String profilePageRecruit(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
-			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
-		logger.info("Entered into get Profile recruit controller Layer");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+	public String profilePageRecruit(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels, @ModelAttribute("CareerTotals") CareerTotals careerTotals) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile recruit controller Layer");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
 
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
-		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+			Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
 
-		RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
-				artillery.getLevel(), infantry.getLevel());
+			RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
+					artillery.getLevel(), infantry.getLevel());
 
-		roleLevels = roleLevels2;
+			roleLevels = roleLevels2;
 
-		model.addAttribute("roleLevels", roleLevels);
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		profiles = recruit;
-		model.addAttribute("profiles", profiles);
+			model.addAttribute("roleLevels", roleLevels);
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			profiles = recruit;
+			model.addAttribute("profiles", profiles);
 
-		CareerTotals career = new CareerTotals(account.getUserID(), recruit.getKills(), recruit.getDeaths(),
-				recruit.getGamewins(), recruit.getGamelosses(), recruit.getGamesplayed(), recruit.getFlaggrabs(),
-				recruit.getFlagreturns(), recruit.getFlagcaptures(), recruit.getLevel());
+			CareerTotals career = new CareerTotals(account.getUserID(), recruit.getKills(), recruit.getDeaths(),
+					recruit.getGamewins(), recruit.getGamelosses(), recruit.getGamesplayed(), recruit.getFlaggrabs(),
+					recruit.getFlagreturns(), recruit.getFlagcaptures(), recruit.getLevel());
 
-		careerTotals = career;
+			careerTotals = career;
 
-		model.addAttribute("careerTotals", careerTotals);
+			model.addAttribute("careerTotals", careerTotals);
 
-		return "accounts/profileRecruit";
+			return "accounts/profileRecruit";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/**
@@ -527,79 +537,86 @@ public class HomepageController {
 	 * @return View returns html page for a user profile
 	 */
 	@GetMapping("/accounts/profileScout")
-	public String profilePageScout(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
-			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
-		logger.info("Entered into get Profile scout controller Layer");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+	public String profilePageScout(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels, @ModelAttribute("CareerTotals") CareerTotals careerTotals) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile scout controller Layer");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
 
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
-		profiles = scout;
-		model.addAttribute("profiles", profiles);
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
+			profiles = scout;
+			model.addAttribute("profiles", profiles);
 
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
-		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+			Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
 
-		RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
-				artillery.getLevel(), infantry.getLevel());
+			RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
+					artillery.getLevel(), infantry.getLevel());
 
-		roleLevels = roleLevels2;
+			roleLevels = roleLevels2;
 
-		model.addAttribute("roleLevels", roleLevels);
+			model.addAttribute("roleLevels", roleLevels);
 
-		CareerTotals career = new CareerTotals(account.getUserID(), scout.getKills(), scout.getDeaths(),
-				scout.getGamewins(), scout.getGamelosses(), scout.getGamesplayed(), scout.getFlaggrabs(),
-				scout.getFlagreturns(), scout.getFlagcaptures(), scout.getLevel());
+			CareerTotals career = new CareerTotals(account.getUserID(), scout.getKills(), scout.getDeaths(),
+					scout.getGamewins(), scout.getGamelosses(), scout.getGamesplayed(), scout.getFlaggrabs(),
+					scout.getFlagreturns(), scout.getFlagcaptures(), scout.getLevel());
 
-		careerTotals = career;
+			careerTotals = career;
 
-		model.addAttribute("careerTotals", careerTotals);
+			model.addAttribute("careerTotals", careerTotals);
 
-		return "accounts/profileScout";
+			return "accounts/profileScout";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	@GetMapping("/accounts/profileArtillery")
-	public String profilePageArtillery(Model model, @SessionAttribute("account") Account account,
-			@ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels,
-			@ModelAttribute("CareerTotals") CareerTotals careerTotals) {
-		logger.info("Entered into get Profile Artillery controller Layer");
-		System.out.println(account.getUserID());
+	public String profilePageArtillery(Model model, @SessionAttribute("account") Account account, @ModelAttribute("Profiles") Profiles profiles, @ModelAttribute("RoleLevels") RoleLevels roleLevels, @ModelAttribute("CareerTotals") CareerTotals careerTotals) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get Profile Artillery controller Layer");
 
-		Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
-		profiles = artillery;
-		/*
-		 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
-		 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
-		 * flagreturns, flagcaptures, experience);
-		 */
+			Profiles artillery = profilesRepository.findByUserID(account.getUserID(), "artillery");
+			profiles = artillery;
+			/*
+			 * Profiles profiles = new Profiles(account.getUserID(), "Overall",
+			 * kills, deaths, gamewins, gamelosses, gamesplayed, flaggrabs,
+			 * flagreturns, flagcaptures, experience);
+			 */
 
-		model.addAttribute("profiles", profiles);
-		Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
-		Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
-		Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
+			model.addAttribute("profiles", profiles);
+			Profiles infantry = profilesRepository.findByUserID(account.getUserID(), "infantry");
+			Profiles recruit = profilesRepository.findByUserID(account.getUserID(), "recruit");
+			Profiles scout = profilesRepository.findByUserID(account.getUserID(), "scout");
 
-		RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
-				artillery.getLevel(), infantry.getLevel());
+			RoleLevels roleLevels2 = new RoleLevels(account.getUserID(), recruit.getLevel(), scout.getLevel(),
+					artillery.getLevel(), infantry.getLevel());
 
-		roleLevels = roleLevels2;
+			roleLevels = roleLevels2;
 
-		model.addAttribute("roleLevels", roleLevels);
+			model.addAttribute("roleLevels", roleLevels);
 
-		CareerTotals career = new CareerTotals(account.getUserID(), artillery.getKills(), artillery.getDeaths(),
-				artillery.getGamewins(), artillery.getGamelosses(), artillery.getGamesplayed(),
-				artillery.getFlaggrabs(), artillery.getFlagreturns(), artillery.getFlagcaptures(),
-				artillery.getLevel());
+			CareerTotals career = new CareerTotals(account.getUserID(), artillery.getKills(), artillery.getDeaths(),
+					artillery.getGamewins(), artillery.getGamelosses(), artillery.getGamesplayed(),
+					artillery.getFlaggrabs(), artillery.getFlagreturns(), artillery.getFlagcaptures(),
+					artillery.getLevel());
 
-		careerTotals = career;
+			careerTotals = career;
 
-		model.addAttribute("careerTotals", careerTotals);
+			model.addAttribute("careerTotals", careerTotals);
 
-		return "accounts/profileInfantry";
+			return "accounts/profileInfantry";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
 	}
 
 	/*
@@ -661,5 +678,89 @@ public class HomepageController {
     		logger.info("Entered into get accounts login controller Layer");
         	return "accounts/login";
     	}
+	}
+	
+	@ModelAttribute(value = "accountsList")
+	public AccountsList newAccountsList() {
+		return new AccountsList();
+	}
+
+	@GetMapping("/accounts/AdminControls")
+	public String LeaderBoards(Model model, @SessionAttribute("account") Account account, @ModelAttribute("AccountsList") AccountsList accountsList) {
+		if(account.getUserID() != null) {
+			logger.info("Entered into get AdminControls controller Layer");
+
+			if (account.getAdministrator() == 0 && account.getDeveloper() == 0)
+				return "accounts/access";
+			Collection<Account> users = accountsRepository.findAllUsers();
+
+			List<Account> list = new ArrayList<Account>();
+			for (Account x : users) {
+				list.add(x);
+			}
+
+			accountsList.setAccountsList(list);
+
+			model.addAttribute("accountsList", accountsList.getAccountsList());
+
+			return "accounts/admincontrols";
+    	}
+    	else {
+    		logger.info("Entered into get accounts login controller Layer");
+        	return "accounts/login";
+    	}
+	}
+
+	@RequestMapping(value = "/accounts/AdminControls", method = RequestMethod.POST)
+	public String AdminControlsPost(@RequestParam("player") String player, HttpServletRequest request, Model model,
+			@SessionAttribute("account") Account account, @ModelAttribute("AccountsList") AccountsList accountsList,
+			@ModelAttribute("Account") Account playeraccount) {
+		logger.info("Entered into get AdminControls POST controller Layer");
+
+		Account oldAccount = accountsRepository.findByUserID(player);
+		if (oldAccount.getAdministrator() == 0) {
+			playeraccount.setUserID(player);
+			playeraccount.setPassword(oldAccount.getPassword());
+			playeraccount.setEmail(oldAccount.getEmail());
+
+			Date date = oldAccount.getDateOfCreation();
+			playeraccount.setDateOfCreation(date);
+			playeraccount.setMember(1);
+			playeraccount.setDeveloper(0);
+			playeraccount.setAdministrator(1);
+
+			accountsRepository.delete(oldAccount);
+			accountsRepository.save(playeraccount);
+
+		} else if (!account.getUserID().equals(player)) {
+			playeraccount.setUserID(player);
+			playeraccount.setPassword(oldAccount.getPassword());
+			playeraccount.setEmail(oldAccount.getEmail());
+
+			Date date = oldAccount.getDateOfCreation();
+			playeraccount.setDateOfCreation(date);
+			playeraccount.setMember(1);
+			playeraccount.setDeveloper(0);
+			playeraccount.setAdministrator(0);
+			accountsRepository.delete(oldAccount);
+			accountsRepository.save(playeraccount);
+		}
+
+		if (account.getAdministrator() == 0 && account.getDeveloper() == 0)
+			return "accounts/access";
+		Collection<Account> users = accountsRepository.findAllUsers();
+
+		List<Account> list = new ArrayList<Account>();
+		for (Account x : users) {
+			list.add(x);
+		}
+
+		accountsList.setAccountsList(list);
+
+		model.addAttribute("accountsList", accountsList.getAccountsList());
+
+		model.addAttribute("playeraccount", playeraccount);
+
+		return "accounts/admincontrols";
 	}
 }

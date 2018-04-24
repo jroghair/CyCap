@@ -1,7 +1,5 @@
 package com.cycapservers.game;
 
-import com.cycapservers.account.ProfileDataUpdate;
-
 public class GuestCaptureTheFlag extends CaptureTheFlag {
 	
 	public GuestCaptureTheFlag(String id) {

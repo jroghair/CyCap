@@ -345,7 +345,6 @@ public final class Utils{
 	}
 	
 	public static Point get_nearest_map_node(Entity e, GameState g) {
-		if(Utils.DEBUG) System.out.println("Coords for node: "+ e.x + ", " + e.y);
 		int x = (int) (Math.ceil(e.x / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		int y = (int) (Math.ceil(e.y / AI_NODE_PIXEL_DISTANCE) * AI_NODE_PIXEL_DISTANCE);
 		short i = 0, j = 0;

@@ -173,7 +173,6 @@ public abstract class GameState extends TimerTask
 				e.printStackTrace();
 			}
 		}
-		//TODO: make all of the AIs dead?
 	}
 
 	@Override

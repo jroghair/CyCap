@@ -183,10 +183,17 @@ function GameScoreGUI(x, y, type){
 	if(this.game_type == "CTF"){
 		this.txt = "Red: 0  |  Blue: 0";
 	}
+	if(this.game_type == "TDM"){
+		this.txt = "Red: 0  |  Blue: 0";
+	}
 	
 	this.update = function(txt){
 		let data = txt.split(",");
 		if(this.game_type == "CTF"){
+			this.txt = "Red: " + data[1] + "  |  Blue: " + data[2];
+			this.txt += " Time Left: " + (data[3]/1000.0);
+		}
+		if(this.game_type == "TDM"){
 			this.txt = "Red: " + data[1] + "  |  Blue: " + data[2];
 			this.txt += " Time Left: " + (data[3]/1000.0);
 		}

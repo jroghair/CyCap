@@ -3,6 +3,7 @@ package com.cycapservers.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 import java.util.Timer;
 
@@ -53,8 +54,18 @@ public class GameManager {
 	
 	//Ask about sending purpose of message;
 	public void getMessage(WebSocketSession session, String message) throws IOException{
+		//////DELTED FINISHED GAMES//////
+		ListIterator<Lobby> lobby_iter = this.lobbies.listIterator();
+		while(lobby_iter.hasNext()){
+			Lobby temp = lobby_iter.next();
+			if(temp.getGame().gameFinished) {
+				temp.getGame().cancel();
+				games.remove(temp.getGame());
+				lobby_iter.remove();
+			}
+		}
+		
 		boolean found = false;
-		boolean erase = false;
 		
 		String[] arr = message.split(":");
 		if(arr[0].equals("input")) {
@@ -94,12 +105,9 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(TeamDeathMatch.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3], session);
+								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
-									lobbies.remove(i);
-								}
 								break;
 							}
 						}
@@ -120,12 +128,9 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(CaptureTheFlag.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3], session);
+								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
-									lobbies.remove(i);
-								}
 								break;
 							}
 						}
@@ -145,12 +150,9 @@ public class GameManager {
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(FreeForAll.class)){
 							if(lobbies.get(i).hasSpace()){
-								erase = lobbies.get(i).addPlayer(arr[3], session);
+								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
-								if(erase){
-									lobbies.remove(i);
-								}
 								break;
 							}
 						}
@@ -218,20 +220,11 @@ public class GameManager {
 	}
 	
 	public void removePlayer(WebSocketSession session) {
-		//TODO fix this for multiple games
 		for(GameState g : games) {
 			g.removePlayer(session);
 		}
 		for(Lobby lobby : lobbies) {
-			/*
 			lobby.removePlayer(session);
-			if(lobby.getCurrentSize() == 0){
-				lobby.t.cancel();
-				lobbies.remove(lobby);
-				lobby.getGame().cancel();
-				games.remove(lobby.getGame());
-				break;
-			}*/
 		}
 	}
 	

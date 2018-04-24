@@ -83,10 +83,8 @@ public class Account {
 		this.email = email;
 	}
 
-	public String getDateOfCreation() {
-
-		// return dateOfCreation;
-		return new SimpleDateFormat("MM-dd-yyyy").format(dateOfCreation);
+	public Date getDateOfCreation() {
+		return this.dateOfCreation;
 	}
 
 	public void setDateOfCreation() {
@@ -95,6 +93,10 @@ public class Account {
 		dtf.format(localDate);
 		java.sql.Date dat = java.sql.Date.valueOf(localDate);
 		this.dateOfCreation = dat;
+	}
+	
+	public void setDateOfCreation(Date date) {
+		this.dateOfCreation = date;
 	}
 
 	public int getMember() {

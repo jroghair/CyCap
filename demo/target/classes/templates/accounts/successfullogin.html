@@ -1,19 +1,36 @@
 <HTML>
-Successfully Logged in 
-<h5 id="user"></h5>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>CyCap</title>
+		<link rel="stylesheet" href="/css/cycap_style.css"/>
+		<link rel="stylesheet" href="/css/topnav_style.css"/>
+	</head>
 
-<body>
-	<button><a href="/accounts/chat">Chat Now</a></button>
-	<button><a href="/game_list">View Available Games</a></button>
-	<button><a href="/accounts/profile">Profile</a></button>
-</body>
+	<body>
+		<div class="topnav">
+			<h1>CyCap</h1>
+			<a href="about" id="logo"><img src="/res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
+			<a href="/">Home</a>
+			<a href="/how_to">How To Play</a>
+			<a href="/game_list">Find Game</a>
+			<a href="/accounts/profile">Profile Page</a>
+			<a href="/accounts/chat">Chat</a>
+			<a href="/about">About the Team</a>
+			<a href="/logout">Log Out</a>
+		</div>
 
-<script th:inline="javascript">
-	/*<![CDATA[*/
-	
-	document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';
-	
-	/*]]>*/
-</script>
+		<h2>Successfully Logged in </h2>
+		<h2 id="user"></h2>
+		<button><a href="/accounts/chat">Chat Now</a></button>
+		<button><a href="/game_list">View Available Games</a></button>
+		<button><a href="/accounts/profile">Profile</a></button>
+	</body>
 
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		
+		document.getElementById("user").innerHTML = /*[[${account.getUserID()}]]*/ '';
+		
+		/*]]>*/
+	</script>
 </HTML>

@@ -51,7 +51,7 @@ public class AI_player extends GameCharacter {
 								(double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 						target = e;
 					} else {
-						if (r.nextInt(10) < 5) {
+						if (r.nextInt(10) < 8) {
 							target = ((CaptureTheFlag) g).team2_flag;
 						} else {
 							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(),
@@ -71,7 +71,7 @@ public class AI_player extends GameCharacter {
 								(double) ((CaptureTheFlag) g).team2_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 						target = e;
 					} else {
-						if (r.nextInt(10) < 5) {
+						if (r.nextInt(10) < 8) {
 							target = ((CaptureTheFlag) g).team1_flag;
 						} else {
 							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team2_base.getX(),
@@ -96,7 +96,11 @@ public class AI_player extends GameCharacter {
 					targetable_players.add(g.AI_players.get(i));
 				}
 			}
-			target = targetable_players.get(Utils.RANDOM.nextInt(targetable_players.size()));
+			if(g.started) {
+				target = targetable_players.get(Utils.RANDOM.nextInt(targetable_players.size()));
+			}else {
+				return;
+			}
 			
 		}
 		if (g.getClass().equals(TeamDeathMatch.class)) {
@@ -111,7 +115,11 @@ public class AI_player extends GameCharacter {
 					targetable_players.add(g.AI_players.get(i));
 				}
 			}
-			target = targetable_players.get(Utils.RANDOM.nextInt(targetable_players.size()));
+			if(g.started) {
+				target = targetable_players.get(Utils.RANDOM.nextInt(targetable_players.size()));
+			}else {
+				return;
+			}
 		}
 		// long end_time = System.currentTimeMillis();
 

@@ -49,7 +49,6 @@ public class CareerTotals {
 			this.averagekills = Math.floor((double) kills / gamesplayed * 100) / 100;
 			this.averagedeaths = Math.floor((double) deaths / gamesplayed * 100) / 100;
 			this.winrate = Math.floor((double) gamewins / gamesplayed * 100) / 100;
-			System.out.println("win ratio: " + winrate + " " + gamewins + " " + gamesplayed);
 
 		} else {
 			this.averagekills = 0;

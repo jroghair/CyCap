@@ -9,12 +9,14 @@ com\cycapservers\game\AutomaticGun.class
 com\cycapservers\game\SpeedBuff.class
 com\cycapservers\game\Pistol.class
 com\cycapservers\CyCapApplication.class
+com\cycapservers\game\GroundMask.class
 com\cycapservers\game\Lobby.class
+com\cycapservers\game\SmokeGrenade.class
 com\cycapservers\game\Particle.class
 com\cycapservers\game\mapNode.class
 com\cycapservers\game\Item.class
-com\cycapservers\game\AI_player$1.class
 com\cycapservers\game\GridLockedNode.class
+com\cycapservers\game\SmokeGrenadeBullet.class
 com\cycapservers\game\IncomingPlayer.class
 com\cycapservers\system\HomepageController.class
 com\cycapservers\game\TeamDeathMatch.class
@@ -25,10 +27,13 @@ com\cycapservers\game\Entity.class
 com\cycapservers\account\Account.class
 com\cycapservers\game\Utils.class
 com\cycapservers\account\ChatWebsocketConfig.class
+com\cycapservers\game\Lobby$1.class
 com\cycapservers\account\ChatController.class
 com\cycapservers\account\ProfilesRepository.class
 com\cycapservers\game\AmmoPack.class
+com\cycapservers\account\RoleLevels.class
 com\cycapservers\game\PlacedWeapon.class
+com\cycapservers\account\CareerTotals.class
 com\cycapservers\game\FreeForAll.class
 com\cycapservers\game\Wall.class
 com\cycapservers\game\ThrownWeapon.class
@@ -44,6 +49,7 @@ com\cycapservers\game\Player.class
 com\cycapservers\game\GameManager.class
 com\cycapservers\account\PlayerLBDataList.class
 com\cycapservers\game\InputSnapshot.class
+com\cycapservers\account\AccountsList.class
 com\cycapservers\game\ArtilleryShell.class
 com\cycapservers\account\PlayerLBData.class
 com\cycapservers\account\ChatMessage$MessageType.class
@@ -54,6 +60,7 @@ com\cycapservers\game\AI_player.class
 com\cycapservers\account\ProfilesList.class
 com\cycapservers\game\Flag.class
 com\cycapservers\game\AI_path_generator.class
+com\cycapservers\game\HealthGun.class
 com\cycapservers\game\PowerUp.class
 com\cycapservers\game\GameState.class
 com\cycapservers\game\Node.class
