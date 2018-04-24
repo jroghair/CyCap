@@ -11,32 +11,20 @@
 	<body>
 		<div class="topnav">
 			<h1>CyCap</h1>
-			<a href="about" id="logo"><img src="res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
+			<a href="/about" id="logo"><img src="res/webpage/Team_IA_logo10.png" width="128" height="128"/></a> <!-- this would probably lead to the about page when you click on it -->
 			<a href="/">Home</a>
 			<a href="/how_to">How To Play</a>
 			<a href="/about">About the Team</a>
-			<a href="/game_list" id="find_game">Find Game</a>
-			<a href="/accounts/profile" id="profile">Profile Page</a>
-			<a href="/accounts/chat" id="chat">Chat</a>
-			<a href="logout">Log Out</a>
+			<a href="/game_list">Find Game</a>
+			<a href="/accounts/profile">Profile Page</a>
+			<a href="/accounts/chat">Chat</a>
+			<a href="/logout">Log Out</a>
 		</div>
-		
-		<script th:inline="javascript">
-			/*<![CDATA[*/
-    		let logged_in = /*[[${logged_in}]]*/ '';
-			/*]]>*/
-			
-			if(!logged_in){
-				document.getElementById('find_game').style = "display:none;";
-				document.getElementById('profile').style = "display:none;";
-				document.getElementById('chat').style = "display:none;";
-			}
-		</script>
 
 		<div class = "section2">
-			<button><a href="play">Play Now</a></button>
-			<button><a href="accounts/log">Log In</a></button>
-			<button><a href="accounts/register">Create Account</a></button>
+			<button><a href="/play">Play Now</a></button>
+			<button><a href="/accounts/log">Log In</a></button>
+			<button><a href="/accounts/register">Create Account</a></button>
 		</div>
 	</body>
 </html>

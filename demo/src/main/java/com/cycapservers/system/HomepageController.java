@@ -81,13 +81,7 @@ public class HomepageController {
 	}
 	
     @GetMapping("/")
-    public String homepage(Model model, @SessionAttribute("account") Account account) {
-    	if(account.getUserID() != null) {
-	    	model.addAttribute("logged_in", true);
-    	}
-    	else {
-	    	model.addAttribute("logged_in", false);
-    	}
+    public String homepage(){
         return "main_page";
     }
     
