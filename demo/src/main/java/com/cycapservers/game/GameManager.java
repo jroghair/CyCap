@@ -59,6 +59,7 @@ public class GameManager {
 		while(lobby_iter.hasNext()){
 			Lobby temp = lobby_iter.next();
 			if(temp.getCurrentSize() == 0 || temp.getGame().readyToStart) {
+				if(Utils.DEBUG) System.out.println("Deleting lobby: " + temp.getId());
 				temp.t.cancel();
 				lobby_iter.remove();
 			}
@@ -67,7 +68,11 @@ public class GameManager {
 		ListIterator<GameState> game_iter = this.games.listIterator();
 		while(game_iter.hasNext()){
 			GameState temp = game_iter.next();
-			if(temp.players.size() == 0 || temp.gameFinished) {
+			if((temp.started && temp.players.size() == 0) || temp.gameFinished) {
+				if(temp.getClass().equals(GuestCaptureTheFlag.class)) {
+					break;
+				}
+				if(Utils.DEBUG) System.out.println("Deleting game: " + temp.game_id);
 				temp.cancel();
 				game_iter.remove();
 			}

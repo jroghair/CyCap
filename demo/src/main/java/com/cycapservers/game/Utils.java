@@ -615,6 +615,16 @@ public final class Utils{
 				}
 				
 			case 1:
+				if(data.y >= 250) {
+					data.x++;
+					data.y -= 250;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 2:
 				if(data.y >= 500) {
 					data.x++;
 					data.y -= 500;
@@ -624,7 +634,17 @@ public final class Utils{
 					break;
 				}
 				
-			case 2:
+			case 3:
+				if(data.y >= 750) {
+					data.x++;
+					data.y -= 750;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 4:
 				if(data.y >= 1000) {
 					data.x++;
 					data.y -= 1000;
@@ -634,7 +654,37 @@ public final class Utils{
 					break;
 				}
 				
-			case 3:
+			case 5:
+				if(data.y >= 1125) {
+					data.x++;
+					data.y -= 1125;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 6:
+				if(data.y >= 1250) {
+					data.x++;
+					data.y -= 1250;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 7:
+				if(data.y >= 1375) {
+					data.x++;
+					data.y -= 1375;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 8:
 				if(data.y >= 1500) {
 					data.x++;
 					data.y -= 1500;
@@ -644,7 +694,57 @@ public final class Utils{
 					break;
 				}
 				
-			case 4:
+			case 9:
+				if(data.y >= 1600) {
+					data.x++;
+					data.y -= 1600;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 10:
+				if(data.y >= 1700) {
+					data.x++;
+					data.y -= 1700;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 11:
+				if(data.y >= 1775) {
+					data.x++;
+					data.y -= 1775;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 12:
+				if(data.y >= 1850) {
+					data.x++;
+					data.y -= 1850;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 13:
+				if(data.y >= 1925) {
+					data.x++;
+					data.y -= 1925;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 14:
 				if(data.y >= 2000) {
 					data.x++;
 					data.y -= 2000;
@@ -654,7 +754,47 @@ public final class Utils{
 					break;
 				}
 				
-			case 5:
+			case 15:
+				if(data.y >= 2050) {
+					data.x++;
+					data.y -= 2050;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 16:
+				if(data.y >= 2100) {
+					data.x++;
+					data.y -= 2100;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 17:
+				if(data.y >= 2150) {
+					data.x++;
+					data.y -= 2150;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 18:
+				if(data.y >= 2200) {
+					data.x++;
+					data.y -= 2200;
+					//intentional fallthrough to check for double level up
+				}
+				else {
+					break;
+				}
+				
+			case 19:
 				if(data.y >= 2250) {
 					data.x++;
 					data.y -= 2250;
@@ -664,150 +804,10 @@ public final class Utils{
 					break;
 				}
 				
-			case 6:
-				if(data.y >= 2500) {
-					data.x++;
-					data.y -= 2500;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 7:
-				if(data.y >= 2750) {
-					data.x++;
-					data.y -= 2750;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 8:
-				if(data.y >= 3000) {
-					data.x++;
-					data.y -= 3000;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 9:
-				if(data.y >= 3200) {
-					data.x++;
-					data.y -= 3200;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 10:
-				if(data.y >= 3400) {
-					data.x++;
-					data.y -= 3400;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 11:
-				if(data.y >= 3550) {
-					data.x++;
-					data.y -= 3550;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 12:
-				if(data.y >= 3700) {
-					data.x++;
-					data.y -= 3700;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 13:
-				if(data.y >= 3850) {
-					data.x++;
-					data.y -= 3850;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 14:
-				if(data.y >= 4000) {
-					data.x++;
-					data.y -= 4000;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 15:
-				if(data.y >= 4100) {
-					data.x++;
-					data.y -= 4100;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 16:
-				if(data.y >= 4200) {
-					data.x++;
-					data.y -= 4200;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 17:
-				if(data.y >= 4300) {
-					data.x++;
-					data.y -= 4300;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 18:
-				if(data.y >= 4400) {
-					data.x++;
-					data.y -= 4400;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
-			case 19:
-				if(data.y >= 4500) {
-					data.x++;
-					data.y -= 4500;
-					//intentional fallthrough to check for double level up
-				}
-				else {
-					break;
-				}
-				
 			case 20:
-				if(data.y >= 4600) {
+				if(data.y >= 2300) {
 					data.x++;
-					data.y -= 4600;
+					data.y -= 2300;
 					//intentional fallthrough to check for double level up
 				}
 				else {
@@ -815,9 +815,9 @@ public final class Utils{
 				}
 				
 			case 21:
-				if(data.y >= 4700) {
+				if(data.y >= 2350) {
 					data.x++;
-					data.y -= 4700;
+					data.y -= 2350;
 					//intentional fallthrough to check for double level up
 				}
 				else {
@@ -825,9 +825,9 @@ public final class Utils{
 				}
 				
 			case 22:
-				if(data.y >= 4800) {
+				if(data.y >= 2400) {
 					data.x++;
-					data.y -= 4800;
+					data.y -= 2400;
 					//intentional fallthrough to check for double level up
 				}
 				else {
@@ -835,9 +835,9 @@ public final class Utils{
 				}
 				
 			case 23:
-				if(data.y >= 4900) {
+				if(data.y >= 2450) {
 					data.x++;
-					data.y -= 4900;
+					data.y -= 2450;
 					//intentional fallthrough to check for double level up
 				}
 				else {
@@ -845,9 +845,9 @@ public final class Utils{
 				}
 				
 			case 24:
-				if(data.y >= 5000) {
+				if(data.y >= 2500) {
 					data.x++;
-					data.y -= 5000;
+					data.y -= 2500;
 					//intentional fallthrough to check for double level up
 				}
 				else {
