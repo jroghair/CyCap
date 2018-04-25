@@ -25,6 +25,7 @@ public abstract class GameState extends TimerTask
 	protected List<InputSnapshot> unhandledInputs;
 	protected boolean readyToStart;
 	protected boolean gameFinished;
+	protected long readyTime;
 	/////////////////////////////
 	
 	//////PLAYERS//////
@@ -195,7 +196,7 @@ public abstract class GameState extends TimerTask
 		}
 		else if(readyToStart && !gameFinished){
 			if(Utils.DEBUG) System.out.println("Players size: " + players.size() + " - Incoming size: " + incomingPlayers.size());
-			if(players.size() == incomingPlayers.size()) {
+			if(players.size() == incomingPlayers.size() || (System.currentTimeMillis() - this.readyTime) >= 15000) {
 				setUpGame();
 			}
 		}

@@ -40,12 +40,12 @@ public class Entity {
 		output += entity_id + ",";
 		output += imageId + ",";
 		output += spriteIndex + ",";
-		output += (int) x + ",";
-		output += (int) y + ",";
-		output += drawWidth + ",";
-		output += drawHeight + ",";
-		output += rotation + ",";
-		output += alpha;
+		output += Utils.roundToSpecifiedPlace(x, 2) + ",";
+		output += Utils.roundToSpecifiedPlace(y, 2) + ",";
+		output += Utils.roundToSpecifiedPlace(drawWidth, 2) + ",";
+		output += Utils.roundToSpecifiedPlace(drawHeight, 2) + ",";
+		output += Utils.roundToSpecifiedPlace(rotation, 3) + ",";
+		output += Utils.roundToSpecifiedPlace(alpha, 3);
 		return output;
 	}
 

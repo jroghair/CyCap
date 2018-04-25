@@ -87,7 +87,9 @@ public class Lobby {
 						}
 					}
 					game.readyToStart = true;
+					game.readyTime = System.currentTimeMillis();
 				}
+				this.cancel();
 			}
 			
 		};
@@ -247,27 +249,26 @@ public class Lobby {
 				}
 				players.remove(i);
 				this.curSize--;
-				
-				//////UPDATE TIMER//////
-				int time_to_start;
-				if(curSize >= game.max_players/2) {
-					time_to_start = 30000;
-				}
-				else {
-					time_to_start = 45000;
-				}
-				this.t.cancel();
-				this.t = new Timer();
-				this.t.schedule(newTask(), time_to_start);
-				for(IncomingPlayer j: players){
-					try {
-						this.GivePlayerList(j.session);
-						i.session.sendMessage(new TextMessage("time:" + time_to_start));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				return;
+				break;
+			}
+		}
+		//////UPDATE TIMER//////
+		int time_to_start;
+		if(curSize >= game.max_players/2) {
+			time_to_start = 20000;
+		}
+		else {
+			time_to_start = 40000;
+		}
+		this.t.cancel();
+		this.t = new Timer();
+		this.t.schedule(newTask(), time_to_start);
+		for(IncomingPlayer j: players){
+			try {
+				this.GivePlayerList(j.session);
+				j.session.sendMessage(new TextMessage("time:" + time_to_start));
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

@@ -873,4 +873,12 @@ public final class Utils{
 		p.y = (int) Math.floor(mapY/Utils.GRID_LENGTH);
 		return p;
 	}
+	
+	public static double roundToSpecifiedPlace(double num, int decimals) {
+		if(decimals < 0) {
+			throw new IllegalArgumentException("Error: decimal must be greater than or equal to 0");
+		}
+		double temp = Math.pow(10, decimals);
+		return Math.round(num * temp)/temp;
+	}
 }

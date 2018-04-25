@@ -54,19 +54,26 @@ public class GameManager {
 	
 	//Ask about sending purpose of message;
 	public void getMessage(WebSocketSession session, String message) throws IOException{
-		//////DELTED FINISHED GAMES//////
+		//////DELTED EMPTY OR STARTED LOBBIES//////
 		ListIterator<Lobby> lobby_iter = this.lobbies.listIterator();
 		while(lobby_iter.hasNext()){
 			Lobby temp = lobby_iter.next();
-			if(temp.getGame().gameFinished) {
-				temp.getGame().cancel();
-				games.remove(temp.getGame());
+			if(temp.getCurrentSize() == 0 || temp.getGame().readyToStart) {
+				temp.t.cancel();
 				lobby_iter.remove();
+			}
+		}
+		//////DELETE FINISHED OR EMPTY GAMES//////
+		ListIterator<GameState> game_iter = this.games.listIterator();
+		while(game_iter.hasNext()){
+			GameState temp = game_iter.next();
+			if(temp.players.size() == 0 || temp.gameFinished) {
+				temp.cancel();
+				game_iter.remove();
 			}
 		}
 		
 		boolean found = false;
-		
 		String[] arr = message.split(":");
 		if(arr[0].equals("input")) {
 			String game_id = arr[1];
@@ -87,7 +94,6 @@ public class GameManager {
 				games.get(0).playerJoin(arr[1], session, "recruit", 1); //the player can only play as the recruit in the guest game
 			}
 		}
-		
 		else if(arr[0].equals("lobby")){
 			if(arr[1].equals("playerList")){
 				GivePlayerList(session,arr[2]);
@@ -104,7 +110,7 @@ public class GameManager {
 				if(arr[2].equals("Death")){
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(TeamDeathMatch.class)){
-							if(lobbies.get(i).hasSpace()){
+							if(lobbies.get(i).hasSpace() && !lobbies.get(i).getGame().readyToStart){
 								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
@@ -127,7 +133,7 @@ public class GameManager {
 				else if(arr[2].equals("Capture")){
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(CaptureTheFlag.class)){
-							if(lobbies.get(i).hasSpace()){
+							if(lobbies.get(i).hasSpace() && !lobbies.get(i).getGame().readyToStart){
 								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
@@ -149,7 +155,7 @@ public class GameManager {
 				else if(arr[2].equals("FFA")){
 					for(int i = 0; i < lobbies.size(); i++){
 						if(lobbies.get(i).getGame().getClass().equals(FreeForAll.class)){
-							if(lobbies.get(i).hasSpace()){
+							if(lobbies.get(i).hasSpace() && !lobbies.get(i).getGame().readyToStart){
 								lobbies.get(i).addPlayer(arr[3], session);
 								session.sendMessage(new TextMessage("joined:" + lobbies.get(i).getId()));
 								foundGame = true;
@@ -202,21 +208,8 @@ public class GameManager {
 		}
 		if(game != -1){
 			lobbies.get(game).GivePlayerList(session);
-			//session.sendMessage(new TextMessage("clean"));
-			//for(int i = 0; i < lobby.get(game).getCurrentSize(); i++){
-				//session.sendMessage(new TextMessage("player:"+ lobby.get(game).getPlayer(i)));
-				//System.out.println(lobby.get(game).getPlayer(i));
-			//}
 		}
 		return;
-	}
-	
-	public boolean playerToRemove(){
-		if(afkPlayers){
-			afkPlayers = false;
-			return true;
-		}
-		return false;
 	}
 	
 	public void removePlayer(WebSocketSession session) {

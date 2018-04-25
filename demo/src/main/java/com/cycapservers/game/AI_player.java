@@ -41,21 +41,19 @@ public class AI_player extends GameCharacter {
 																											// capture
 			// the flag
 			if (this.team == 1) {
-				if (((CaptureTheFlag) g).team1_flag.grabbed) {// if our flag is
-																// grabbed
+				if (((CaptureTheFlag) g).team1_flag.grabbed) {// if our flag is grabbed
 					target = ((CaptureTheFlag) g).team1_flag.grabber;
-				} else {
+				}
+				else {
 					if (this.item_slot == ((CaptureTheFlag) g).team2_flag) {
 						// quick fix to target to base
-						Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(),
-								(double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
+						Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(), (double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 						target = e;
 					} else {
 						if (r.nextInt(10) < 8) {
 							target = ((CaptureTheFlag) g).team2_flag;
 						} else {
-							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(),
-									(double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
+							Entity e = new Entity(0, 0, (double) ((CaptureTheFlag) g).team1_base.getX(), (double) ((CaptureTheFlag) g).team1_base.getY(), 0.0, 0.0, 0.0, 0.0, "");
 							target = e;
 						}
 					}
