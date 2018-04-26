@@ -25,7 +25,9 @@ public class Lobby {
 	/**
 	 * timer used to keep track of when to start the game
 	 */
-	public Timer t;
+	public Timer lobby_timer;
+	
+	public TimerTask currentTask;
 	
 	/**
 	 * Stores the usernames of all of the players in the lobby.
@@ -55,7 +57,7 @@ public class Lobby {
 	 */
 	public Lobby(Class<? extends GameState> c, String id){
 		this.curSize=0;
-		this.t = new Timer();
+		this.lobby_timer = new Timer();
 		if(c.equals(TeamDeathMatch.class)){
 			int map_num = Utils.RANDOM.nextInt(2);
 			this.game = new TeamDeathMatch(id, map_num);
@@ -77,7 +79,7 @@ public class Lobby {
 
 			@Override
 			public void run() {
-				if(!game.readyToStart) {
+				if(!game.readyToStart && this.equals(currentTask)) {
 					for(IncomingPlayer i : players){
 						game.addIncomingPlayer(i);
 						try {
@@ -229,9 +231,10 @@ public class Lobby {
 			this.GivePlayerList(i.session);
 			i.session.sendMessage(new TextMessage("time:" + time_to_start));
 		}
-		this.t.cancel();
-		this.t = new Timer();
-		this.t.schedule(newTask(), time_to_start);
+		this.lobby_timer.cancel();
+		this.lobby_timer = new Timer();
+		this.currentTask = newTask();
+		this.lobby_timer.schedule(this.currentTask, time_to_start);
 	}
 	
 	/**
@@ -260,9 +263,10 @@ public class Lobby {
 		else {
 			time_to_start = 40000;
 		}
-		this.t.cancel();
-		this.t = new Timer();
-		this.t.schedule(newTask(), time_to_start);
+		this.lobby_timer.cancel();
+		this.lobby_timer = new Timer();
+		this.currentTask = newTask();
+		this.lobby_timer.schedule(this.currentTask, time_to_start);
 		for(IncomingPlayer j: players){
 			try {
 				this.GivePlayerList(j.session);

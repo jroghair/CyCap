@@ -395,8 +395,9 @@ public final class Utils{
 					}
 					if (g.ai_map.get(i).get(j).node_trav != false) {
 						return new Point(i, j);
-					} else {
-						System.out.println("Couldn't find a traversable node near entity");
+					}
+					else {
+						
 					}
 				}
 			}

@@ -18,7 +18,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class MessageHandler extends TextWebSocketHandler {
 	
-	private volatile GameManager gameManager = new GameManager();
+	private static volatile GameManager gameManager = new GameManager();
 	
 	private ThreadLocal<String> UserId = new ThreadLocal<String>();
 	
@@ -54,6 +54,5 @@ public class MessageHandler extends TextWebSocketHandler {
         	}
     	}
     	gameManager.getMessage(session, textMessage.getPayload());
-    	//check to see when the last game state was sent out, if more than 100ms, send now
     }
 }

@@ -32,7 +32,7 @@ public class GameManager {
 	
 	private boolean afkPlayers;
 	
-	static final int TOLERABLE_UPDATE_ERROR = 15; //IN MS
+	static final int TOLERABLE_UPDATE_ERROR = 50; //IN MS
 	static final int BULLET_WARNING_LEVEL = 250;
 	static final int ADVANCED_BULLET_WARNING_LEVEL = 500;
 	
@@ -59,8 +59,8 @@ public class GameManager {
 		while(lobby_iter.hasNext()){
 			Lobby temp = lobby_iter.next();
 			if(temp.getCurrentSize() == 0 || temp.getGame().readyToStart) {
-				if(Utils.DEBUG) System.out.println("Deleting lobby: " + temp.getId());
-				temp.t.cancel();
+				if(Utils.DEBUG) System.out.println("Deleting lobby: " + temp.getId() + " with game " + temp.getGame().game_id);
+				temp.lobby_timer.cancel();
 				lobby_iter.remove();
 			}
 		}
@@ -69,12 +69,11 @@ public class GameManager {
 		while(game_iter.hasNext()){
 			GameState temp = game_iter.next();
 			if((temp.started && temp.players.size() == 0) || temp.gameFinished) {
-				if(temp.getClass().equals(GuestCaptureTheFlag.class)) {
-					break;
+				if(!temp.getClass().equals(GuestCaptureTheFlag.class)) {
+					if(Utils.DEBUG) System.out.println("Deleting game: " + temp.game_id);
+					temp.cancel();
+					game_iter.remove();
 				}
-				if(Utils.DEBUG) System.out.println("Deleting game: " + temp.game_id);
-				temp.cancel();
-				game_iter.remove();
 			}
 		}
 		
@@ -90,8 +89,12 @@ public class GameManager {
 		}
 		else if(arr[0].equals("join")) {
 			for(GameState s: games){
+				if(s.gameFinished) {
+					continue;
+				}
 				found = s.findIncomingPlayer(arr[1], session);
 				if(found){
+					if(Utils.DEBUG) System.out.println(arr[1] + " joining game " + s.game_id);
 					break;
 				}
 			}
@@ -124,7 +127,6 @@ public class GameManager {
 						}
 					}
 					if(!foundGame){
-						System.out.println(arr[3]);
 						String id = Utils.getGoodRandomString(game_ids, GAME_ID_LENGTH);
 						Lobby l = new Lobby(TeamDeathMatch.class, id);
 						game_ids.add(id);
