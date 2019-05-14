@@ -18,7 +18,7 @@ and I implemented. After each game users are able to see their latest game data 
 for all players of the game. Leaderboards showed key ingame statistics for players including kills/deaths and k/d ratio, and allowed users to 
 sort, filter and search. 
 
-[![CyCap](https://img.youtube.com/vi/aA-XCnGD7Pg&t=1s/0.jpg)](https://www.youtube.com/watch?v=aA-XCnGD7Pg&t=1s)
+[![CyCap Video](https://img.youtube.com/vi/aA-XCnGD7Pg&t=1s/0.jpg)](https://www.youtube.com/watch?v=aA-XCnGD7Pg&t=1s)
 
 # Reflection
 This project was my first attempt at software development and certainly my first exposure to Spring. The code is not perfect, but I certainly
