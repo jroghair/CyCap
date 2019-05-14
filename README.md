@@ -23,5 +23,5 @@ sort, filter and search.
 # Reflection
 This project was my first attempt at software development and certainly my first exposure to Spring. The code is not perfect, but I certainly
 feel like I learned a great deal from the experience and am a better programmer as a result. The project went on to be one of a handful that were
-nominated for best project at the end of the semester. I highlight the significance of this only to mention that it was only possible due to the amazing team mates that I had that semester, Ted, Andrew and Bryan. Each of them are fantastic programmers and engineers on their own,but it was our combined teamwork and hardwork led us to having such a great project in the end. Bryan in particular poured more hours into the project
+nominated for best project at the end of the semester. I highlight the significance of this only to mention that it was only possible due to the amazing team mates that I had that semester, Ted, Andrew and Bryan. Each of them are fantastic programmers and engineers on their own, but it was our combined teamwork and hardwork led us to having such a great project in the end. Bryan in particular poured more hours into the project
 that any of us and was instrumental in making it the success that it was. I truly enjoyed working on this project with them.
